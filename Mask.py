@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageSequence
 from PIL.PngImagePlugin import PngInfo
 import numpy as np
 import torch
+import torchvision.transforms.v2 as T
 import re
 
 cat = "Mira/Mask"
@@ -374,3 +375,72 @@ class ColorMasksToStringList:
                 ret.append('#{:02X}{:02X}{:02X}'.format(PngColorMasks[Index][0], PngColorMasks[Index][1], PngColorMasks[Index][2]))
                 
         return (ret[0],ret[1],ret[2],ret[3],ret[4],ret[5],ret[6],ret[7],ret[8],ret[9],)
+    
+class ColorMasksToMaskList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "Image": ("IMAGE", {
+                    "display": "input" 
+                }),
+                "PngColorMasks": ("LIST", {
+                    "display": "input" 
+                }),
+                "Blur": ("FLOAT", {
+                    "default": 0.0,
+                    "min": 0.0,
+                    "step": 0.5,
+                    "display": "number" 
+                }),
+                "Start_At_Index": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),
+            },
+        }
+        
+        # Not sure if there's a dynamic outputs solution....
+    r_t = ()
+    r_n = ()
+    for i in range(10):        
+        r_t += ('MASK',)
+        r_n += (f'mask_{i}',)
+            
+    RETURN_TYPES = r_t
+    RETURN_NAMES = r_n
+    FUNCTION = "ColorMasksToMaskListEx"
+    CATEGORY = cat
+    
+    # refer: https://github.com/cubiq/ComfyUI_essentials?tab=readme-ov-file
+    # MaskBlur and MaskFromColor
+    def ColorMasksToMaskListEx(self, Image, PngColorMasks, Blur, Start_At_Index):
+        masks = []
+                
+        for index in range(Start_At_Index, Start_At_Index + 10, 1):            
+            if len(PngColorMasks) <= index:
+                color = torch.tensor([0,0,0])
+            else:
+                color = torch.tensor(PngColorMasks[index])
+            temp = (torch.clamp(Image, 0, 1.0) * 255.0).round().to(torch.int)
+            lower_bound = (color).clamp(min=0)
+            upper_bound = (color).clamp(max=255)
+            mask = (temp >= lower_bound) & (temp <= upper_bound)
+            mask = mask.all(dim=-1)
+            mask = mask.float()
+            
+            if 0 < Blur:
+                size = int(6 * Blur +1)
+                if size % 2 == 0:
+                    size+= 1
+                
+                blurred = mask.unsqueeze(1)
+                blurred = T.GaussianBlur(size, Blur)(blurred)
+                blurred = blurred.squeeze(1)
+                mask = blurred
+            
+            masks.append(mask)
+
+        return (masks[0], masks[1], masks[2], masks[3], masks[4], masks[5], masks[6], masks[7], masks[8], masks[9],)

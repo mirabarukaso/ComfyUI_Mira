@@ -1,7 +1,7 @@
 from .Multiplier import IntMultiplier, FloatMultiplier
 from .Numeral import NumeralToString
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple
-from .Mask import CreateRegionalMask, ColorMasksToString, ColorMasksToRGB, ColorMasksToStringList
+from .Mask import CreateRegionalMask, ColorMasksToString, ColorMasksToRGB, ColorMasksToStringList, ColorMasksToMaskList
 
 def __init__(self):
     pass
@@ -18,6 +18,7 @@ NODE_CLASS_MAPPINGS = {
     "ColorMasksToString"        : ColorMasksToString,
     "ColorMasksToRGB"           : ColorMasksToRGB,
     "ColorMasksToStringList"    : ColorMasksToStringList,
+    "ColorMasksToMaskList"      : ColorMasksToMaskList,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -31,6 +32,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ColorMasksToString"        : "Color Mask to HEX String",
     "ColorMasksToRGB"           : "Color Mask to INT RGB",
     "ColorMasksToStringList"    : "Color Masks to List",
+    "ColorMasksToMaskList"      : "Color Masks to Mask List",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
