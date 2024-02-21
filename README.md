@@ -34,13 +34,32 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 | `0-9` | Block weights |
 | `,` | A normal segmentation. Let's call it `N` cut|
 | `;` | A high-priority segmentation perpendicular to the normal direction. Let's call it `G` cut|
-| `1,2,1,1;2,4,6` <br /> `Colum_first ENABLED`| When combining `,` and `;`, the first and the following `;` elements are treated as the weight of `G`current cavans. Node will first split the canvas with weight `1` and `;2` as `G` cuts. Then split the following parts with `2,1,1` and `4,6` as `N` cuts.  <br />***NOTE: The arithmetic logic here are different from WebUI, please use "Colum_first" if you need to change the direction, don't replace `,` and `;` directly.*** |
+| `1,2,1,1;2,4,6` <br /> `Colum_first ENABLED`| When combining `,` and `;`, the first and the following `;` elements are treated as the weight of `G` for current cavans. Node will first split the canvas with weight `1` and `;2` as `G` cuts. Then split the following parts with `2,1,1` and `4,6` as `N` cuts.  <br />***NOTE: The arithmetic logic here are different from WebUI, please use "Colum_first" if you need to change the direction, don't replace `,` and `;` directly.*** |
 | `1,2,3,2,1` <br /> `Colum_first DISABLED`| A simple horizontal `N` cut with weights. |
 | `1,2,3,2,1` <br /> `Colum_first ENABLED`| A simple vertical `N` cut with weights. |
 
 | ***1,2,1,1;2,4,6 with Colum_first*** | ***1,2,3,2,1*** | ***1,2,3,2,1 with Colum_first*** |
 | --- | --- | --- |
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_f.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_t.png" width=35% height=35%> |
+
+------
+### Mira/Mask/Create PNG Mask 
+Convert ranged `PngColorMasks` to Masks with(or without) Blur. **Dunno if there is a proper way to solve the output problem.**
+
+| Inputs | Description |
+| --- | --- |
+| `Image` | Image from ` Mira/Mask/Create PNG Mask` |
+| `PngColorMasks` | List from ` Mira/Mask/Create PNG Mask` |
+| `Blur` | The first block index number you want. |
+| `Start_At_Index` | The first block index number you want. |
+
+| Outputs | Description |
+| --- | --- |
+| `mask_[0-9]` | The Mask for `Regional Conditioning By Color Mask (Inspire)` or etc. |
+
+| ***Solid*** | ***Blur 16.0*** |
+| --- | --- |
+| <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2mask_solid.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2mask_blur.png" width=35% height=35%> |
 
 ------
 ### Mira/Mask/Color Mask to HEX String
@@ -72,7 +91,7 @@ Convert specified `Index` `PngColorMasks` to RGB value for `🔧 Mask From Color
 
 ------
 ### Mira/Mask/Color Masks to List
-Convert ranged `PngColorMasks` to HEX value. Dunno if there is a proper way to solve the output problem.
+Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to solve the output problem.**
 
 | Inputs | Description |
 | --- | --- |
