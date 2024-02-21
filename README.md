@@ -2,7 +2,7 @@
 A custom node for [ComfyUI](https://github.com/comfyanonymous/ComfyUI/) to improve all those custom nodes I feel not comfortable in my workflow.
 
 ## Installation
-`Clone` the repository to custom_nodes in your [ComfyUI](https://github.com/comfyanonymous/ComfyUI/) directory:
+`Clone` the repository to custom_nodes in your `ComfyUI\custom_nodes` directory:
 ```
 git clone https://github.com/mirabarukaso/ComfyUI_Mira.git
 ```
