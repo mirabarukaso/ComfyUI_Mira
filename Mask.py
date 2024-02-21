@@ -68,11 +68,9 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                 new_layout += '1,'
             new_layout = new_layout[:-1] + ';'
         new_layout = new_layout[:-1]
-        print("Mira: new_layout: " + new_layout)
         DebugMessage += 'new_layout: ' + new_layout + '\n'
         return CreatePNG(Width, Height, Rows, Colums, Colum_first, new_layout, DebugMessage)
     else:        
-        print('Mira: use Layouts')
         DebugMessage += 'use Layouts\n'
         isSingleSeparator = False
         
@@ -80,17 +78,17 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
         WarpTimesArray = 0
             
         if ',' in Layout and ';' not in Layout:
-            print('Mira: only , ')
+            DebugMessage += 'Mira: only , \n'
             BlocksCount = Layout.count(',') + 1
             WarpTimesArray = Layout.split(',')
             isSingleSeparator = True
         elif ';' in Layout and ',' not in Layout:
-            print('Mira: only ; ')
+            DebugMessage += 'Mira: only ; \n'
             BlocksCount = Layout.count(';') + 1
             WarpTimesArray = Layout.split(';')
             isSingleSeparator = True
         else:            
-            print('Mira: both , ;')
+            DebugMessage += 'Mira: both , ; \n'
             
         if True == isSingleSeparator:            
             SingleBlock = 0
@@ -128,7 +126,8 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                         nowHeightEnd = Height
                     
                     if 1 >= len(FullWarpTimesArray):
-                        print('Mira: By pass empty GreatCuts')                        
+                        print('Mira: Bypass empty GreatCuts')    
+                        DebugMessage += 'Mira: Bypass empty GreatCuts\n'                    
                     else:
                         # remove first Great Cuts Value
                         FullWarpTimesArray.pop(0)
@@ -157,7 +156,8 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                         nowWidthEnd = Width
                     
                     if 1 >= len(FullWarpTimesArray):
-                        print('Mira: By pass empty GreatCuts')                        
+                        print('Mira: By pass empty GreatCuts')
+                        DebugMessage += 'Mira: By pass empty GreatCuts\n'
                     else:
                         # remove first Great Cuts Value
                         FullWarpTimesArray.pop(0)
@@ -194,7 +194,7 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                         
         for i in range(BlocksCount):
             hex_rgb = ' #{:02X}{:02X}{:02X}'.format(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2])
-            print('Mira: [' + str(i) +']Draw ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb + '\n')
+            print('Mira: [' + str(i) +']Draw ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb)
             DebugMessage += '[' + str(i) +']Draw ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb +'\n'
             PngDraw.rectangle(Rectangles[i], fill=(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2], 255))
         DebugMessage += '\n'

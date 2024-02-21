@@ -109,17 +109,20 @@ Create Canvas information `Width` and `Height` for Latent with Landscape switch.
 
 | Inputs | Description |
 | --- | --- |
+| Basic |
 | `Width`  `Height` | Image size. |
+| Normal |
 | `Landscape` | Swap `Width` and `Height` by one click. |
-| Advanced | --- |
+| Advanced |
 | `Batch`  | Batch size. |
 | `HiResMultiplier`  | Automatically calculated (in steps of 8) for HiResFix. |
 | `Debug` | Debug information as String. |
 
 | Outputs | Description |
 | --- | --- |
+| Basic & Normal |
 | `Width`  `Height` | Image size. Swaps automatically when `Landscape` is Enabled. |
-| Advanced | --- |
+| Advanced | 
 | `Batch`  | Batch size. |
 | `HiRes Width` `HiRes Height`  | Width and Height for HiResFix or etc. |
 

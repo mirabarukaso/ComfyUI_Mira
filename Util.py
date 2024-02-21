@@ -17,6 +17,36 @@ def SafeCheck(Width = 16, Height = 16, Batch = 1, HiResMultiplier = 1.0):
         
         return Width, Height, Batch, HiResMultiplier
 
+class CanvasCreatorBasic:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "Width": ("INT", {
+                    "default": 576,
+                    "min": 16,
+                    "step": 8,
+                    "display": "number" 
+                }),
+                "Height": ("INT", {
+                    "default": 1024,
+                    "min": 16,
+                    "step": 8,
+                    "display": "number" 
+                }),
+            },
+        }
+                
+    RETURN_TYPES = ("INT","INT",)
+    RETURN_NAMES = ("Width","Height",)
+    FUNCTION = "CanvasCreatorBasicEx"
+    CATEGORY = cat
+    
+    def CanvasCreatorBasicEx(self, Width, Height):                         
+        Width, Height, Batch, HiResMultiplier = SafeCheck(Width, Height)
+        
+        return(Width, Height,)
+
 class CanvasCreatorSimple:
     @classmethod
     def INPUT_TYPES(s):
@@ -46,7 +76,7 @@ class CanvasCreatorSimple:
     CATEGORY = cat
     
     def CanvasCreatorSimpleEx(self, Width, Height, Landscape):                         
-        Width, Height, = SafeCheck(Width, Height)
+        Width, Height, Batch, HiResMultiplier = SafeCheck(Width, Height)
         
         if(False == Landscape):
             return(Width, Height,)

@@ -1,6 +1,6 @@
 from .Multiplier import IntMultiplier, FloatMultiplier
 from .Numeral import NumeralToString
-from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple
+from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic
 from .Mask import CreateRegionalMask, ColorMasksToString, ColorMasksToRGB, ColorMasksToStringList, ColorMasksToMaskList
 
 def __init__(self):
@@ -14,6 +14,7 @@ NODE_CLASS_MAPPINGS = {
     "NumeralToString"           : NumeralToString,
     "CanvasCreatorAdvanced"     : CanvasCreatorAdvanced,
     "CanvasCreatorSimple"       : CanvasCreatorSimple,
+    "CanvasCreatorBasic"        : CanvasCreatorBasic,
     "CreateRegionalMask"        : CreateRegionalMask,
     "ColorMasksToString"        : ColorMasksToString,
     "ColorMasksToRGB"           : ColorMasksToRGB,
@@ -28,6 +29,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "NumeralToString"           : "Convert Numeral to String",
     "CanvasCreatorAdvanced"     : "Create Canvas Advanced",
     "CanvasCreatorSimple"       : "Create Canvas",
+    "CanvasCreatorBasic"        : "Create Canvas H/W only",
     "CreateRegionalMask"        : "Create PNG Mask",
     "ColorMasksToString"        : "Color Mask to HEX String",
     "ColorMasksToRGB"           : "Color Mask to INT RGB",

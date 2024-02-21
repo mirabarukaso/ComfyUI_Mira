@@ -31,8 +31,6 @@ class NumeralToString:
             return (str(numeral),)
         else:
             result = 'Mira: invalid input Type '
-            print(result, end='')
-            print(type(numeral))
             result += str(type(numeral))
             return (result,)
         
