@@ -1,3 +1,5 @@
+import math
+
 cat = "Mira/Util"
 
 def SafeCheck(Width = 16, Height = 16, Batch = 1, HiResMultiplier = 1.0):
@@ -101,36 +103,42 @@ class CanvasCreatorAdvanced:
         HiResWidth = Width * HiResMultiplier
         HiResHeight = Height * HiResMultiplier        
         
-        if 0 != int(HiResWidth)%8:
-            DebugMessage += '\n(Before)HiResWidth = ' + str(int(HiResWidth))
-            residue = int(HiResWidth)%8
-            if 3 >= int(HiResWidth)%8:
-                HiResWidth = int(HiResWidth) - residue
+        if 0 != math.floor(HiResWidth)%8:
+            DebugMessage += '\n(Before)HiResWidth = ' + str(math.floor(HiResWidth))
+            residue = math.floor(HiResWidth)%8
+            if 3 >= math.floor(HiResWidth)%8:
+                HiResWidth = math.floor(HiResWidth) - residue
             else:
-                HiResWidth = int(HiResWidth) + 8 - residue
-            DebugMessage += '\n(After)HiResWidth = ' + str(int(HiResWidth))            
+                HiResWidth = math.floor(HiResWidth) + 8 - residue
+            DebugMessage += '\n(After)HiResWidth = ' + str(math.floor(HiResWidth))            
             
-        if 0 != int(HiResHeight)%8:
-            DebugMessage += '\n(Before)HiResHeight = ' + str(int(HiResHeight))
-            residue = int(HiResHeight)%8
-            if 3 >= int(HiResHeight)%8:
-                HiResHeight = int(HiResHeight) - residue
+        if 0 != math.floor(HiResHeight)%8:
+            DebugMessage += '\n(Before)HiResHeight = ' + str(math.floor(HiResHeight))
+            residue = math.floor(HiResHeight)%8
+            if 3 >= math.floor(HiResHeight)%8:
+                HiResHeight = math.floor(HiResHeight) - residue
             else:
-                HiResHeight = int(HiResHeight) + 8 - residue
-            DebugMessage += '\n(After)HiResHeight = ' + str(int(HiResHeight))
+                HiResHeight = math.floor(HiResHeight) + 8 - residue
+            DebugMessage += '\n(After)HiResHeight = ' + str(math.floor(HiResHeight))
         
         if(False == Landscape):
             DebugMessage += '\nWidth = ' + str(Width)
             DebugMessage += '\nHeight = ' + str(Height)
-            DebugMessage += '\nHiResWidth = ' + str(int(HiResWidth))
-            DebugMessage += '\nHiResHeight = ' + str(int(HiResHeight))
-            return(Width, Height, Batch, HiResWidth, HiResHeight, DebugMessage,)
+            DebugMessage += '\nHiResWidth = ' + str(math.floor(HiResWidth))
+            DebugMessage += '\nHiResHeight = ' + str(math.floor(HiResHeight))
+            
+            intHiResHeight = math.floor(HiResHeight)
+            intHiResWidth = math.floor(HiResWidth)
+            return(Width, Height, Batch, intHiResWidth, intHiResHeight, DebugMessage,)
         else:
             DebugMessage += '\nLandscape actived, swap Height and Width'
             DebugMessage += '\nWidth = ' + str(Height)
             DebugMessage += '\nHeight = ' + str(Width)
-            DebugMessage += '\nHiResWidth = ' + str(int(HiResWidth))
-            DebugMessage += '\nHiResHeight = ' + str(int(HiResHeight))
-            return(Height, Width, Batch, HiResHeight, HiResWidth, DebugMessage,)
+            DebugMessage += '\nHiResWidth = ' + str(math.floor(HiResWidth))
+            DebugMessage += '\nHiResHeight = ' + str(math.floor(HiResHeight))
+            
+            intHiResHeight = math.floor(HiResHeight)
+            intHiResWidth = math.floor(HiResWidth)
+            return(Height, Width, Batch, intHiResHeight, intHiResWidth, DebugMessage,)
         
         
