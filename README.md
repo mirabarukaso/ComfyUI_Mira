@@ -22,11 +22,12 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 | `Colum_first` | A boolean trigger, when enabled, will treat default cut as a horizontal cut. |
 | `Rows`  `Colums` |  Define how many `Blocks` you want, all `Blocks` are the same weight. (Blocks = Rows x Colums) <br />  ***Low prority, only works when Layout is incorrect.*** |
 | `Layout` | Customized `Blocks` with layouts input. e.g. `1,2,1,1;2,4,6`<br /> `0-9` `,` `;` Check Examples section for more detail. <br />***High prority, in case you don't need custom layout, simply put `#` here.*** |
+| `Use_Catched_PNG` | Because we didn't need to generate new `Mask` every time, a `Cached Image` with `PNG Mask List` is automatically saved in memory until you change the settings or refresh the page. ***Update: Looks like ComfyUI has its own logic for interacting with Nodes, but it's out there anyway.*** |
 
 | Outputs | Description |
 | --- | --- |
 | `Image` | Visualisation Image of your Layout. |
-| `PngColorMasks` | A List contains all your Blocks' color information.  <br />Connect to `Color Mask to HEX String` `Color Mask to INT RGB` `Color Masks List` |
+| `PngColorMasks` | A List contains all your Blocks' color information.  <br />Connect to `Create PNG Mask ` `Color Mask to HEX String` `Color Mask to INT RGB` `Color Masks List` |
 | `Debug` | Debug information as String. |
 
 | Examples | Description |
@@ -51,7 +52,7 @@ Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 | --- | --- |
 | `Image` | Image from ` Mira/Mask/Create PNG Mask` |
 | `PngColorMasks` | List from ` Mira/Mask/Create PNG Mask` |
-| `Blur` | The first block index number you want. |
+| `Blur` | The intensity of blur around the edge of Mask, set to 0 for a solid edge. |
 | `Start_At_Index` | The first block index number you want. |
 
 | Outputs | Description |
