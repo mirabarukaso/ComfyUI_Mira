@@ -44,7 +44,8 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 
 ------
 ### Mira/Mask/Create PNG Mask 
-Convert ranged `PngColorMasks` to Masks with(or without) Blur. **Dunno if there is a proper way to solve the output problem.**
+Convert ranged `PngColorMasks` to Masks with(or without) Blur. **Dunno if there is a proper way to solve the output problem.**   
+Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 
 | Inputs | Description |
 | --- | --- |
@@ -55,7 +56,7 @@ Convert ranged `PngColorMasks` to Masks with(or without) Blur. **Dunno if there 
 
 | Outputs | Description |
 | --- | --- |
-| `mask_[0-9]` | The Mask for `Regional Conditioning By Color Mask (Inspire)` or etc. |
+| `mask_[0-9]` | The Mask for `Regional Conditioning` or ***Anything*** who need a Mask. |
 
 | ***Solid*** | ***Blur 16.0*** |
 | --- | --- |
