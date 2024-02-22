@@ -201,7 +201,12 @@ And, few `Float` stacks.
 ------
 
 ## Change Logs
-### 2024.02.22 Ver 0.3.3.0
+### 2024.02.22 Ver 0.3.5.0
+・Add Text Switcher
+・Add simple Logic functions
+・Bugfix
+
+v0.3.3.0
 ・Bugs fix
 ・Renamed few nodes
 ・Add PngRectanglesToMask (List)
