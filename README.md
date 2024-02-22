@@ -122,6 +122,9 @@ Convert specified `Index` `PngRectangles` to Mask.
 | List |
 | `mask_[0-9]` | Masks List with specified `Intenisity` and `Blur`. |
 
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_pngrect2masks.png" width=35% height=35%>   
+
 ------
 ### Mira/Util/Create Canvas
 Create Canvas information `Width` and `Height` for Latent with Landscape switch. There's an advanced version also controls `Batch` and `HiResMultiplier`.
