@@ -1,6 +1,17 @@
 cat = "Mira/Multiplier"
 
 class IntMultiplier:
+    '''
+    Integer Multiplier with various output interfaces.
+    
+    Inputs:
+    input_value     - Integer number as A
+    multiply_value  - Integer number as B
+        
+    Outputs:
+    Result (INT)    - The result of A x B
+    Result (STRING) - The result of A x B, and convert to string
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -28,6 +39,18 @@ class IntMultiplier:
         return (result, str(result),)
     
 class FloatMultiplier:
+    '''
+    Float Multiplier with various output interfaces.
+    
+    Inputs:
+    input_value     - Float number as A
+    multiply_value  - Float number as B
+        
+    Outputs:
+    Result (FLOAT)  - The result of A x B
+    Result (INT)    - The result of A x B, and trimmed to integer value
+    Result (STRING) - The result of A x B, and convert to string
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {

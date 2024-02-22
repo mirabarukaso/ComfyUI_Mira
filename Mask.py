@@ -206,6 +206,24 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
         return PngImage, Rectangles, PngColorMasks, DebugMessage
 
 class CreateRegionalPNGMask:
+    '''
+    Create a PNG tiled image with Color Mask stack for regional conditioning mask.
+    
+    Inputs:
+    Width       - Image Width
+    Height      - Image Height
+    Colum_first - A boolean trigger, when enabled, will treat default cut as a horizontal cut.
+    Rows        - Low prority, only works when Layout is incorrect.
+    Colums      - Low prority, only works when Layout is incorrect.
+    Layout      - Refer to Readme.md @https://github.com/mirabarukaso/ComfyUI_Mira
+    Use_Catched_PNG - Save PNG to memory for performance
+        
+    Outputs:
+    PngImage        - Image
+    PngColorMasks   - A List contains all PNG Blocks' color information.
+    PngRectangles   - A List contains all PNG Blocks' rectangle informationm, last one is the whole Image's Width and Height
+    Debug           - Debug output
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -328,6 +346,16 @@ class CreateRegionalPNGMask:
         return (output_image, PngColorMasks, PngRectangles, DebugMessage,)
     
 class PngColorMasksToString:
+    '''
+    Convert specified Index of PngColorMasks to HEX value. 
+    
+    Inputs:
+    PngColorMasks   - List from Create PNG Mask
+    Index           - The Block id of PNG Mask
+        
+    Outputs:
+    mask_color      - String. e.g. RGB(255,0,255) to #FF00FF
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -358,6 +386,18 @@ class PngColorMasksToString:
         return (ret,)
     
 class PngColorMasksToRGB:
+    '''
+    Convert specified Index of PngColorMasks to RGB value. 
+    
+    Inputs:
+    PngColorMasks   - List from Create PNG Mask
+    Index           - The Block id of PNG Mask
+        
+    Outputs:
+    R               - Integer. Red
+    G               - Integer. Green
+    B               - Integer. Blue
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -390,6 +430,16 @@ class PngColorMasksToRGB:
         return (R, G, B,)
     
 class PngColorMasksToStringList:
+    '''
+    Convert ranged PngColorMasks to HEX value.
+    
+    Inputs:
+    PngColorMasks   - List from Create PNG Mask
+    Start_At_Index  - The first Block id to start
+        
+    Outputs:
+    mask_color[0-9] - String. e.g. RGB(255,0,255) to #FF00FF
+    '''
     @classmethod
     def INPUT_TYPES(s):
         inputs = {
@@ -432,6 +482,19 @@ class PngColorMasksToStringList:
         return (ret[0],ret[1],ret[2],ret[3],ret[4],ret[5],ret[6],ret[7],ret[8],ret[9],)
     
 class PngColorMasksToMaskList:
+    '''
+    Convert ranged PngColorMasks to Mask with Mask Blur function.
+    This is a color based function, so it could NOT set Intenisity to Mask.
+    
+    Inputs:
+    PngImage        - Image from Create PNG Mask
+    PngColorMasks   - List from Create PNG Mask
+    Blur            - The amount of Blur, 0 for Soild.
+    Start_At_Index  - The first Block id to start
+        
+    Outputs:
+    mask_[0-9]      - Mask for anyone who want a Mask
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -588,9 +651,22 @@ class PngRectanglesToMask:
     
     def PngRectanglesToMaskEx(self, PngRectangles, Intenisity, Blur, Start_At_Index):
         masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, Start_At_Index + 1)
-        return (masks[0])    
+        return (masks[0],)    
     
 class PngRectanglesToMaskList:
+    '''
+    Convert ranged PngRectangles to Mask with Mask Intenisity and Blur function.
+    This function creates Mask directly from Rectangles data.
+    
+    Inputs:
+    PngRectangles   - List from Create PNG Mask
+    Intenisity      - The intenisity of Mask, 1 for Soild.
+    Blur            - The amount of Blur, 0 for Soild.
+    Start_At_Index  - The first Block id to start
+        
+    Outputs:
+    mask_[0-9]      - Mask for anyone who want a Mask
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {

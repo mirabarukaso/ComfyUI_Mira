@@ -18,6 +18,17 @@ def SafeCheck(Width = 16, Height = 16, Batch = 1, HiResMultiplier = 1.0):
         return Width, Height, Batch, HiResMultiplier
 
 class CanvasCreatorBasic:
+    '''
+    Create Canvas information Width and Height for Latent.
+    
+    Inputs:
+    Width       - Image Width
+    Height      - Image Height
+        
+    Outputs:
+    Width       - Image Width
+    Height      - Image Height
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -48,6 +59,18 @@ class CanvasCreatorBasic:
         return(Width, Height,)
 
 class CanvasCreatorSimple:
+    '''
+    Create Canvas information Width and Height for Latent with Landscape switch.
+    
+    Inputs:
+    Width       - Image Width
+    Height      - Image Height
+    Landscape   - When ENABLED, will swap Width and Height for output
+        
+    Outputs:
+    Width       - Image Width
+    Height      - Image Height
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -85,6 +108,24 @@ class CanvasCreatorSimple:
 
         
 class CanvasCreatorAdvanced:
+    '''
+    Create Canvas information Width and Height for Latent with Landscape switch, Batch and HiResMultiplier.
+    
+    Inputs:
+    Width           - Image Width
+    Height          - Image Height
+    Landscape       - When ENABLED, will swap Width and Height for output
+    Batch           - Batch size for Latent
+    HiResMultiplier - Multiplier setting for high-resolution output 
+        
+    Outputs:
+    Width           - Image Width for Latent
+    Height          - Image Height for Latent
+    Batch           - Batch size for Latent
+    HiRes Width     - Width x HiResMultiplier. The result is not the product of the original data, but the nearest multiple of 8.
+    HiRes Height    - Height x HiResMultiplier. 
+    Debug           - Debug output
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {

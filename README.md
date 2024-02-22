@@ -28,6 +28,7 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 | --- | --- |
 | `Image` | Visualisation Image of your Layout. |
 | `PngColorMasks` | A List contains all your Blocks' color information.  <br />Connect to `Create PNG Mask ` `Color Mask to HEX String` `Color Mask to INT RGB` `Color Masks List` |
+| `PngRectangles` | A List contains all PNG Blocks' rectangle informationm, last one is the whole Image's Width and Height. |
 | `Debug` | Debug information as String. |
 
 | Examples | Description |
@@ -44,7 +45,7 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_f.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_t.png" width=35% height=35%> |
 
 ------
-### Mira/Mask/Create PNG Mask 
+### Mira/Mask/PngColor Masks to Mask List
 Convert ranged `PngColorMasks` to Masks with(or without) Blur. **Dunno if there is a proper way to solve the output problem.**   
 Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 
@@ -65,7 +66,7 @@ Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 
 ------
 ### Mira/Mask/PngColor Mask to HEX String
-Convert specified `Index` `PngColorMasks` to HEX value. e.g. `RGB(255,0,255)` to `#FF00FF`
+Convert specified `Index` of `PngColorMasks` to HEX value. e.g. `RGB(255,0,255)` to `#FF00FF`
 
 | Inputs | Description |
 | --- | --- |
@@ -106,12 +107,12 @@ Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to
 
 ------
 ### Mira/Mask/PngRectangles to Mask (List)
-Convert specified `Index` `PngRectangles` to Mask.
+Convert ranged `PngRectangles` to Mask with Mask `Intenisity` and `Blur` function.
 
 | Inputs | Description |
 | --- | --- |
 | `PngRectangles` | List from ` Mira/Mask/Create PNG Mask` |
-| `Intenisity` | `Intenisity` of Mask, `0.0` to `1.0` |
+| `Intenisity` | `Intenisity` of Mask, set to `1.0` for solid Mask. |
 | `Blur` | The intensity of blur around the edge of Mask, set to `0` for a solid edge. |
 | `Start_At_Index` | The first block index number you want. |
 
@@ -146,7 +147,7 @@ Create Canvas information `Width` and `Height` for Latent with Landscape switch.
 | `Width`  `Height` | Image size. Swaps automatically when `Landscape` is Enabled. |
 | Advanced | 
 | `Batch`  | Batch size. |
-| `HiRes Width` `HiRes Height`  | Width and Height for HiResFix or etc. |
+| `HiRes Width` `HiRes Height`  | Width and Height for HiResFix or etc. <br />***NOTE:The result is not the product of the original data, but the nearest multiple of 8.***|
 
 ------
 ### Mira/Numeral/Convert Numeral to String
