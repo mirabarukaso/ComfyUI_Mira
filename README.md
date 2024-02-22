@@ -52,7 +52,7 @@ Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 | --- | --- |
 | `Image` | Image from ` Mira/Mask/Create PNG Mask` |
 | `PngColorMasks` | List from ` Mira/Mask/Create PNG Mask` |
-| `Blur` | The intensity of blur around the edge of Mask, set to 0 for a solid edge. |
+| `Blur` | The intensity of blur around the edge of Mask, set to `0` for a solid edge. |
 | `Start_At_Index` | The first block index number you want. |
 
 | Outputs | Description |
@@ -64,7 +64,7 @@ Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2mask_solid.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2mask_blur.png" width=35% height=35%> |
 
 ------
-### Mira/Mask/Color Mask to HEX String
+### Mira/Mask/PngColor Mask to HEX String
 Convert specified `Index` `PngColorMasks` to HEX value. e.g. `RGB(255,0,255)` to `#FF00FF`
 
 | Inputs | Description |
@@ -77,7 +77,7 @@ Convert specified `Index` `PngColorMasks` to HEX value. e.g. `RGB(255,0,255)` to
 | `mask_color` | The color RGB in HEX for `Regional Conditioning By Color Mask (Inspire)` or etc. |
 
 ------
-### Mira/Mask/Color Mask to INT RGB
+### Mira/Mask/PngColor Mask to INT RGB
 Convert specified `Index` `PngColorMasks` to RGB value for `🔧 Mask From Color` or etc. e.g. `RGB(255,0,255)` 
 
 | Inputs | Description |
@@ -92,7 +92,7 @@ Convert specified `Index` `PngColorMasks` to RGB value for `🔧 Mask From Color
 | `B` | Blue |
 
 ------
-### Mira/Mask/Color Masks to List
+### Mira/Mask/PngColor Masks to List
 Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to solve the output problem.**
 
 | Inputs | Description |
@@ -103,6 +103,24 @@ Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to
 | Outputs | Description |
 | --- | --- |
 | `mask_color_[0-9]` | The color RGB in HEX for `Regional Conditioning By Color Mask (Inspire)` or etc. |
+
+------
+### Mira/Mask/PngRectangles to Mask (List)
+Convert specified `Index` `PngRectangles` to Mask.
+
+| Inputs | Description |
+| --- | --- |
+| `PngRectangles` | List from ` Mira/Mask/Create PNG Mask` |
+| `Intenisity` | `Intenisity` of Mask, `0.0` to `1.0` |
+| `Blur` | The intensity of blur around the edge of Mask, set to `0` for a solid edge. |
+| `Start_At_Index` | The first block index number you want. |
+
+| Outputs | Description |
+| --- | --- |
+| Normal |
+| `mask` | Mask with specified `Intenisity` and `Blur`. |
+| List |
+| `mask_[0-9]` | Masks List with specified `Intenisity` and `Blur`. |
 
 ------
 ### Mira/Util/Create Canvas
