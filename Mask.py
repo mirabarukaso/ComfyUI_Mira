@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageSequence
 from PIL.PngImagePlugin import PngInfo
 import numpy as np
 import torch
+import torch.nn.functional as F
 import torchvision.transforms.v2 as T
 import re
 
@@ -197,11 +198,14 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
             print('Mira: [' + str(i) +']Draw ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb)
             DebugMessage += '[' + str(i) +']Draw ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb +'\n'
             PngDraw.rectangle(Rectangles[i], fill=(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2], 255))
+            
+        # Add Image Size to last
+        Rectangles.append([0,0,Width,Height])
         DebugMessage += '\n'
                 
-        return PngImage, PngColorMasks, DebugMessage
+        return PngImage, Rectangles, PngColorMasks, DebugMessage
 
-class CreateRegionalMask:
+class CreateRegionalPNGMask:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -243,12 +247,12 @@ class CreateRegionalMask:
             },            
         }
                 
-    RETURN_TYPES = ("IMAGE", "LIST", "STRING",)
-    RETURN_NAMES = ("Image", "PngColorMasks", "Debug",)
-    FUNCTION = "CreateRegionalMaskEx"
+    RETURN_TYPES = ("IMAGE", "LIST", "LIST", "STRING",)
+    RETURN_NAMES = ("PngImage", "PngColorMasks", "PngRectangles", "Debug",)
+    FUNCTION = "CreateRegionalPNGMaskEx"
     CATEGORY = cat
     
-    def CreateRegionalMaskEx(self, Width, Height, Rows, Colums, Colum_first, Use_Catched_PNG, Layout = '#'):
+    def CreateRegionalPNGMaskEx(self, Width, Height, Rows, Colums, Colum_first, Use_Catched_PNG, Layout = '#'):
         global catched_Width
         global catched_Height
         global catched_Image
@@ -280,7 +284,7 @@ class CreateRegionalMask:
                         DebugMessage += 'Mira: Rows x Colums Cache Mismach, creating new PNG.\n'
                 
         
-        PngImage, PngColorMasks, DebugMessage = CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage)
+        PngImage, PngRectangles, PngColorMasks, DebugMessage = CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage)
         
         #refer: https://github.com/comfyanonymous/ComfyUI/blob/master/nodes.py#L1487
         #       LoadImage
@@ -321,9 +325,9 @@ class CreateRegionalMask:
         catched_Colum_First = Colum_first
         DebugMessage += 'Mira: Cache updated\n'
             
-        return (output_image, PngColorMasks, DebugMessage,)
+        return (output_image, PngColorMasks, PngRectangles, DebugMessage,)
     
-class ColorMasksToString:
+class PngColorMasksToString:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -353,7 +357,7 @@ class ColorMasksToString:
         ret = ('#{:02X}{:02X}{:02X}'.format(PngColorMasks[Index][0], PngColorMasks[Index][1], PngColorMasks[Index][2]))
         return (ret,)
     
-class ColorMasksToRGB:
+class PngColorMasksToRGB:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -385,7 +389,7 @@ class ColorMasksToRGB:
         B = PngColorMasks[Index][2]
         return (R, G, B,)
     
-class ColorMasksToStringList:
+class PngColorMasksToStringList:
     @classmethod
     def INPUT_TYPES(s):
         inputs = {
@@ -427,12 +431,12 @@ class ColorMasksToStringList:
                 
         return (ret[0],ret[1],ret[2],ret[3],ret[4],ret[5],ret[6],ret[7],ret[8],ret[9],)
     
-class ColorMasksToMaskList:
+class PngColorMasksToMaskList:
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "Image": ("IMAGE", {
+                "PngImage": ("IMAGE", {
                     "display": "input" 
                 }),
                 "PngColorMasks": ("LIST", {
@@ -465,9 +469,9 @@ class ColorMasksToMaskList:
     FUNCTION = "ColorMasksToMaskListEx"
     CATEGORY = cat
     
-    # refer: https://github.com/cubiq/ComfyUI_essentials?tab=readme-ov-file
+    # refer: https://github.com/cubiq/ComfyUI_essentials
     # MaskBlur and MaskFromColor
-    def ColorMasksToMaskListEx(self, Image, PngColorMasks, Blur, Start_At_Index):
+    def ColorMasksToMaskListEx(self, PngImage, PngColorMasks, Blur, Start_At_Index):
         masks = []
                 
         for index in range(Start_At_Index, Start_At_Index + 10, 1):            
@@ -475,7 +479,7 @@ class ColorMasksToMaskList:
                 color = torch.tensor([0,0,0])
             else:
                 color = torch.tensor(PngColorMasks[index])
-            temp = (torch.clamp(Image, 0, 1.0) * 255.0).round().to(torch.int)
+            temp = (torch.clamp(PngImage, 0, 1.0) * 255.0).round().to(torch.int)
             lower_bound = (color).clamp(min=0)
             upper_bound = (color).clamp(max=255)
             mask = (temp >= lower_bound) & (temp <= upper_bound)
@@ -495,3 +499,147 @@ class ColorMasksToMaskList:
             masks.append(mask)
 
         return (masks[0], masks[1], masks[2], masks[3], masks[4], masks[5], masks[6], masks[7], masks[8], masks[9],)
+    
+    
+# refer: https://github.com/comfyanonymous/ComfyUI
+# SolidMask
+# refer: https://github.com/cubiq/ComfyUI_essentials
+# MaskBlur MaskBatch    
+def CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, End_At_Step=1):
+    masks = []       
+
+    print(PngRectangles)       
+    sizePngRectangles = len(PngRectangles) - 1
+    Width = PngRectangles[sizePngRectangles][2]
+    Height = PngRectangles[sizePngRectangles][3]    
+
+    print('Mira: Create baseMask W=' + str(Width) + ' H=' + str(Height))
+    destinationMask = torch.full((1,Height, Width), 0, dtype=torch.float32, device="cpu")       
+                    
+    for index in range(Start_At_Index, End_At_Step + 10, 1):     
+        print("Index = " + str(index) + '/' + str(sizePngRectangles))       
+        if sizePngRectangles + Start_At_Index <= index:
+            print('Mira: Create NULL ' + str(index))                
+            mask = destinationMask
+        else:
+            print('Mira: Create Mask ' + str(PngRectangles[index]))     
+            W = PngRectangles[index][2] - PngRectangles[index][0]
+            H = PngRectangles[index][3] - PngRectangles[index][1]
+            print('Mira: Create Mask W=' + str(W) + ' H=' + str(H))
+            output = destinationMask.reshape((-1, destinationMask.shape[-2], destinationMask.shape[-1])).clone()
+            
+            sourceMask = torch.full((1,H, W), Intenisity, dtype=torch.float32, device="cpu")
+            source = sourceMask.reshape((-1, sourceMask.shape[-2], sourceMask.shape[-1]))
+            
+            left, top = (PngRectangles[index][0],PngRectangles[index][1],)
+            right, bottom = (min(left + source.shape[-1], destinationMask.shape[-1]), min(top + source.shape[-2], destinationMask.shape[-2]))
+            visible_width, visible_height = (right - left, bottom - top,)
+            
+            source_portion = source[:, :visible_height, :visible_width]
+            destination_portion = destinationMask[:, top:bottom, left:right]
+            
+            # Add
+            output[:, top:bottom, left:right] = destination_portion + source_portion
+            
+            mask = output
+        
+            if 0 < Blur:
+                size = int(6 * Blur +1)
+                if size % 2 == 0:
+                    size+= 1
+                
+                blurred = mask.unsqueeze(1)
+                blurred = T.GaussianBlur(size, Blur)(blurred)
+                blurred = blurred.squeeze(1)
+                mask = blurred
+        
+        masks.append(mask)
+    return masks
+        
+class PngRectanglesToMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "PngRectangles": ("LIST", {
+                    "display": "input" 
+                }),
+                "Intenisity": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                    "display": "number" 
+                }),
+                "Blur": ("FLOAT", {
+                    "default": 0.0,
+                    "min": 0.0,
+                    "step": 0.5,
+                    "display": "number" 
+                }),
+                "Start_At_Index": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),
+            },
+        }
+                    
+    RETURN_TYPES = ('MASK',)
+    RETURN_NAMES = ('mask',)
+    FUNCTION = "PngRectanglesToMaskEx"
+    CATEGORY = cat
+    
+    def PngRectanglesToMaskEx(self, PngRectangles, Intenisity, Blur, Start_At_Index):
+        masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, 1)
+        return (masks[0])    
+    
+class PngRectanglesToMaskList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "PngRectangles": ("LIST", {
+                    "display": "input" 
+                }),
+                "Intenisity": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                    "display": "number" 
+                }),
+                "Blur": ("FLOAT", {
+                    "default": 0.0,
+                    "min": 0.0,
+                    "step": 0.5,
+                    "display": "number" 
+                }),
+                "Start_At_Index": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),
+            },
+        }
+        
+    # Not sure if there's a dynamic outputs solution....
+    r_t = ()
+    r_n = ()
+    for i in range(10):        
+        r_t += ('MASK',)
+        r_n += (f'mask_{i}',)
+            
+    RETURN_TYPES = r_t
+    RETURN_NAMES = r_n
+    FUNCTION = "PngRectanglesToMaskListEx"
+    CATEGORY = cat
+
+    def PngRectanglesToMaskListEx(self, PngRectangles, Intenisity, Blur, Start_At_Index):
+        masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, 10)
+
+        return (masks[0], masks[1], masks[2], masks[3], masks[4], masks[5], masks[6], masks[7], masks[8], masks[9],)
+    
+    

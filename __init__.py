@@ -1,7 +1,7 @@
 from .Multiplier import IntMultiplier, FloatMultiplier
 from .Numeral import NumeralToString
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic
-from .Mask import CreateRegionalMask, ColorMasksToString, ColorMasksToRGB, ColorMasksToStringList, ColorMasksToMaskList
+from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList
 
 def __init__(self):
     pass
@@ -15,11 +15,13 @@ NODE_CLASS_MAPPINGS = {
     "CanvasCreatorAdvanced"     : CanvasCreatorAdvanced,
     "CanvasCreatorSimple"       : CanvasCreatorSimple,
     "CanvasCreatorBasic"        : CanvasCreatorBasic,
-    "CreateRegionalMask"        : CreateRegionalMask,
-    "ColorMasksToString"        : ColorMasksToString,
-    "ColorMasksToRGB"           : ColorMasksToRGB,
-    "ColorMasksToStringList"    : ColorMasksToStringList,
-    "ColorMasksToMaskList"      : ColorMasksToMaskList,
+    "CreateRegionalPNGMask"     : CreateRegionalPNGMask,
+    "PngColorMasksToString"     : PngColorMasksToString,
+    "PngColorMasksToRGB"        : PngColorMasksToRGB,
+    "PngColorMasksToStringList" : PngColorMasksToStringList,
+    "PngColorMasksToMaskList"   : PngColorMasksToMaskList,
+    "PngRectanglesToMask"       : PngRectanglesToMask,
+    "PngRectanglesToMaskList"   : PngRectanglesToMaskList,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -30,11 +32,13 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CanvasCreatorAdvanced"     : "Create Canvas Advanced",
     "CanvasCreatorSimple"       : "Create Canvas",
     "CanvasCreatorBasic"        : "Create Canvas H/W only",
-    "CreateRegionalMask"        : "Create PNG Mask",
-    "ColorMasksToString"        : "Color Mask to HEX String",
-    "ColorMasksToRGB"           : "Color Mask to INT RGB",
-    "ColorMasksToStringList"    : "Color Masks to List",
-    "ColorMasksToMaskList"      : "Color Masks to Mask List",
+    "CreateRegionalPNGMask"     : "Create PNG Mask",
+    "PngColorMasksToString"     : "PngColor Mask to HEX String",
+    "PngColorMasksToRGB"        : "PngColor Mask to INT RGB",
+    "PngColorMasksToStringList" : "PngColor Masks to List",
+    "PngColorMasksToMaskList"   : "PngColor Masks to Mask List",
+    "PngRectanglesToMask"       : "PngRectangles to Mask",
+    "PngRectanglesToMaskList"   : "PngRectangles to Mask List",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
