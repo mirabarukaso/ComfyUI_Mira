@@ -173,5 +173,11 @@ Convert `Integer` or `Float` to String.
 ------
 
 ## Change Logs
+### 2024.02.22 Ver 0.3.3.0
+・Bugs fix
+・Renamed few nodes
+・Add PngRectanglesToMask (List)
+・Add CanvasCreator Basic & Normal
+
 ### 2024.02.21 Ver 0.3.0.0
 ・Initial release
