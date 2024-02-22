@@ -59,7 +59,7 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
     # ; == seperate colum, has higher prority to cut masks
     # Colum_first == swap , and ;
     if False == special_match(Layout):
-        print('Mira: syntaxerror in layout -> [' + Layout + '] Will use Rows * Colums')
+        #print('Mira: syntaxerror in layout -> [' + Layout + '] Will use Rows * Colums')
         DebugMessage += 'syntaxerror in layout -> [' + Layout + '] Will use Rows * Colums\n'
         
         new_layout = ''
@@ -127,7 +127,7 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                         nowHeightEnd = Height
                     
                     if 1 >= len(FullWarpTimesArray):
-                        print('Mira: Bypass empty GreatCuts')    
+                        #print('Mira: Bypass empty GreatCuts')    
                         DebugMessage += 'Mira: Bypass empty GreatCuts\n'                    
                     else:
                         # remove first Great Cuts Value
@@ -157,7 +157,7 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                         nowWidthEnd = Width
                     
                     if 1 >= len(FullWarpTimesArray):
-                        print('Mira: By pass empty GreatCuts')
+                        #print('Mira: By pass empty GreatCuts')
                         DebugMessage += 'Mira: By pass empty GreatCuts\n'
                     else:
                         # remove first Great Cuts Value
@@ -195,7 +195,7 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                         
         for i in range(BlocksCount):
             hex_rgb = ' #{:02X}{:02X}{:02X}'.format(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2])
-            print('Mira: [' + str(i) +']Draw ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb)
+            #print('Mira: [' + str(i) +']Draw ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb)
             DebugMessage += '[' + str(i) +']Draw ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb +'\n'
             PngDraw.rectangle(Rectangles[i], fill=(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2], 255))
             
@@ -508,24 +508,19 @@ class PngColorMasksToMaskList:
 def CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, End_At_Step=1):
     masks = []       
 
-    print(PngRectangles)       
     sizePngRectangles = len(PngRectangles) - 1
     Width = PngRectangles[sizePngRectangles][2]
     Height = PngRectangles[sizePngRectangles][3]    
 
-    print('Mira: Create baseMask W=' + str(Width) + ' H=' + str(Height))
     destinationMask = torch.full((1,Height, Width), 0, dtype=torch.float32, device="cpu")       
                     
-    for index in range(Start_At_Index, End_At_Step + 10, 1):     
-        print("Index = " + str(index) + '/' + str(sizePngRectangles))       
-        if sizePngRectangles + Start_At_Index <= index:
-            print('Mira: Create NULL ' + str(index))                
+    for index in range(Start_At_Index, End_At_Step, 1):     
+        # In case of someone need a whole mask, changed <= to <
+        if sizePngRectangles < index:
             mask = destinationMask
         else:
-            print('Mira: Create Mask ' + str(PngRectangles[index]))     
             W = PngRectangles[index][2] - PngRectangles[index][0]
             H = PngRectangles[index][3] - PngRectangles[index][1]
-            print('Mira: Create Mask W=' + str(W) + ' H=' + str(H))
             output = destinationMask.reshape((-1, destinationMask.shape[-2], destinationMask.shape[-1])).clone()
             
             sourceMask = torch.full((1,H, W), Intenisity, dtype=torch.float32, device="cpu")
@@ -592,7 +587,7 @@ class PngRectanglesToMask:
     CATEGORY = cat
     
     def PngRectanglesToMaskEx(self, PngRectangles, Intenisity, Blur, Start_At_Index):
-        masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, 1)
+        masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, Start_At_Index + 1)
         return (masks[0])    
     
 class PngRectanglesToMaskList:
@@ -638,7 +633,7 @@ class PngRectanglesToMaskList:
     CATEGORY = cat
 
     def PngRectanglesToMaskListEx(self, PngRectangles, Intenisity, Blur, Start_At_Index):
-        masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, 10)
+        masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, Start_At_Index + 10)
 
         return (masks[0], masks[1], masks[2], masks[3], masks[4], masks[5], masks[6], masks[7], masks[8], masks[9],)
     
