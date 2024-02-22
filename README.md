@@ -150,8 +150,32 @@ Create Canvas information `Width` and `Height` for Latent with Landscape switch.
 | `HiRes Width` `HiRes Height`  | Width and Height for HiResFix or etc. <br />***NOTE:The result is not the product of the original data, but the nearest multiple of 8.***|
 
 ------
+### Mira/Text/Text Switcher
+Selects `text1` or `text2` depending on the `use_text2` and automatically adds `common_text` for output.
+
+| Inputs | Description |
+| --- | --- |
+| `use_text2` | When `ENABLED`, will switch `Output` to `text2 + separator + common_text`. |
+| `text1` | Default output text. |
+| `text2` | Alternative text when `use_text2` is `ENABLED`. |
+| `separator`  | Separator between `text(1/2)` and `common_text`, default value is `,`. |
+| `common_text`  | Common text input for quality tags and etc, leave it blank if you don't need it.. |
+
+| Outputs | Description |
+| --- | --- |
+| `text`  | A combined text output. |
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_text_switcher.png" width=35% height=35%>   
+
+------
+### Mira/Logic
+Few `Boolean` stacks.
+
+------
 ### Mira/Numeral/Convert Numeral to String
 Convert `Integer` or `Float` to String.   
+And, few `Float` stacks.
 
 ------
 ### Mira/Multiplier
