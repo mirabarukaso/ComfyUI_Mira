@@ -71,3 +71,4 @@ class TextWithBooleanSwitchAndCommonTextInput:
             return (text2 + separator + common_text,)
         else:
             return (text1 + separator + common_text,)
+

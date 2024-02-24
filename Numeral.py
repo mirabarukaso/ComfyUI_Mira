@@ -64,6 +64,7 @@ class TwoFloats:
     
     def TwoFloatsEx(self, float_1, float_2,):
         return (float_1, float_2,)
+    
 class FourFloats:
     '''
     4 Floats
@@ -111,4 +112,86 @@ class SixFloats:
     
     def SixFloatsEx(self, float_1, float_2, float_3, float_4, float_5, float_6):
         return (float_1, float_2, float_3, float_4, float_5, float_6,)
+    
+class EightFloats:
+    '''
+    8 Floats
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_3": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_4": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_5": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_6": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_7": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_8": ("FLOAT", {"default": 1.0, "step": 0.1}),
+            },
+        }
+                
+    RETURN_TYPES = ("FLOAT","FLOAT","FLOAT","FLOAT","FLOAT","FLOAT","FLOAT","FLOAT",)
+    RETURN_NAMES = ("float_1","float_2","float_3","float_4","float_5","float_6","float_7","float_8",)
+    FUNCTION = "SixFloatsEx"
+    CATEGORY = cat
+    
+    def SixFloatsEx(self, float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8):
+        return (float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8,)
+    
+class StepsAndCfg:
+    '''
+    Steps and CFG
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "steps": ("INT", {"default": 22, "step": 1, "min": 1}),
+                "cfg": ("FLOAT", {"default": 8.0, "step": 0.1, "min": 1.0}),
+            },
+        }
+                
+    RETURN_TYPES = ("INT", "FLOAT",)
+    RETURN_NAMES = ("STEPS", "CFG",)
+    FUNCTION = "StepsAndCFGEx"
+    CATEGORY = cat
+    
+    def StepsAndCFGEx(self, steps, cfg):
+        return (steps, cfg,)
+    
+class StepsAndCfgAndWH:
+    '''
+    Steps and CFG and Width and Height
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "steps": ("INT", {"default": 22, "step": 1, "min": 1}),
+                "cfg": ("FLOAT", {"default": 8.0, "step": 0.1, "min": 1.0}),
+                "width": ("INT", {
+                    "default": 576,
+                    "min": 16,
+                    "step": 8,
+                    "display": "number" 
+                }),
+                "height": ("INT", {
+                    "default": 1024,
+                    "min": 16,
+                    "step": 8,
+                    "display": "number" 
+                }),
+            },
+        }
+                
+    RETURN_TYPES = ("INT", "FLOAT", "INT", "INT",)
+    RETURN_NAMES = ("STEPS", "CFG", "Width", "Height",)
+    FUNCTION = "StepsAndCfgAndWHEx"
+    CATEGORY = cat
+    
+    def StepsAndCfgAndWHEx(self, steps, cfg, width, height):
+        return (steps, cfg, width, height,)
+    
     

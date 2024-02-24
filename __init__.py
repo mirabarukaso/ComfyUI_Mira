@@ -1,5 +1,5 @@
 from .Multiplier import IntMultiplier, FloatMultiplier
-from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats
+from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic
 from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput
@@ -18,6 +18,9 @@ NODE_CLASS_MAPPINGS = {
     "TwoFloats"                 : TwoFloats,
     "FourFloats"                : FourFloats,
     "SixFloats"                 : SixFloats,
+    "EightFloats"               : EightFloats,
+    "StepsAndCfg"               : StepsAndCfg,
+    "StepsAndCfgAndWH"          : StepsAndCfgAndWH,
         
     "CanvasCreatorAdvanced"     : CanvasCreatorAdvanced,
     "CanvasCreatorSimple"       : CanvasCreatorSimple,
@@ -49,6 +52,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TwoFloats"                 : "2 Floats",
     "FourFloats"                : "4 Floats",
     "SixFloats"                 : "6 Floats",
+    "EightFloats"               : "8 Floats",
+    "StepsAndCfg"               : "Steps & Cfg",
+    "StepsAndCfgAndWH"          : "Steps & Cfg & WH",
     
     "CanvasCreatorAdvanced"     : "Create Canvas Advanced",
     "CanvasCreatorSimple"       : "Create Canvas",
@@ -57,9 +63,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PngColorMasksToString"     : "PngColor Mask to HEX String",
     "PngColorMasksToRGB"        : "PngColor Mask to INT RGB",
     "PngColorMasksToStringList" : "PngColor Masks to List",
-    "PngColorMasksToMaskList"   : "PngColor Masks to Mask List",
+    "PngColorMasksToMaskList"   : "PngColor Masks to Masks",
     "PngRectanglesToMask"       : "PngRectangles to Mask",
-    "PngRectanglesToMaskList"   : "PngRectangles to Mask List",
+    "PngRectanglesToMaskList"   : "PngRectangles to Masks",
     
     "SingleBooleanTrigger"      : "1 Bool",
     "TwoBooleanTrigger"         : "2 Bool",
