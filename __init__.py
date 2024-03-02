@@ -2,7 +2,7 @@ from .Multiplier import IntMultiplier, FloatMultiplier
 from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic
 from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList
-from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput
+from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger
 
 def __init__(self):
@@ -41,6 +41,8 @@ NODE_CLASS_MAPPINGS = {
     
     "TextBox"                                   : TextBox,
     "TextWithBooleanSwitchAndCommonTextInput"   : TextWithBooleanSwitchAndCommonTextInput,
+    "TextCombinerSix"                           : TextCombinerSix,
+    "TextCombinerTwo"                           : TextCombinerTwo,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -74,6 +76,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     
     "TextBox"                                   : "Text Box",
     "TextWithBooleanSwitchAndCommonTextInput"   : "Text Switcher",
+    "TextCombinerSix"                           : "Text Combiner 6",
+    "TextCombinerTwo"                           : "Text Combiner 2",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]

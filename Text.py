@@ -72,3 +72,60 @@ class TextWithBooleanSwitchAndCommonTextInput:
         else:
             return (text1 + separator + common_text,)
 
+class TextCombinerSix:
+    '''
+    Simply combine six input texts for regional text
+    
+    Inputs:
+    text1-6     - Input text
+        
+    Outputs:
+    text        - A combined text output    
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text1": ("STRING", {"display": "input"}),
+                "text2": ("STRING", {"display": "input"}),
+                "text3": ("STRING", {"display": "input"}),
+                "text4": ("STRING", {"display": "input"}),
+                "text5": ("STRING", {"display": "input"}),
+                "text6": ("STRING", {"display": "input"}),
+            },
+        }
+                
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("text",)
+    FUNCTION = "TextCombinerSixEx"
+    CATEGORY = cat
+    
+    def TextCombinerSixEx(self, text1, text2, text3, text4, text5, text6):
+        return (text1 + text2 + text3 + text4 + text5 + text6,)
+    
+class TextCombinerTwo:
+    '''
+    Simply combine two input texts for regional text
+    
+    Inputs:
+    text1-2     - Input text
+        
+    Outputs:
+    text        - A combined text output    
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text1": ("STRING", {"display": "input"}),
+                "text2": ("STRING", {"display": "input"}),
+            },
+        }
+                
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("text",)
+    FUNCTION = "TextCombinerTwoEx"
+    CATEGORY = cat
+    
+    def TextCombinerTwoEx(self, text1, text2):
+        return (text1 + text2,)
