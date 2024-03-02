@@ -21,8 +21,7 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 | `Width`  `Height` | Image size, could be difference with cavan size, but recommended to connect them together. |
 | `Colum_first` | A boolean trigger, when enabled, will treat default cut as a horizontal cut. |
 | `Rows`  `Colums` |  Define how many `Blocks` you want, all `Blocks` are the same weight. (Blocks = Rows x Colums) <br />  ***Low prority, only works when Layout is incorrect.*** |
-| `Layout` | Customized `Blocks` with layouts input. e.g. `1,2,1,1;2,4,6`<br /> `0-9` `,` `;` Check Examples section for more detail. <br />***High prority, in case you don't need custom layout, simply put `#` here.*** |
-| `Use_Catched_PNG` | Because we didn't need to generate new `Mask` every time, a `Cached Image` with `PNG Mask List` is automatically saved in memory until you change the settings or refresh the page. ***Update: Looks like ComfyUI has its own logic for interacting with Nodes, but it's out there anyway.*** |
+| `Layout` | Customized `Blocks` with layouts input. e.g. `1,2,1,1;2,4,6`<br /> `0-9` `,` `;` Check Examples section for more detail. <br />***High prority, in case you don't need custom layout, simply put `#` here.*** |   
 
 | Outputs | Description |
 | --- | --- |

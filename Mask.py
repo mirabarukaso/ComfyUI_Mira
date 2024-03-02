@@ -9,14 +9,6 @@ import torchvision.transforms.v2 as T
 import re
 
 cat = "Mira/Mask"
-catched_Width = 0
-catched_Height = 0
-catched_Image = None
-catched_MaskList = None
-catched_layout = None
-catched_Rows = 0
-catched_Colums = 0
-catched_Colum_First = False
 
 def special_match(strg, search=re.compile(r'[^0-9.,;]').search):
     return not bool(search(strg))
@@ -259,9 +251,6 @@ class CreateRegionalPNGMask:
                     "multiline": False, 
                     "default": "1,1,1"
                 }),
-                "Use_Catched_PNG": ("BOOLEAN", {
-                    "default": True
-                }),
             },            
         }
                 
@@ -270,37 +259,8 @@ class CreateRegionalPNGMask:
     FUNCTION = "CreateRegionalPNGMaskEx"
     CATEGORY = cat
     
-    def CreateRegionalPNGMaskEx(self, Width, Height, Rows, Colums, Colum_first, Use_Catched_PNG, Layout = '#'):
-        global catched_Width
-        global catched_Height
-        global catched_Image
-        global catched_MaskList
-        global catched_layout          
-        global catched_Rows
-        global catched_Colums
-        global catched_Colum_First
-        DebugMessage = ''
-        
-        if True == Use_Catched_PNG:
-            if Width != catched_Width or Height != catched_Height:
-                DebugMessage += 'Mira: Width x Height Cache Mismach, creating new PNG.\n'
-            else:
-                if True == special_match(Layout):
-                    if Layout == catched_layout and Colum_first == catched_Colum_First:
-                        if None != catched_Image or None != catched_MaskList:
-                            DebugMessage += 'Mira: Use catched Layout PNG\n'
-                            return(catched_Image, catched_MaskList, DebugMessage,) 
-                        else:
-                            DebugMessage += 'Mira: catched_Image or catched_MaskList Mismach, creating new PNG.\n'
-                    else:
-                        DebugMessage += 'Mira: Layout Cache Mismach, creating new PNG.\n'
-                else:
-                    if Rows == catched_Rows and Colums == catched_Colums and Colum_first == catched_Colum_First:
-                        DebugMessage += 'Mira: Use catched Rows x Colums PNG\n'
-                        return(catched_Image, catched_MaskList, DebugMessage,) 
-                    else:
-                        DebugMessage += 'Mira: Rows x Colums Cache Mismach, creating new PNG.\n'
-                
+    def CreateRegionalPNGMaskEx(self, Width, Height, Rows, Colums, Colum_first, Layout = '#'):
+        DebugMessage = ''                        
         
         PngImage, PngRectangles, PngColorMasks, DebugMessage = CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage)
         
@@ -331,17 +291,7 @@ class CreateRegionalPNGMask:
             output_mask = torch.cat(output_masks, dim=0)
         else:
             output_image = output_images[0]
-            output_mask = output_masks[0]
-            
-        catched_Width = Width
-        catched_Height = Height
-        catched_layout = Layout
-        catched_Image = output_image
-        catched_MaskList = PngColorMasks
-        catched_Rows = Rows
-        catched_Colums = Colums
-        catched_Colum_First = Colum_first
-        DebugMessage += 'Mira: Cache updated\n'
+            output_mask = output_masks[0]            
             
         return (output_image, PngColorMasks, PngRectangles, DebugMessage,)
     
