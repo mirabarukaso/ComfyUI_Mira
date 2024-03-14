@@ -128,7 +128,7 @@ Example
 ------
 ### Mira/Mask/Create Mask With Canvas   
 Create a new `mask` on defined `cavans`.   
-In case you need `merge` muliple `masks`, try search `MaskComposite` with `operation add`.   
+In case you need `merge` multiple `masks`, try search `MaskComposite` with `operation add`.   
     
 | Inputs | Description |
 | --- | --- |
