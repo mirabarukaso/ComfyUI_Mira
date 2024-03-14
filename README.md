@@ -127,8 +127,8 @@ Example
 
 ------
 ### Mira/Mask/Create Mask With Canvas   
-Create a new `mask` on defined `cavans`.
-In case you need `merge` muliple `masks`, try search `MaskComposite` with `operation add`.
+Create a new `mask` on defined `cavans`.   
+In case you need `merge` muliple `masks`, try search `MaskComposite` with `operation add`.   
     
 | Inputs | Description |
 | --- | --- |
@@ -145,7 +145,7 @@ In case you need `merge` muliple `masks`, try search `MaskComposite` with `opera
 | --- | --- |
 | `mask` | New mask with defined cavans |
 
-Example
+Example   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createmaskwithcavans.png" width=35% height=35%>   
 
 ------
