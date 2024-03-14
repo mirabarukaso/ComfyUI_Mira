@@ -126,6 +126,29 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_pngrect2masks.png" width=35% height=35%>   
 
 ------
+### Mira/Mask/Create Mask With Canvas   
+Create a new `mask` on defined `cavans`.
+In case you need `merge` muliple `masks`, try search `MaskComposite` with `operation add`.
+    
+| Inputs | Description |
+| --- | --- |
+| `C_Width` | Width of cavans. |
+| `C_Height` | Height of cavans. |
+| `X` | The left point of new mask on cavans. |
+| `Y` | The top point of new mask on cavans. |
+| `Width` | Mask width. |
+| `Height` | Mask height. |
+| `Intenisity` | `Intenisity` of Mask, set to `1.0` for solid Mask. |
+| `Blur` | The intensity of blur around the edge of Mask, set to `0` for a solid edge. |
+        
+| Outputs | Description |
+| --- | --- |
+| `mask` | New mask with defined cavans |
+
+Example
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createmaskwithcavans.png" width=35% height=35%>   
+
+------
 ### Mira/Util/Create Canvas
 Create Canvas information `Width` and `Height` for Latent with Landscape switch. There's an advanced version also controls `Batch` and `HiResMultiplier`.
 

@@ -1,7 +1,7 @@
 from .Multiplier import IntMultiplier, FloatMultiplier
 from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic
-from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList
+from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger
 
@@ -33,6 +33,7 @@ NODE_CLASS_MAPPINGS = {
     "PngColorMasksToMaskList"   : PngColorMasksToMaskList,
     "PngRectanglesToMask"       : PngRectanglesToMask,
     "PngRectanglesToMaskList"   : PngRectanglesToMaskList,
+    "CreateMaskWithCanvas"      : CreateMaskWithCanvas,
     
     "SingleBooleanTrigger"      : SingleBooleanTrigger,
     "TwoBooleanTrigger"         : TwoBooleanTrigger,
@@ -68,6 +69,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PngColorMasksToMaskList"   : "PngColor Masks to Masks",
     "PngRectanglesToMask"       : "PngRectangles to Mask",
     "PngRectanglesToMaskList"   : "PngRectangles to Masks",
+    "CreateMaskWithCanvas"      : "Create Mask With Canvas",
     
     "SingleBooleanTrigger"      : "1 Bool",
     "TwoBooleanTrigger"         : "2 Bool",

@@ -664,3 +664,73 @@ class PngRectanglesToMaskList:
         return (masks[0], masks[1], masks[2], masks[3], masks[4], masks[5], masks[6], masks[7], masks[8], masks[9],)
     
     
+class CreateMaskWithCanvas:    
+    '''
+    Create a new mask on defined cavans
+    
+    Inputs:
+    C_Width         - Width of cavans
+    C_Height        - Height of cavans
+    X               - The left point of new mask on cavans
+    Y               - The top point of new mask on cavans
+    Width           - Mask width
+    Height          - Mask height
+    Intenisity      - The intenisity of Mask, 1 for Soild.
+    Blur            - The amount of Blur, 0 for Soild.    
+        
+    Outputs:
+    mask            - New mask with defined cavans
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "C_Width": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
+                "C_Height": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),                
+                "X": ("INT", { "default": 0, "min": 0, "max": 4096, "step": 1, "display": "number" }),
+                "Y": ("INT", { "default": 0, "min": 0, "max": 4096, "step": 1, "display": "number" }),
+                "Width": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
+                "Height": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),                
+                "Intenisity": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 1.0, "step": 0.1, "display": "number" }),
+                "Blur": ("FLOAT", { "default": 0.0, "min": 0.0, "step": 0.5, "display": "number" }),
+            },
+        }
+        
+    RETURN_TYPES = ('MASK',)
+    RETURN_NAMES = ('mask',)
+    FUNCTION = "CreateMaskWithCanvasEx"
+    CATEGORY = cat
+    
+    
+    def CreateMaskWithCanvasEx(self, C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur):       
+        destinationMask = torch.full((1,C_Height, C_Width), 0, dtype=torch.float32, device="cpu")
+        
+        output = destinationMask.reshape((-1, destinationMask.shape[-2], destinationMask.shape[-1])).clone()
+        
+        sourceMask = torch.full((1, Height, Width), Intenisity, dtype=torch.float32, device="cpu")
+        source = sourceMask.reshape((-1, sourceMask.shape[-2], sourceMask.shape[-1]))
+        
+        left, top = (X, Y)
+        right, bottom = (min(left + source.shape[-1], destinationMask.shape[-1]), min(top + source.shape[-2], destinationMask.shape[-2]))
+        visible_width, visible_height = (right - left, bottom - top,)
+        
+        source_portion = source[:, :visible_height, :visible_width]
+        destination_portion = destinationMask[:, top:bottom, left:right]
+        
+        output[:, top:bottom, left:right] = destination_portion + source_portion            
+        mask = output
+    
+        if 0 < Blur:
+            size = int(6 * Blur +1)
+            if size % 2 == 0:
+                size+= 1
+            
+            blurred = mask.unsqueeze(1)
+            blurred = T.GaussianBlur(size, Blur)(blurred)
+            blurred = blurred.squeeze(1)
+            mask = blurred
+
+        return (mask,)
+    
+    
