@@ -223,16 +223,19 @@ And, few `Float` stacks.
 ------
 
 ## Change Logs
-### 2024.02.22 Ver 0.3.5.0
-・Add Text Switcher
-・Add simple Logic functions
-・Bugfix
+### 2024.03.14 Ver 0.3.6.0
+・Add Create Mask With Canvas   
 
-v0.3.3.0
-・Bugs fix
-・Renamed few nodes
-・Add PngRectanglesToMask (List)
-・Add CanvasCreator Basic & Normal
+### 2024.02.22 Ver 0.3.5.0
+・Add Text Switcher   
+・Add simple Logic functions   
+・Bugfix   
+
+v0.3.3.0   
+・Bugs fix   
+・Renamed few nodes   
+・Add PngRectanglesToMask (List)   
+・Add CanvasCreator Basic & Normal   
 
 ### 2024.02.21 Ver 0.3.0.0
-・Initial release
+・Initial release   
