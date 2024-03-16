@@ -1,6 +1,6 @@
 from .Multiplier import IntMultiplier, FloatMultiplier
 from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
-from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic
+from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomLayouts
 from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger
@@ -25,6 +25,7 @@ NODE_CLASS_MAPPINGS = {
     "CanvasCreatorAdvanced"     : CanvasCreatorAdvanced,
     "CanvasCreatorSimple"       : CanvasCreatorSimple,
     "CanvasCreatorBasic"        : CanvasCreatorBasic,
+    "RandomLayouts"             : RandomLayouts,
     
     "CreateRegionalPNGMask"     : CreateRegionalPNGMask,
     "PngColorMasksToString"     : PngColorMasksToString,
@@ -62,6 +63,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CanvasCreatorAdvanced"     : "Create Canvas Advanced",
     "CanvasCreatorSimple"       : "Create Canvas",
     "CanvasCreatorBasic"        : "Create Canvas H/W only",
+    "RandomLayouts"             : "Random Layouts",
+    
     "CreateRegionalPNGMask"     : "Create PNG Mask",
     "PngColorMasksToString"     : "PngColor Mask to HEX String",
     "PngColorMasksToRGB"        : "PngColor Mask to INT RGB",

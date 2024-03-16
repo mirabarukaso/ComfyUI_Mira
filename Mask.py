@@ -18,7 +18,7 @@ def RectWidth(Rectangles, Range, nowWidth, warpWidth, y, Width, Height, WarpTime
     for i in range(Range):            
         if None is not WarpTimesArray:
             warpTimes = float(WarpTimesArray[i])
-        if Width - nowWidth - (warpWidth * warpTimes)<= 8:
+        if i == (Range -1):
             Rectangles.append([int(nowWidth), y, Width, Height])
         else:
             Rectangles.append([int(nowWidth), y, int(nowWidth + (warpWidth * warpTimes)), Height])
@@ -30,7 +30,7 @@ def RectHeight(Rectangles, Range, nowHeight, warpHeight, x, Width, Height, WarpT
     for i in range(Range):
         if None is not WarpTimesArray:
             warpTimes = float(WarpTimesArray[i])
-        if Height - nowHeight - (warpHeight * warpTimes) <= 8:
+        if i == (Range -1):
             Rectangles.append([x, int(nowHeight), Width, Height])    
         else:
             Rectangles.append([x, int(nowHeight), Width, int(nowHeight + (warpHeight * warpTimes))])
@@ -38,7 +38,7 @@ def RectHeight(Rectangles, Range, nowHeight, warpHeight, x, Width, Height, WarpT
     return Rectangles
     
 def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
-    DebugMessage += 'Mira:\n'
+    DebugMessage += 'Mira:\nLayout:' + Layout + '\n'
     Rectangles = []
     BlocksCount = Rows * Colums
     
@@ -46,6 +46,10 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
     nowHeight = 0
     warpWidth = 0
     warpHeight = 0
+    
+    autogen_mark = Layout.find('@')
+    if -1 != autogen_mark:
+        Layout = Layout[(autogen_mark+1):]    
     
     # , == seperate row
     # ; == seperate colum, has higher prority to cut masks
@@ -115,7 +119,7 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                     FullWarpTimesArray = cut.split(',')
                     nowHeightEnd = int(nowHeight+GreatWarpHeight*float(GreatBlockArray[now_cut]))
                                         
-                    if Height - nowHeightEnd <= 8:
+                    if now_cut == (len(GreatCuts) - 1):
                         nowHeightEnd = Height
                     
                     if 1 >= len(FullWarpTimesArray):
@@ -145,7 +149,7 @@ def CreatePNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
                     FullWarpTimesArray = cut.split(',')
                     nowWidthEnd = int(nowWidth+GreatWarpWidth*float(GreatBlockArray[now_cut]))
                                         
-                    if Width - nowWidthEnd <= 8:
+                    if now_cut == (len(GreatCuts) - 1):
                         nowWidthEnd = Width
                     
                     if 1 >= len(FullWarpTimesArray):

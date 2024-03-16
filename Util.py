@@ -1,4 +1,5 @@
 import math
+import random
 
 cat = "Mira/Util"
 
@@ -213,3 +214,167 @@ class CanvasCreatorAdvanced:
             return(Height, Width, Batch, intHiResHeight, intHiResWidth, DebugMessage,)
         
         
+class RandomLayouts:        
+    '''
+    [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)
+    
+    Random Mask Layout Generator
+    Highly recommend connect the output `layout` or `Create PNG Mask -> Debug` to `ShowText` node.
+    
+    **Known Issue**   
+    `randomize` and `fixed` needs 2 `Queue Prompt` to take affect.   
+    If you really like the latest result(hope you didn't forget `ShowText` node), you need manually copy and paste it to `Create PNG Mask -> Layout`.    
+    The `Text Switcher` node also works, but will cause `Create PNG Mask` to refresh everytime, which may affect performance.   
+
+    **Remainder**   
+    The `seed` have nothing to do with the actual random numbers,   
+    you can't get the same `layout` with the same `seed`,   
+    it is recommended to use `ShowText` and `Notes` to save your favourite `layout`.   
+
+    **Hint**   
+    Set rows or colums to `0` for only one direction cuts.   
+    Whichever is set to `0` will automatically cut according to the other non-zero setting.   
+    Just in case all fours are `0`, it will return `1,1`.   
+    
+    Inputs:
+    min_rows, max_rows      - Range of how many `N cuts` you may want, set both to 0 to disable it.
+    min_colums, max_colums  - Range of how many `G cuts` you may want, set both to 0 to disable it.       
+    max_weights_gcuts       - The maxium weight of `G cuts` range from 1 to `max_weights_gcuts`
+    max_weights_ncuts       - The maxium weight of `N cuts` range from 1 to `max_weights_ncuts`
+    
+    seed                    - Global seed from `ComfyUI`
+    control_after_generate  - Set to `randomize` to get new layouts, and set to `fixed` to use the latest layouts.
+            
+    Outputs:
+    Layout                  - Layouts string, you need connect it to `Create PNG Mask -> layout`
+    
+    Example:
+    [2,2,2,1]@3.8,4.2,2.1,3.3;3.6,3.5,3.3,3.7;2.7,3.2,4.9
+     ^ * * *
+    ^2 colums
+        * the 1st block has 2 rows (3 blocks)
+        * the 2nd block has 2 rows (3 blocks)
+        * the 3rd block has 1 row (2 blocks)
+    3+3+2= 8 blocks in total        
+    
+    Colum_first == False                 
+    1|4|7
+    2|5|
+    3|6|8
+    
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "min_rows": ("INT", {
+                    "default": 1,
+                    "min": 0,
+                    "max": 16,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "max_rows": ("INT", {
+                    "default": 1,
+                    "min": 0,
+                    "max": 16,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "min_colums": ("INT", {
+                    "default": 1,
+                    "min": 0,
+                    "max": 16,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "max_colums": ("INT", {
+                    "default": 1,
+                    "min": 0,
+                    "max": 16,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "max_weights_gcuts": ("FLOAT", {
+                    "default": 2.0,
+                    "min": 1.0,
+                    "max": 10.0,
+                    "step": 0.1,
+                    "display": "number" 
+                }),
+                "max_weights_ncuts": ("FLOAT", {
+                    "default": 2.0,
+                    "min": 1.0,
+                    "max": 10.0,
+                    "step": 0.1,
+                    "display": "number" 
+                }),
+                "seed": ("INT", {
+                    "default": 0, 
+                    "min": 0, 
+                    "max": 0xffffffffffffffff
+                }),
+            },            
+        }
+        
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("layout",)
+    FUNCTION = "RandomLayoutsEx"
+    CATEGORY = cat
+    
+    def RandomLayoutsEx(self, min_rows, max_rows, min_colums, max_colums, max_weights_gcuts, max_weights_ncuts, seed):
+        if min_colums > max_colums:
+            min_colums = max_colums
+        
+        if min_rows > max_rows:
+            min_rows = max_rows
+            
+        if 0 == max_colums and max_colums == max_rows:
+            layouts = "1,1"
+            return (layouts, seed,)
+        
+        if 0 == max_colums or 0 == max_rows:
+            max_colums = max(max_colums, max_rows)
+            max_rows = 0
+        
+        colums = random.randrange(min_colums, max_colums + 1)        
+        #print("Mira: colums: " + str(colums))
+    
+        row_and_colum_info = '[' + str(colums) + ","
+        layouts = ""    
+        if 0 == colums:
+            rows = random.randrange(min_rows, max_rows + 1)
+            #print("Mira: colums = 0 rows: " + str(rows))
+            if 0 == rows:
+                row_and_colum_info += "0,"
+                layouts = "1,1"
+            else:
+                row_and_colum_info += str(rows) + ","
+                for _ in range(0, rows + 1):
+                    layouts += str(round(random.uniform(1, max_weights_ncuts),1))
+                    layouts += ","
+                layouts = layouts[:-1]   
+        else:        
+            for _ in range(0, colums + 1):
+                layouts += str(round(random.uniform(1, max_weights_gcuts),1))
+                rows = random.randrange(min_rows, max_rows + 1)
+                #print("Mira: rows: " + str(rows))
+                if 0 == rows:
+                    row_and_colum_info += "0,"
+                    layouts += ",1"
+                else:
+                    row_and_colum_info += str(rows) + ","
+                    layouts += ","
+                    for _ in range(0, rows + 1):
+                        layouts += str(round(random.uniform(1, max_weights_ncuts),1))
+                        layouts += ","
+                    layouts = layouts[:-1]            
+                layouts += ";"
+            layouts = layouts[:-1]    
+            
+        row_and_colum_info = row_and_colum_info[:-1]            
+        row_and_colum_info += ']@'
+                    
+        return (row_and_colum_info + layouts,seed,)
+    
+    

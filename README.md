@@ -12,7 +12,8 @@ git clone https://github.com/mirabarukaso/ComfyUI_Mira.git
 ------
 
 ## Basic Functions   
-### Mira/Mask/Create PNG Mask 
+### Mask
+#### Create PNG Mask 
 Create a PNG tiled image with Color Mask stack for regional conditioning mask.   
 Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-regional-prompter)
 
@@ -44,7 +45,7 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_f.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_t.png" width=35% height=35%> |
 
 ------
-### Mira/Mask/PngColor Masks to Mask List
+#### PngColor Masks to Mask List
 Convert ranged `PngColorMasks` to Masks with(or without) Blur. **Dunno if there is a proper way to solve the output problem.**   
 Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 
@@ -64,7 +65,7 @@ Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2mask_solid.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2mask_blur.png" width=35% height=35%> |
 
 ------
-### Mira/Mask/PngColor Mask to HEX String
+#### PngColor Mask to HEX String
 Convert specified `Index` of `PngColorMasks` to HEX value. e.g. `RGB(255,0,255)` to `#FF00FF`
 
 | Inputs | Description |
@@ -77,7 +78,7 @@ Convert specified `Index` of `PngColorMasks` to HEX value. e.g. `RGB(255,0,255)`
 | `mask_color` | The color RGB in HEX for `Regional Conditioning By Color Mask (Inspire)` or etc. |
 
 ------
-### Mira/Mask/PngColor Mask to INT RGB
+#### PngColor Mask to INT RGB
 Convert specified `Index` `PngColorMasks` to RGB value for `🔧 Mask From Color` or etc. e.g. `RGB(255,0,255)` 
 
 | Inputs | Description |
@@ -92,7 +93,7 @@ Convert specified `Index` `PngColorMasks` to RGB value for `🔧 Mask From Color
 | `B` | Blue |
 
 ------
-### Mira/Mask/PngColor Masks to List
+#### PngColor Masks to List
 Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to solve the output problem.**
 
 | Inputs | Description |
@@ -105,7 +106,7 @@ Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to
 | `mask_color_[0-9]` | The color RGB in HEX for `Regional Conditioning By Color Mask (Inspire)` or etc. |
 
 ------
-### Mira/Mask/PngRectangles to Mask (List)
+#### PngRectangles to Mask (List)
 Convert ranged `PngRectangles` to Mask with Mask `Intenisity` and `Blur` function.
 
 | Inputs | Description |
@@ -126,7 +127,7 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_pngrect2masks.png" width=35% height=35%>   
 
 ------
-### Mira/Mask/Create Mask With Canvas   
+#### Create Mask With Canvas   
 Create a new `mask` on defined `cavans`.   
 In case you need `merge` multiple `masks`, try search `MaskComposite` with `operation add`.   
     
@@ -149,7 +150,8 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createmaskwithcavans.png" width=35% height=35%>   
 
 ------
-### Mira/Util/Create Canvas
+### Util
+#### Create Canvas
 Create Canvas information `Width` and `Height` for Latent with Landscape switch. There's an advanced version also controls `Batch` and `HiResMultiplier`.
 
 | Inputs | Description |
@@ -172,7 +174,43 @@ Create Canvas information `Width` and `Height` for Latent with Landscape switch.
 | `HiRes Width` `HiRes Height`  | Width and Height for HiResFix or etc. <br />***NOTE:The result is not the product of the original data, but the nearest multiple of 8.***|
 
 ------
-### Mira/Text/Text Switcher
+#### Random Layouts
+Random Mask `Layout` Generator for `Create PNG Mask -> Layout`   
+
+**Highly recommend connect the output `layout` or `Create PNG Mask -> Debug` to `ShowText` node.**   
+Refer to [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)   
+
+**Known Issue**   
+`randomize` and `fixed` needs 2 `Queue Prompt` to take affect.   
+If you really like the latest result(hope you didn't forget `ShowText` node), you need manually copy and paste it to `Create PNG Mask -> Layout`.    
+The `Text Switcher` node also works, but will cause `Create PNG Mask` to refresh everytime, which may affect performance.   
+
+**Remainder**   
+The `seed` have nothing to do with the actual random numbers,   
+you can't get the same `layout` with the same `seed`,   
+it is recommended to use `ShowText` and `Notes` to save your favourite `layout`.   
+
+**Hint**   
+Set rows or colums to `0` for only one direction cuts.   
+Whichever is set to `0` will automatically cut according to the other non-zero setting.   
+Just in case all fours are `0`, it will return `1,1`.   
+    
+| Inputs | Description |
+| --- | --- |
+| `min_rows` `max_rows` | Range of how many `N cuts` you may want, set both to 0 to disable it. |
+| `min_colums` `max_colums` | Range of how many `G cuts` you may want, set both to 0 to disable it. |
+| `max_weights_gcuts` | The maxium weight of `G cuts` range from 1 to `max_weights_gcuts` |
+| `max_weights_ncuts` | The maxium weight of `N cuts` range from 1 to `max_weights_ncuts` | 
+| `seed`| Global seed from `ComfyUI` |
+| `control_after_generate` | Set to `randomize` to get new layouts, and set to `fixed` to use the latest layouts. |
+    
+| Outputs | Description |
+| --- | --- |
+| `Layout` | Layouts string, you need connect it to `Create PNG Mask -> layout` |
+
+------
+### Text
+#### Text Switcher
 Selects `text1` or `text2` depending on the `use_text2` and automatically adds `common_text` for output.
 
 | Inputs | Description |
@@ -191,16 +229,19 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_text_switcher.png" width=35% height=35%>   
 
 ------
-### Mira/Logic
+### Logic
 Few `Boolean` stacks.
 
 ------
-### Mira/Numeral/Convert Numeral to String
+### Numeral
+#### Convert Numeral to String
 Convert `Integer` or `Float` to String.   
+
+#### Floats
 And, few `Float` stacks.
 
 ------
-### Mira/Multiplier
+### Multiplier
 `Integer` and `Float` Multiplier with various output interfaces.
 
 | Inputs | Description |
@@ -223,6 +264,9 @@ And, few `Float` stacks.
 ------
 
 ## Change Logs
+### 2024.03.16 Ver 0.3.7.0
+・Add Random Layouts [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)
+
 ### 2024.03.14 Ver 0.3.6.0
 ・Add Create Mask With Canvas   
 
