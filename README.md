@@ -185,7 +185,7 @@ Refer to [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custo
 If you really like the latest result(hope you didn't forget `ShowText` node), you need manually copy and paste it to `Create PNG Mask -> Layout`.    
 The `Text Switcher` node also works, but will cause `Create PNG Mask` to refresh everytime, which may affect performance.   
 
-**Remainder**   
+**Reminder**   
 The `seed` have nothing to do with the actual random numbers,   
 you can't get the same `layout` with the same `seed`,   
 it is recommended to use `ShowText` and `Notes` to save your favourite `layout`.   
