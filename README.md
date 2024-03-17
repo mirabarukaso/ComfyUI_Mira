@@ -204,6 +204,13 @@ Set rows or colums to `0` for only one direction cuts. Whichever is set to `0` w
 | --- | --- |
 | `Layout` | Layouts string, you need connect it to `Create PNG Mask -> layout` |
 
+Example:   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_random_layouts.png" width=35% height=35%>   
+
+------
+#### Seed Generator
+Random `Seed` Generator for `Random Layouts`, same as normal random seed generator.   
+
 ------
 ### Text
 #### Text Switcher
