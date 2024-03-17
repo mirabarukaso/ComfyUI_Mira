@@ -180,20 +180,17 @@ Random Mask `Layout` Generator for `Create PNG Mask -> Layout`
 **Highly recommend connect the output `layout` or `Create PNG Mask -> Debug` to `ShowText` node.**   
 Refer to [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)   
 
-**Known Issue**   
-`randomize` and `fixed` needs 2 `Queue Prompt` to take affect.   
-If you really like the latest result(hope you didn't forget `ShowText` node), you need manually copy and paste it to `Create PNG Mask -> Layout`.    
-The `Text Switcher` node also works, but will cause `Create PNG Mask` to refresh everytime, which may affect performance.   
+**Known Issue** about `Seed Generator`   
+Switching `randomize` to `fixed` now works immediately.   
+But, switching `fixed` to `randomize`, it need 2 times `Queue Prompt` to take affect. (Because of the ComfyUI logic)   
+      
+Solution: Try `Global Seed (Inspire)` from [ComfyUI-Inspire-Pack](https://github.com/ltdrdata/ComfyUI-Inspire-Pack)   
 
 **Reminder**   
-The `seed` have nothing to do with the actual random numbers,   
-you can't get the same `layout` with the same `seed`,   
-it is recommended to use `ShowText` and `Notes` to save your favourite `layout`.   
+The `rnd_seed` have nothing to do with the actual random numbers, you can't get the same `layout` with the same `rnd_seed`, it is recommended to use `ShowText` and `Notes` to save your favourite `layout`.   
 
 **Hint**   
-Set rows or colums to `0` for only one direction cuts.   
-Whichever is set to `0` will automatically cut according to the other non-zero setting.   
-Just in case all fours are `0`, it will return `1,1`.   
+Set rows or colums to `0` for only one direction cuts. Whichever is set to `0` will automatically cut according to the other non-zero setting. Just in case all fours are `0`, it will return `1,1`.   
     
 | Inputs | Description |
 | --- | --- |
@@ -201,8 +198,7 @@ Just in case all fours are `0`, it will return `1,1`.
 | `min_colums` `max_colums` | Range of how many `G cuts` you may want, set both to 0 to disable it. |
 | `max_weights_gcuts` | The maxium weight of `G cuts` range from 1 to `max_weights_gcuts` |
 | `max_weights_ncuts` | The maxium weight of `N cuts` range from 1 to `max_weights_ncuts` | 
-| `seed`| Global seed from `ComfyUI` |
-| `control_after_generate` | Set to `randomize` to get new layouts, and set to `fixed` to use the latest layouts. |
+| `rnd_seed`| Connect to the `Seed Generator` node, then use `Global Seed (Inspire)` node to control it properly. |
     
 | Outputs | Description |
 | --- | --- |

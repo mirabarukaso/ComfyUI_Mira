@@ -1,6 +1,15 @@
 import math
 import random
 
+class AlwaysEqualProxy(str):
+#ComfyUI-Logic 
+#refer: https://github.com/theUpsider/ComfyUI-Logic
+    def __eq__(self, _):
+        return True
+
+    def __ne__(self, _):
+        return False
+
 cat = "Mira/Util"
 
 def SafeCheck(Width = 16, Height = 16, Batch = 1, HiResMultiplier = 1.0):
@@ -216,19 +225,20 @@ class CanvasCreatorAdvanced:
         
 class RandomLayouts:        
     '''
-    [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)
+    [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)   
     
-    Random Mask Layout Generator
-    Highly recommend connect the output `layout` or `Create PNG Mask -> Debug` to `ShowText` node.
+    Random Mask Layout Generator   
+    Highly recommend connect the output `layout` or `Create PNG Mask -> Debug` to `ShowText` node.   
     
-    **Known Issue**   
-    `randomize` and `fixed` needs 2 `Queue Prompt` to take affect.   
-    If you really like the latest result(hope you didn't forget `ShowText` node), you need manually copy and paste it to `Create PNG Mask -> Layout`.    
-    The `Text Switcher` node also works, but will cause `Create PNG Mask` to refresh everytime, which may affect performance.   
+    **Known Issue** about `Seed Generator`   
+    Switching `randomize` to `fixed` now works immediately.   
+    But, switching `fixed` to `randomize`, it need 2 times `Queue Prompt` to take affect. (Because of the ComfyUI logic)   
+      
+    Solution: Try `Global Seed (Inspire)` from [ComfyUI-Inspire-Pack](https://github.com/ltdrdata/ComfyUI-Inspire-Pack)
 
     **Reminder **   
-    The `seed` have nothing to do with the actual random numbers,   
-    you can't get the same `layout` with the same `seed`,   
+    The `rnd_seed` have nothing to do with the actual random numbers,   
+    you can't get the same `layout` with the same `rnd_seed`,   
     it is recommended to use `ShowText` and `Notes` to save your favourite `layout`.   
 
     **Hint**   
@@ -242,8 +252,7 @@ class RandomLayouts:
     max_weights_gcuts       - The maxium weight of `G cuts` range from 1 to `max_weights_gcuts`
     max_weights_ncuts       - The maxium weight of `N cuts` range from 1 to `max_weights_ncuts`
     
-    seed                    - Global seed from `ComfyUI`
-    control_after_generate  - Set to `randomize` to get new layouts, and set to `fixed` to use the latest layouts.
+    rnd_seed                - Connect to the `Seed Generator` node, then use `Global Seed (Inspire)` node to control it properly.
             
     Outputs:
     Layout                  - Layouts string, you need connect it to `Create PNG Mask -> layout`
@@ -309,10 +318,11 @@ class RandomLayouts:
                     "step": 0.1,
                     "display": "number" 
                 }),
-                "seed": ("INT", {
+                "rnd_seed": (AlwaysEqualProxy('*'), {
                     "default": 0, 
                     "min": 0, 
-                    "max": 0xffffffffffffffff
+                    "max": 0xffffffffffffffff,
+                    "display": "input" 
                 }),
             },            
         }
@@ -322,7 +332,7 @@ class RandomLayouts:
     FUNCTION = "RandomLayoutsEx"
     CATEGORY = cat
     
-    def RandomLayoutsEx(self, min_rows, max_rows, min_colums, max_colums, max_weights_gcuts, max_weights_ncuts, seed):
+    def RandomLayoutsEx(self, min_rows, max_rows, min_colums, max_colums, max_weights_gcuts, max_weights_ncuts, rnd_seed):
         if min_colums > max_colums:
             min_colums = max_colums
         
@@ -331,7 +341,7 @@ class RandomLayouts:
             
         if 0 == max_colums and max_colums == max_rows:
             layouts = "1,1"
-            return (layouts, seed,)
+            return (layouts,)
         
         if 0 == max_colums or 0 == max_rows:
             max_colums = max(max_colums, max_rows)
@@ -340,7 +350,7 @@ class RandomLayouts:
         colums = random.randrange(min_colums, max_colums + 1)        
         #print("Mira: colums: " + str(colums))
     
-        row_and_colum_info = '[' + str(colums) + ","
+        row_and_colum_info = '[' + str(rnd_seed) + '][' + str(colums) + ","
         layouts = ""    
         if 0 == colums:
             rows = random.randrange(min_rows, max_rows + 1)
@@ -375,6 +385,28 @@ class RandomLayouts:
         row_and_colum_info = row_and_colum_info[:-1]            
         row_and_colum_info += ']@'
                     
-        return (row_and_colum_info + layouts,seed,)
+        return (row_and_colum_info + layouts,)
     
+class SeedGenerator:
+    '''
+    SeedGenerator
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "seed": ("INT", {
+                    "default": 0, 
+                    "min": 0, 
+                    "max": 0xffffffffffffffff
+                }),
+            },            
+        }
+        
+    RETURN_TYPES = ("INT",)
+    RETURN_NAMES = ("seed",)
+    FUNCTION = "SeedGeneratorEx"
+    CATEGORY = cat
     
+    def SeedGeneratorEx(self, seed):
+        return(seed,)
