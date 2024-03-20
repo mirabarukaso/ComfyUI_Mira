@@ -105,3 +105,28 @@ class SixBooleanTrigger:
         return (bool_1, bool_2, bool_3, bool_4, bool_5, bool_6,)
     
     
+class LogicNot:
+    '''   
+    Always return Boolean Not
+    
+    Input | Output
+    True    False
+    False   True    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "bool": ("BOOLEAN", {"default": True,}),
+            },
+        }
+                
+    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_NAMES = ("not_bool",)
+    FUNCTION = "LogicNotEx"
+    CATEGORY = cat
+    
+    def LogicNotEx(self, bool,):
+        return (not bool,)
+    

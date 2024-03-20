@@ -3,7 +3,7 @@ from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFlo
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomLayouts, SeedGenerator
 from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
-from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger
+from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, LogicNot
 
 def __init__(self):
     pass
@@ -41,6 +41,7 @@ NODE_CLASS_MAPPINGS = {
     "TwoBooleanTrigger"         : TwoBooleanTrigger,
     "FourBooleanTrigger"        : FourBooleanTrigger,
     "SixBooleanTrigger"         : SixBooleanTrigger,
+    "LogicNot"                  : LogicNot,
     
     "TextBox"                                   : TextBox,
     "TextWithBooleanSwitchAndCommonTextInput"   : TextWithBooleanSwitchAndCommonTextInput,
@@ -80,6 +81,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TwoBooleanTrigger"         : "2 Bool",
     "FourBooleanTrigger"        : "4 Bool",
     "SixBooleanTrigger"         : "6 Bool",
+    "LogicNot"                  : "Not",
     
     "TextBox"                                   : "Text Box",
     "TextWithBooleanSwitchAndCommonTextInput"   : "Text Switcher",
