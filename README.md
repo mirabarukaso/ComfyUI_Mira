@@ -253,6 +253,9 @@ Convert `Integer` or `Float` to String.
 #### Floats
 And, few `Float` stacks.   
 
+#### Even or Odd
+Check if a `Integer` is odd or even.   
+
 ------
 ### Arithmetic (WIP)
 Addition, Subtraction, Multiplication and Division.   

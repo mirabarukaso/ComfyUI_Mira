@@ -130,3 +130,31 @@ class LogicNot:
     def LogicNotEx(self, bool,):
         return (not bool,)
     
+class EvenOrOdd:
+    '''   
+    Check if a `Integer` is odd or even.   
+    
+    Input | Output
+    Odd     True    
+    Even    False
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "num": ("INT", {"default": 1,}),
+            },
+        }
+                
+    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_NAMES = ("bool",)
+    FUNCTION = "EvenOrOddEx"
+    CATEGORY = cat
+    
+    def EvenOrOddEx(self, num,):       
+        if num & 1:
+            return (True,)
+        else:
+            return (False,)    
+    
