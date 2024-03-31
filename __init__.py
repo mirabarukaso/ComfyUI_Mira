@@ -1,4 +1,4 @@
-from .Multiplier import IntMultiplier, FloatMultiplier
+from .Arithmetic import IntMultiplication, FloatMultiplication, IntSubtraction
 from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomLayouts, SeedGenerator
 from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas
@@ -11,8 +11,9 @@ def __init__(self):
 # A dictionary that contains all nodes you want to export with their names
 # NOTE: names should be globally unique
 NODE_CLASS_MAPPINGS = {
-    "IntMultiplier"             : IntMultiplier,
-    "FloatMultiplier"           : FloatMultiplier,
+    "IntMultiplication"         : IntMultiplication,
+    "FloatMultiplication"       : FloatMultiplication,
+    "IntSubtraction"            : IntSubtraction,
     
     "NumeralToString"           : NumeralToString,
     "TwoFloats"                 : TwoFloats,
@@ -51,8 +52,9 @@ NODE_CLASS_MAPPINGS = {
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "IntMultiplier"             : "Integer Multiplier",
-    "FloatMultiplier"           : "Float Multiplier",
+    "IntMultiplication"         : "Integer Multiplication",
+    "FloatMultiplication"       : "Float Multiplication",
+    "IntSubtraction"            : "Int Subtraction",
     
     "NumeralToString"           : "Convert Numeral to String",
     "TwoFloats"                 : "2 Floats",

@@ -254,7 +254,12 @@ Convert `Integer` or `Float` to String.
 And, few `Float` stacks.   
 
 ------
-### Multiplier
+### Arithmetic (WIP)
+Addition, Subtraction, Multiplication and Division.   
+
+**Multiplier now renamed to Arithmetic.**
+
+#### Multiplication
 `Integer` and `Float` Multiplier with various output interfaces.
 
 | Inputs | Description |
@@ -269,7 +274,26 @@ And, few `Float` stacks.
 | `String`  | Convert result to `String`. |
 
 ------
+#### Subtraction
+`Integer` Subtraction with various output interfaces.   
 
+**Mostly usage for `Create Mask With Cavans`, connect `Y` with `Result` then connect `height` with `subtracted_value`.**
+
+| Inputs | Description |
+| --- | --- |
+| `input_value` | Subtracted number. |
+| `subtracted_value` | Subtracted by how much? |
+
+| Outputs | Description |
+| --- | --- |
+| `Integer`  | `Integer` result. |
+| `String`  | Convert result to `String`. |
+| `subtracted_value` | As is |
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_subtraction.png" width=35% height=35%>   
+
+------
 ## Overview - Regional Conditioning Mask with HiRes Fix
 
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/overview01.png" width=50% height=50%>
@@ -277,6 +301,10 @@ And, few `Float` stacks.
 ------
 
 ## Change Logs
+### 2024.03.31 Ver 0.3.8.0
+・Multiplier now renamed to Arithmetic.   
+・Add Integer Subtraction 
+
 ### 2024.03.16 Ver 0.3.7.0
 ・Add Random Layouts [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)
 
