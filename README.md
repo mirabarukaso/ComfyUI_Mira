@@ -236,7 +236,6 @@ Example
 #### Boolean
 Few `Boolean` stacks.   
 
-------
 #### Logic NOT
 Always return `not Boolean`
     
@@ -245,6 +244,9 @@ Always return `not Boolean`
 | `True` | `False` |
 | `False` | `True` |
 
+#### Even or Odd
+Check if a `Integer` is odd or even.   
+
 ------
 ### Numeral
 #### Convert Numeral to String
@@ -252,9 +254,6 @@ Convert `Integer` or `Float` to String.
 
 #### Floats
 And, few `Float` stacks.   
-
-#### Even or Odd
-Check if a `Integer` is odd or even.   
 
 ------
 ### Arithmetic (WIP)
