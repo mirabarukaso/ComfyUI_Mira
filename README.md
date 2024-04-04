@@ -219,9 +219,9 @@ Selects `text1` or `text2` depending on the `use_text2` and automatically adds `
 | Inputs | Description |
 | --- | --- |
 | `use_text2` | When `ENABLED`, will switch `Output` to `text2 + separator + common_text`. |
+| `common_text_at_front` | When ENABLED, the common text is placed in front of the text (1 or 2). |
 | `text1` | Default output text. |
 | `text2` | Alternative text when `use_text2` is `ENABLED`. |
-| `separator`  | Separator between `text(1/2)` and `common_text`, default value is `,`. |
 | `common_text`  | Common text input for quality tags and etc, leave it blank if you don't need it.. |
 
 | Outputs | Description |
@@ -246,6 +246,11 @@ Always return `not Boolean`
 
 #### Even or Odd
 Check if a `Integer` is odd or even.   
+
+| Input | Output |
+| --- | --- |
+| `Even` | `False` |
+| `Odd` | `True` |
 
 ------
 ### Numeral

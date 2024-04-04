@@ -148,7 +148,7 @@ class EvenOrOdd:
         }
                 
     RETURN_TYPES = ("BOOLEAN",)
-    RETURN_NAMES = ("bool",)
+    RETURN_NAMES = ("bool_Odd_True",)
     FUNCTION = "EvenOrOddEx"
     CATEGORY = cat
     

@@ -27,11 +27,11 @@ class TextWithBooleanSwitchAndCommonTextInput:
     Selects Text 1 or Text 2 depending on the switch and automatically adds Common Text for output.
     
     Inputs:
-    use_text2   - When ENABLED, will switch output to text2 + separator + common_text
-    text1       - Default output text
-    text2       - Alternative text when use_text2 is ENABLED
-    separator   - Separator between text(1/2) and common_text, default value is ","
-    common_text - Common text input for quality tags and etc, leave it blank if you don't need it.
+    use_text2               - When ENABLED, will switch output to text2 + separator + common_text
+    common_text_at_front    - When ENABLED, the common text is placed in front of the text (1 or 2).
+    text1                   - Default output text
+    text2                   - Alternative text when use_text2 is ENABLED
+    common_text             - Common text input for quality tags and etc, leave it blank if you don't need it.
         
     Outputs:
     text        - A combined text output    
@@ -44,15 +44,15 @@ class TextWithBooleanSwitchAndCommonTextInput:
                     "default": False,
                     "display": "input"
                 }),
+                "common_text_at_front": ("BOOLEAN", {
+                    "default": False,
+                    "display": "input"
+                }),
                 "text1": ("STRING", {
                     "multiline": True, 
                 }),
                 "text2": ("STRING", {
                     "multiline": True, 
-                }),
-                "separator": ("STRING", {
-                    "multiline": False, 
-                    "default": ","
                 }),
                 "common_text": ("STRING", {
                     "multiline": True, 
@@ -66,11 +66,17 @@ class TextWithBooleanSwitchAndCommonTextInput:
     FUNCTION = "TextWithBooleanSwitchAndCommonTextInputEx"
     CATEGORY = cat
     
-    def TextWithBooleanSwitchAndCommonTextInputEx(self, use_text2, text1, text2, separator, common_text):
-        if True == use_text2:
-            return (text2 + separator + common_text,)
+    def TextWithBooleanSwitchAndCommonTextInputEx(self, use_text2, common_text_at_front, text1, text2, common_text):
+        if True == common_text_at_front:
+            if True == use_text2:
+                return (common_text + text2,)
+            else:
+                return (common_text + text1,)
         else:
-            return (text1 + separator + common_text,)
+            if True == use_text2:
+                return (text2 + common_text,)
+            else:
+                return (text1 + common_text,)
 
 class TextCombinerSix:
     '''
