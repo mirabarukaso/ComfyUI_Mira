@@ -281,7 +281,7 @@ Random Nested Mask `Layout` Generator for `Create Nested PNG Mask -> Layout`
             
 | Outputs | Description |
 | --- | --- |
-| `Layout` | Layouts string, you need connect it to `Create PNG Mask -> layout` |
+| `Layout` | Layouts string, you need connect it to `Create Nested PNG Mask -> layout` |
 | `top`, `bottom`, `left`, `right` | Random Boolean for `Create Nested PNG Mask -> Layout` |
 
 Example   
