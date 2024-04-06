@@ -389,20 +389,20 @@ Example
 ------
 
 ## Change Logs
-#### 2024.04.06 Ver 0.4.0.0
-・Add Create Nested Rectangle PNG Mask
-・Add Random Nested Layouts
-・Add Integer to Float Multiplication
-・Bugfix
-・Func enchantment
+#### 2024.04.06 Ver 0.4.0.0   
+・Add Create Nested Rectangle PNG Mask   
+・Add Random Nested Layouts   
+・Add Integer to Float Multiplication   
+・Bugfix   
+・Func enchantment   
 
-v0.3.9.0
-・Add Create Watermark Removal Mask   
-・Modified Text Switcher
+v0.3.9.0   
+・Add Create Watermark Removal Mask    
+・Modified Text Switcher   
 
-#### 2024.03.31 Ver 0.3.8.0
+#### 2024.03.31 Ver 0.3.8.0   
 ・Multiplier now renamed to Arithmetic.   
-・Add Integer Subtraction 
+・Add Integer Subtraction    
 
 #### 2024.03.16 Ver 0.3.7.0
 ・Add Random Layouts [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)
