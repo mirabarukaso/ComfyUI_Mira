@@ -165,7 +165,6 @@ Ideas from [comfyui-lama-remover](https://github.com/Layer-norm/comfyui-lama-rem
 | `Top_R` | Create mask from top right. |
 | `Bottom_L` | Create mask from bottom left. |
 | `Bottom_R` | Create mask from bottom right. |  
-
 | `Intenisity` | `Intenisity` of Mask, set to `1.0` for solid Mask. |
 | `Blur` | The intensity of blur around the edge of Mask, set to `0` for a solid edge. |
         
