@@ -150,6 +150,34 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createmaskwithcavans.png" width=35% height=35%>   
 
 ------
+#### Create Watermark Removal Mask
+Creates multiple `masks` at the corners of the image for subsequent watermark detection and removal.    
+Ideas from [comfyui-lama-remover](https://github.com/Layer-norm/comfyui-lama-remover)
+
+
+| Inputs | Description |
+| --- | --- |
+| `C_Width` | Width of cavans. |
+| `C_Height` | Height of cavans. |
+| `Mask_W` | Mask width, maxium value are half of cavans width. |
+| `Mask_H` | Mask height, maxium value are half of cavans height. |
+| `Top_L` | Create mask from top left. |
+| `Top_R` | Create mask from top right. |
+| `Bottom_L` | Create mask from bottom left. |
+| `Bottom_R` | Create mask from bottom right. |  
+
+| `Intenisity` | `Intenisity` of Mask, set to `1.0` for solid Mask. |
+| `Blur` | The intensity of blur around the edge of Mask, set to `0` for a solid edge. |
+        
+| Outputs | Description |
+| --- | --- |
+| `Mask` | New mask with defined cavans |
+
+| ***Before*** | ***After*** |
+| --- | --- |
+| <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_watermark_removal_mask_before.png" width=35% height=35%> |  <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_watermark_removal_mask_after.png" width=35% height=35%> |
+
+------
 ### Util
 #### Create Canvas
 Create Canvas information `Width` and `Height` for Latent with Landscape switch. There's an advanced version also controls `Batch` and `HiResMultiplier`.
@@ -219,7 +247,7 @@ Selects `text1` or `text2` depending on the `use_text2` and automatically adds `
 | Inputs | Description |
 | --- | --- |
 | `use_text2` | When `ENABLED`, will switch `Output` to `text2 + separator + common_text`. |
-| `common_text_at_front` | When ENABLED, the common text is placed in front of the text (1 or 2). |
+| `common_text_at_front` | When `ENABLED`, the common text is placed in front of the text (1 or 2). |
 | `text1` | Default output text. |
 | `text2` | Alternative text when `use_text2` is `ENABLED`. |
 | `common_text`  | Common text input for quality tags and etc, leave it blank if you don't need it.. |
@@ -308,17 +336,21 @@ Example
 ------
 
 ## Change Logs
-### 2024.03.31 Ver 0.3.8.0
+#### 2024.04.06 Ver 0.3.9.0
+・Add Create Watermark Removal Mask
+・Modified Text Switcher
+
+#### 2024.03.31 Ver 0.3.8.0
 ・Multiplier now renamed to Arithmetic.   
 ・Add Integer Subtraction 
 
-### 2024.03.16 Ver 0.3.7.0
+#### 2024.03.16 Ver 0.3.7.0
 ・Add Random Layouts [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)
 
-### 2024.03.14 Ver 0.3.6.0
+#### 2024.03.14 Ver 0.3.6.0
 ・Add Create Mask With Canvas   
 
-### 2024.02.22 Ver 0.3.5.0
+#### 2024.02.22 Ver 0.3.5.0
 ・Add Text Switcher   
 ・Add simple Logic functions   
 ・Bugfix   
@@ -329,5 +361,5 @@ v0.3.3.0
 ・Add PngRectanglesToMask (List)   
 ・Add CanvasCreator Basic & Normal   
 
-### 2024.02.21 Ver 0.3.0.0
+#### 2024.02.21 Ver 0.3.0.0
 ・Initial release   

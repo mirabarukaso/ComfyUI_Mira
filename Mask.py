@@ -10,6 +10,41 @@ import re
 
 cat = "Mira/Mask"
 
+def mask_blur(blur, mask):
+    if 0 < blur:
+            size = int(6 * blur +1)
+            if size % 2 == 0:
+                size+= 1
+            
+            blurred = mask.unsqueeze(1)
+            blurred = T.GaussianBlur(size, blur)(blurred)
+            blurred = blurred.squeeze(1)
+            new_mask = blurred
+    else:
+        new_mask = mask
+        
+    return new_mask
+
+def create_mask_with_canvas(C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur):       
+    destinationMask = torch.full((1,C_Height, C_Width), 0, dtype=torch.float32, device="cpu")
+    
+    output = destinationMask.reshape((-1, destinationMask.shape[-2], destinationMask.shape[-1])).clone()
+    
+    sourceMask = torch.full((1, Height, Width), Intenisity, dtype=torch.float32, device="cpu")
+    source = sourceMask.reshape((-1, sourceMask.shape[-2], sourceMask.shape[-1]))
+    
+    left, top = (X, Y)
+    right, bottom = (min(left + source.shape[-1], destinationMask.shape[-1]), min(top + source.shape[-2], destinationMask.shape[-2]))
+    visible_width, visible_height = (right - left, bottom - top,)
+    
+    source_portion = source[:, :visible_height, :visible_width]
+    destination_portion = destinationMask[:, top:bottom, left:right]
+    
+    output[:, top:bottom, left:right] = destination_portion + source_portion               
+    mask = mask_blur(Blur, output)
+    
+    return mask
+
 def special_match(strg, search=re.compile(r'[^0-9.,;]').search):
     return not bool(search(strg))
    
@@ -502,16 +537,8 @@ class PngColorMasksToMaskList:
             mask = (temp >= lower_bound) & (temp <= upper_bound)
             mask = mask.all(dim=-1)
             mask = mask.float()
-            
-            if 0 < Blur:
-                size = int(6 * Blur +1)
-                if size % 2 == 0:
-                    size+= 1
-                
-                blurred = mask.unsqueeze(1)
-                blurred = T.GaussianBlur(size, Blur)(blurred)
-                blurred = blurred.squeeze(1)
-                mask = blurred
+                        
+            mask = mask_blur(Blur, mask)
             
             masks.append(mask)
 
@@ -551,19 +578,9 @@ def CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index,
             destination_portion = destinationMask[:, top:bottom, left:right]
             
             # Add
-            output[:, top:bottom, left:right] = destination_portion + source_portion
+            output[:, top:bottom, left:right] = destination_portion + source_portion                    
             
-            mask = output
-        
-            if 0 < Blur:
-                size = int(6 * Blur +1)
-                if size % 2 == 0:
-                    size+= 1
-                
-                blurred = mask.unsqueeze(1)
-                blurred = T.GaussianBlur(size, Blur)(blurred)
-                blurred = blurred.squeeze(1)
-                mask = blurred
+            mask = mask_blur(Blur, output)
         
         masks.append(mask)
     return masks
@@ -708,33 +725,103 @@ class CreateMaskWithCanvas:
     
     
     def CreateMaskWithCanvasEx(self, C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur):       
-        destinationMask = torch.full((1,C_Height, C_Width), 0, dtype=torch.float32, device="cpu")
-        
-        output = destinationMask.reshape((-1, destinationMask.shape[-2], destinationMask.shape[-1])).clone()
-        
-        sourceMask = torch.full((1, Height, Width), Intenisity, dtype=torch.float32, device="cpu")
-        source = sourceMask.reshape((-1, sourceMask.shape[-2], sourceMask.shape[-1]))
-        
-        left, top = (X, Y)
-        right, bottom = (min(left + source.shape[-1], destinationMask.shape[-1]), min(top + source.shape[-2], destinationMask.shape[-2]))
-        visible_width, visible_height = (right - left, bottom - top,)
-        
-        source_portion = source[:, :visible_height, :visible_width]
-        destination_portion = destinationMask[:, top:bottom, left:right]
-        
-        output[:, top:bottom, left:right] = destination_portion + source_portion            
-        mask = output
-    
-        if 0 < Blur:
-            size = int(6 * Blur +1)
-            if size % 2 == 0:
-                size+= 1
-            
-            blurred = mask.unsqueeze(1)
-            blurred = T.GaussianBlur(size, Blur)(blurred)
-            blurred = blurred.squeeze(1)
-            mask = blurred
-
+        mask = create_mask_with_canvas(C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur)        
         return (mask,)
+    
+class CreateWatermarkRemovalMask:
+    '''
+    Creates multiple masks at the corners of the image for subsequent watermark detection and removal.
+    
+    Inputs:
+    C_Width         - Width of cavans.
+    C_Height        - Height of cavans.
+    
+    Mask_W          - Mask width, maxium value are half of cavans width.
+    Mask_H          - Mask height, maxium value are half of cavans height.
+    
+    Top_L           - Create mask from top left.
+    Top_R           - Create mask from top right.
+    Bottom_L        - Create mask from bottom left.
+    Bottom_R        - Create mask from bottom right.    
+    
+    Intenisity      - The intenisity of Mask, 1 for Soild.
+    Blur            - The amount of Blur, 0 for Soild.    
+        
+    Output:
+    Mask            - New mask with defined cavans.
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "C_Width": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
+                "C_Height": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),                                
+                "Mask_W": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
+                "Mask_H": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
+                
+                "Top_L": ("BOOLEAN", {"default": True}),
+                "Top_R": ("BOOLEAN", {"default": True}),
+                "Bottom_L": ("BOOLEAN", {"default": True}),
+                "Bottom_R": ("BOOLEAN", {"default": True}),                
+                                
+                "Intenisity": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 1.0, "step": 0.1, "display": "number" }),
+                "Blur": ("FLOAT", { "default": 0.0, "min": 0.0, "step": 0.5, "display": "number" }),
+            },
+        }
+        
+    RETURN_TYPES = ('MASK',)
+    RETURN_NAMES = ('Mask',)
+    FUNCTION = "CreateWatermarkRemovalMaskEx"
+    CATEGORY = cat
+    
+    def CreateWatermarkRemovalMaskEx(self, C_Width, C_Height, Mask_W, Mask_H, Top_L, Top_R, Bottom_L, Bottom_R, Intenisity, Blur):      
+        if (Mask_W*2) > C_Width:
+            Mask_W = C_Width / 2
+        
+        if (Mask_H*2) > C_Height:
+            Mask_H = C_Height / 2        
+                
+        masks = []
+        
+        if True == Top_L:
+            mask = create_mask_with_canvas(C_Width, C_Height, 0, 0, Mask_W, Mask_H, Intenisity, Blur)
+            masks.append(mask)
+            
+        if True == Top_R:
+            mask = create_mask_with_canvas(C_Width, C_Height, C_Width - Mask_W, 0, Mask_W, Mask_H, Intenisity, Blur)
+            masks.append(mask)
+        
+        if True == Bottom_L:
+            mask = create_mask_with_canvas(C_Width, C_Height, 0, C_Height - Mask_H, Mask_W, Mask_H, Intenisity, Blur)
+            masks.append(mask)
+                
+        if True == Bottom_R:
+            mask = create_mask_with_canvas(C_Width, C_Height, C_Width - Mask_W, C_Height - Mask_H, Mask_W, Mask_H, Intenisity, Blur)
+            masks.append(mask)
+            
+        if len(masks) > 0:
+            if 1 == len(masks) :
+                final_mask = masks[0]
+            else:
+                final_mask = masks[0]
+                for index in range(1, len(masks)):
+                    output = final_mask.reshape((-1, final_mask.shape[-2], final_mask.shape[-1])).clone()
+                    
+                    left, top = (0, 0)
+                    right, bottom = (min(left + final_mask.shape[-1], masks[index].shape[-1]), min(top + final_mask.shape[-2], masks[index].shape[-2]))
+                    visible_width, visible_height = (right - left, bottom - top,)
+    
+                    source_portion = final_mask[:, :visible_height, :visible_width]
+                    destination_portion = masks[index][:, top:bottom, left:right]
+    
+                    output[:, top:bottom, left:right] = destination_portion + source_portion    
+                    
+                    final_mask = output     
+        else:
+            final_mask = create_mask_with_canvas(C_Width, C_Height, 0, 0, C_Width, C_Height, Intenisity, Blur)
+                                              
+         
+        return (final_mask,)
     
     

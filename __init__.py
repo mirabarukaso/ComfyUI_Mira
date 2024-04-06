@@ -1,7 +1,7 @@
 from .Arithmetic import IntMultiplication, FloatMultiplication, IntSubtraction
 from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomLayouts, SeedGenerator
-from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas
+from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, LogicNot, EvenOrOdd
 def __init__(self):
@@ -36,6 +36,7 @@ NODE_CLASS_MAPPINGS = {
     "PngRectanglesToMask"       : PngRectanglesToMask,
     "PngRectanglesToMaskList"   : PngRectanglesToMaskList,
     "CreateMaskWithCanvas"      : CreateMaskWithCanvas,
+    "CreateWatermarkRemovalMask": CreateWatermarkRemovalMask,
     
     "SingleBooleanTrigger"      : SingleBooleanTrigger,
     "TwoBooleanTrigger"         : TwoBooleanTrigger,
@@ -78,6 +79,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PngRectanglesToMask"       : "PngRectangles to Mask",
     "PngRectanglesToMaskList"   : "PngRectangles to Masks",
     "CreateMaskWithCanvas"      : "Create Mask With Canvas",
+    "CreateWatermarkRemovalMask": "Create Watermark Removal Mask",
     
     "SingleBooleanTrigger"      : "1 Bool",
     "TwoBooleanTrigger"         : "2 Bool",
