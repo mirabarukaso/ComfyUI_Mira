@@ -1,7 +1,7 @@
-from .Arithmetic import IntMultiplication, FloatMultiplication, IntSubtraction
+from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
 from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
-from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomLayouts, SeedGenerator
-from .Mask import CreateRegionalPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask
+from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
+from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, LogicNot, EvenOrOdd
 def __init__(self):
@@ -11,6 +11,7 @@ def __init__(self):
 # NOTE: names should be globally unique
 NODE_CLASS_MAPPINGS = {
     "IntMultiplication"         : IntMultiplication,
+    "IntToFloatMultiplication"  : IntToFloatMultiplication,
     "FloatMultiplication"       : FloatMultiplication,
     "IntSubtraction"            : IntSubtraction,
     
@@ -25,10 +26,12 @@ NODE_CLASS_MAPPINGS = {
     "CanvasCreatorAdvanced"     : CanvasCreatorAdvanced,
     "CanvasCreatorSimple"       : CanvasCreatorSimple,
     "CanvasCreatorBasic"        : CanvasCreatorBasic,
-    "RandomLayouts"             : RandomLayouts,
+    "RandomTillingLayouts"      : RandomTillingLayouts,
+    "RandomNestedLayouts"       : RandomNestedLayouts,
     "SeedGenerator"             : SeedGenerator,
     
-    "CreateRegionalPNGMask"     : CreateRegionalPNGMask,
+    "CreateTillingPNGMask"      : CreateTillingPNGMask,
+    "CreateNestedPNGMask"       : CreateNestedPNGMask,
     "PngColorMasksToString"     : PngColorMasksToString,
     "PngColorMasksToRGB"        : PngColorMasksToRGB,
     "PngColorMasksToStringList" : PngColorMasksToStringList,
@@ -54,8 +57,9 @@ NODE_CLASS_MAPPINGS = {
 # A dictionary that contains the friendly/humanly readable titles for the nodes
 NODE_DISPLAY_NAME_MAPPINGS = {
     "IntMultiplication"         : "Integer Multiplication",
+    "IntToFloatMultiplication"  : "Integer to Float Multiplication",
     "FloatMultiplication"       : "Float Multiplication",
-    "IntSubtraction"            : "Int Subtraction",
+    "IntSubtraction"            : "Integer Subtraction",
     
     "NumeralToString"           : "Convert Numeral to String",
     "TwoFloats"                 : "2 Floats",
@@ -68,10 +72,12 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CanvasCreatorAdvanced"     : "Create Canvas Advanced",
     "CanvasCreatorSimple"       : "Create Canvas",
     "CanvasCreatorBasic"        : "Create Canvas H/W only",
-    "RandomLayouts"             : "Random Layouts",
+    "RandomTillingLayouts"      : "Random Tilling Layouts",
+    "RandomNestedLayouts"       : "Random Nested Layouts",
     "SeedGenerator"             : "Seed Generator",
     
-    "CreateRegionalPNGMask"     : "Create PNG Mask",
+    "CreateTillingPNGMask"      : "Create Tilling PNG Mask",
+    "CreateNestedPNGMask"       : "Create Nested PNG Mask",
     "PngColorMasksToString"     : "PngColor Mask to HEX String",
     "PngColorMasksToRGB"        : "PngColor Mask to INT RGB",
     "PngColorMasksToStringList" : "PngColor Masks to List",

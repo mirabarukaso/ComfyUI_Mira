@@ -223,12 +223,12 @@ class CanvasCreatorAdvanced:
             return(Height, Width, Batch, intHiResHeight, intHiResWidth, DebugMessage,)
         
         
-class RandomLayouts:        
+class RandomTillingLayouts:
     '''
     [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)   
     
-    Random Mask Layout Generator   
-    Highly recommend connect the output `layout` or `Create PNG Mask -> Debug` to `ShowText` node.   
+    Random Tilling Mask Layout Generator   
+    Highly recommend connect the output `layout` or `Create Tilling PNG Mask -> Debug` to `ShowText` node.   
     
     **Known Issue** about `Seed Generator`   
     Switching `randomize` to `fixed` now works immediately.   
@@ -255,7 +255,7 @@ class RandomLayouts:
     rnd_seed                - Connect to the `Seed Generator` node, then use `Global Seed (Inspire)` node to control it properly.
             
     Outputs:
-    Layout                  - Layouts string, you need connect it to `Create PNG Mask -> layout`
+    Layout                  - Layouts string, you need connect it to `Create Tilling PNG Mask -> layout`
     
     Example:
     [2,2,2,1]@3.8,4.2,2.1,3.3;3.6,3.5,3.3,3.7;2.7,3.2,4.9
@@ -329,10 +329,10 @@ class RandomLayouts:
         
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("layout",)
-    FUNCTION = "RandomLayoutsEx"
+    FUNCTION = "RandomTillingLayoutsEx"
     CATEGORY = cat
     
-    def RandomLayoutsEx(self, min_rows, max_rows, min_colums, max_colums, max_weights_gcuts, max_weights_ncuts, rnd_seed):
+    def RandomTillingLayoutsEx(self, min_rows, max_rows, min_colums, max_colums, max_weights_gcuts, max_weights_ncuts, rnd_seed):
         if min_colums > max_colums:
             min_colums = max_colums
         
@@ -345,7 +345,6 @@ class RandomLayouts:
         
         if 0 == max_colums or 0 == max_rows:
             max_colums = max(max_colums, max_rows)
-            max_rows = 0
         
         colums = random.randrange(min_colums, max_colums + 1)        
         #print("Mira: colums: " + str(colums))
@@ -386,7 +385,93 @@ class RandomLayouts:
         row_and_colum_info += ']@'
                     
         return (row_and_colum_info + layouts,)
+
+class RandomNestedLayouts:
+    '''   
+    Random Nested Mask Layout Generator   
+    All known issues same as upper one.
     
+    Inputs:
+    min_nested, max_nested      - Range of nest you want.
+    min_weights, max_weights    - The weight of every nest.
+    rnd_seed                    - Connect to the `Seed Generator` node, then use `Global Seed (Inspire)` node to control it properly.
+            
+    Outputs:
+    Layout                      - Layouts string, you need connect it to `Create Nested PNG Mask -> layout`
+    top, bottom, left, right    - Random Boolean
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "min_nested": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 32,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "max_nested": ("INT", {
+                    "default": 2,
+                    "min": 1,
+                    "max": 32,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "min_weights": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.1,
+                    "max": 10.0,
+                    "step": 0.1,
+                    "display": "number" 
+                }),
+                "max_weights": ("FLOAT", {
+                    "default": 2.0,
+                    "min": 1.0,
+                    "max": 10.0,
+                    "step": 0.1,
+                    "display": "number" 
+                }),
+                "rnd_seed": (AlwaysEqualProxy('*'), {
+                    "default": 0, 
+                    "min": 0, 
+                    "max": 0xffffffffffffffff,
+                    "display": "input" 
+                }),
+            },            
+        }
+        
+    RETURN_TYPES = ("STRING", "BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN")
+    RETURN_NAMES = ("layout", "top", "bottom", "left", "right")
+    FUNCTION = "RandomNestedLayoutsEx"
+    CATEGORY = cat
+    
+    def RandomNestedLayoutsEx(self, min_nested, max_nested, min_weights, max_weights, rnd_seed):
+        if min_nested > max_nested:
+            min_nested = max_nested        
+        
+        if min_weights > max_weights:
+            min_weights = max_weights
+            
+        nested = random.randrange(min_nested, max_nested + 1)        
+    
+        bool1 = bool(random.getrandbits(1))
+        bool2 = bool(random.getrandbits(1))
+        bool3 = bool(random.getrandbits(1))
+        bool4 = bool(random.getrandbits(1))
+    
+        generator_info = '[' + str(rnd_seed) + '][' + str(nested) + '][' + str(bool1) + ',' + str(bool2) + ',' + str(bool3) + ',' + str(bool4) + ']@'
+        layouts = ""  
+        
+        for _ in range(0, nested):
+            layouts += str(round(random.uniform(min_weights, max_weights),1))
+            layouts += ','
+            
+        layouts = layouts[:-1]
+                
+        return (generator_info + layouts, bool1, bool2, bool3, bool4,)
+        
 class SeedGenerator:
     '''
     SeedGenerator

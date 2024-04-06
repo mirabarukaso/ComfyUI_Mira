@@ -13,8 +13,8 @@ git clone https://github.com/mirabarukaso/ComfyUI_Mira.git
 
 ## Basic Functions   
 ### Mask
-#### Create PNG Mask 
-Create a PNG tiled image with Color Mask stack for regional conditioning mask.   
+#### Create Tilling PNG Mask 
+Create a `Tilling` PNG image with Color Mask stack for regional conditioning mask.   
 Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-regional-prompter)
 
 | Inputs | Description |
@@ -43,6 +43,39 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 | ***1,2,1,1;2,4,6 with Colum_first*** | ***1,2,3,2,1*** | ***1,2,3,2,1 with Colum_first*** |
 | --- | --- | --- |
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_f.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_t.png" width=35% height=35%> |
+
+------
+#### Create Nested Rectangles PNG Mask 
+Create a `Nested Rectangles` PNG image with Color Mask stack for regional conditioning mask.   
+Ideas from [Watermark Removal](https://github.com/mirabarukaso/ComfyUI_Mira?tab=readme-ov-file#create-watermark-removal-mask)   
+
+| Inputs | Description |
+| --- | --- |
+| `Width`  `Height` | Image size, could be difference with cavan size, but recommended to connect them together. |
+| `X`, `Y` |  Center point (`X`,`Y`) of all Rectangles. |    
+| `unlimit_top` | When `ENABLED`, all `masks` will create from the top of Image. |
+| `unlimit_bottom` | When `ENABLED`, all `masks` will create till the bottom of Image. |
+| `unlimit_left` | When `ENABLED`, all `masks` will create from the left of Image. |
+| `unlimit_right` | When `ENABLED`, all `masks` will create till the right of Image. |        
+| `Layout` | Customized `Blocks` with layouts input. e.g. `2,4,1` <br /> `0-9` `,` `;` Check Examples section for more detail. |
+        
+| Outputs | Description |
+| --- | --- |
+| `Image` | Visualisation Image of your Layout. |
+| `PngColorMasks` | A List contains all your Blocks' color information.  <br />Connect to `Create PNG Mask ` `Color Mask to HEX String` `Color Mask to INT RGB` `Color Masks List` |
+| `PngRectangles` | A List contains all PNG Blocks' rectangle informationm, last one is the whole Image's Width and Height. |
+| `Debug` | Debug information as String. |
+
+
+| Examples | Description |
+| --- | --- |
+| `0-9` | Block weights |
+| `,` | A normal segmentation.  `;` will treat as same as `,` |
+| `;` | Ignored in `,  ;` |
+
+| ***2,4,1*** | ***2,4,1 unlimit bottom*** | ***2,4,1 unlimit bottom and right and blur 16*** |
+| --- | --- | --- |
+| <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createnestedpng.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createnestedpng_ub.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createnestedpng_ubr_b16.png" width=35% height=35%> |
 
 ------
 #### PngColor Masks to Mask List
@@ -201,8 +234,8 @@ Create Canvas information `Width` and `Height` for Latent with Landscape switch.
 | `HiRes Width` `HiRes Height`  | Width and Height for HiResFix or etc. <br />***NOTE:The result is not the product of the original data, but the nearest multiple of 8.***|
 
 ------
-#### Random Layouts
-Random Mask `Layout` Generator for `Create PNG Mask -> Layout`   
+#### Random Tilling Layouts
+Random Tilling Mask `Layout` Generator for `Create Tilling PNG Mask -> Layout`   
 
 **Highly recommend connect the output `layout` or `Create PNG Mask -> Debug` to `ShowText` node.**   
 Refer to [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)   
@@ -233,6 +266,26 @@ Set rows or colums to `0` for only one direction cuts. Whichever is set to `0` w
 
 Example   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_random_layouts.png" width=35% height=35%>   
+
+------
+#### Random Nested Mask Layouts
+Random Nested Mask `Layout` Generator for `Create Nested PNG Mask -> Layout`  
+    
+**Known Issue** same as upper one.
+    
+| Inputs | Description |
+| --- | --- |
+| `min_nested`, `max_nested` | Range of nest you want. |
+| `min_weights`, `max_weights` | The weight of every nest. |
+| `rnd_seed` | Connect to the `Seed Generator` node, then use `Global Seed (Inspire)` node to control it properly. |
+            
+| Outputs | Description |
+| --- | --- |
+| `Layout` | Layouts string, you need connect it to `Create PNG Mask -> layout` |
+| `top`, `bottom`, `left`, `right` | Random Boolean for `Create Nested PNG Mask -> Layout` |
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_random_nested_layouts.png" width=35% height=35%>   
 
 ------
 #### Seed Generator
@@ -288,17 +341,18 @@ Convert `Integer` or `Float` to String.
 And, few `Float` stacks.   
 
 ------
-### Arithmetic (WIP)
+### Arithmetic (WIP as I need......)
 Addition, Subtraction, Multiplication and Division.   
 
 **Multiplier now renamed to Arithmetic.**
 
 #### Multiplication
-`Integer` and `Float` Multiplier with various output interfaces.
+`Integer` and `Float` Multiplier with various output interfaces.   
+There is also an `Integer to Float` Multiplier, connect to `Seed Generator` (x0.1) for `Even or Odd` and `Text Switcher`.
 
 | Inputs | Description |
 | --- | --- |
-| `input_value` | The number you want tu multiply. |
+| `int_value` `float_value` | The number you want to multiply. |
 | `multiply_value` | How many times? |
 
 | Outputs | Description |
@@ -315,7 +369,7 @@ Addition, Subtraction, Multiplication and Division.
 
 | Inputs | Description |
 | --- | --- |
-| `input_value` | Subtracted number. |
+| `int_value` | Subtracted number. |
 | `subtracted_value` | Subtracted by how much? |
 
 | Outputs | Description |
@@ -335,8 +389,15 @@ Example
 ------
 
 ## Change Logs
-#### 2024.04.06 Ver 0.3.9.0
-・Add Create Watermark Removal Mask
+#### 2024.04.06 Ver 0.4.0.0
+・Add Create Nested Rectangle PNG Mask
+・Add Random Nested Layouts
+・Add Integer to Float Multiplication
+・Bugfix
+・Func enchantment
+
+v0.3.9.0
+・Add Create Watermark Removal Mask   
 ・Modified Text Switcher
 
 #### 2024.03.31 Ver 0.3.8.0

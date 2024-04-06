@@ -14,7 +14,7 @@ class IntMultiplication:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "input_value": ("INT", {
+                "int_value": ("INT", {
                     "default": 0,
                     "min": 0,           # Minimum value
                     "display": "number" # Cosmetic only: display as "number" or "slider"
@@ -32,14 +32,51 @@ class IntMultiplication:
     FUNCTION = "ExIntMultiplication"
     CATEGORY = cat
 
-    def IntMultiplication(self, input_value, multiply_value):
-        result = input_value * multiply_value
+    def IntMultiplication(self, int_value, multiply_value):
+        result = int_value * multiply_value
         return (result, str(result),)
+    
+class IntToFloatMultiplication:
+    '''   
+    Inputs:
+    int_value       - Integer number as A
+    multiply_value  - Integer number as B
+        
+    Outputs:
+    Result (INT)    - The result of A x B
+    Result (STRING) - The result of A x B, and convert to string
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "int_value": ("INT", {
+                    "default": 0,
+                    "min": 0,           # Minimum value
+                    "display": "number" # Cosmetic only: display as "number" or "slider"
+                }),
+                "multiply_value": ("FLOAT", {
+                    "default": 1.5,
+                    "min": 0,           
+                    "step": 0.0000001,
+                    "display": "number" 
+                })
+            },
+        }
+
+    RETURN_TYPES = ("FLOAT","INT", "STRING",)
+    RETURN_NAMES = ("Result (FLOAT)", "Result (INT)","Result (STRING)",)
+    FUNCTION = "IntToFloatMultiplicationEx"
+    CATEGORY = cat
+
+    def IntToFloatMultiplicationEx(self, int_value, multiply_value):
+        result = float(int_value) * multiply_value
+        return (result, int(result), str(result),)
     
 class FloatMultiplication:
     '''   
     Inputs:
-    input_value     - Float number as A
+    float_value     - Float number as A
     multiply_value  - Float number as B
         
     Outputs:
@@ -51,16 +88,16 @@ class FloatMultiplication:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "input_value": ("FLOAT", {
+                "float_value": ("FLOAT", {
                     "default": 0.0,
                     "min": 0.0,           
-                    "step": 0.1,
+                    "step": 0.0000001,
                     "display": "number" 
                 }),
                 "multiply_value": ("FLOAT", {
                     "default": 1.5,
                     "min": 0,           
-                    "step": 0.1,
+                    "step": 0.0000001,
                     "display": "number" 
                 })
             },
@@ -71,14 +108,14 @@ class FloatMultiplication:
     FUNCTION = "ExFloatMultiplication"
     CATEGORY = cat
 
-    def ExFloatMultiplication(self, input_value, multiply_value):
-        result = input_value * multiply_value
+    def ExFloatMultiplication(self, float_value, multiply_value):
+        result = float_value * multiply_value
         return (result, int(result), str(result),)
     
 class IntSubtraction:
     '''   
     Inputs:
-    input_value         - Integer number as A
+    int_value           - Integer number as A
     subtracted_value    - Integer number as B
         
     Outputs:
@@ -91,7 +128,7 @@ class IntSubtraction:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "input_value": ("INT", {
+                "int_value": ("INT", {
                     "default": 0,
                     "min": 0,           
                     "display": "number" 
@@ -109,7 +146,7 @@ class IntSubtraction:
     FUNCTION = "ExIntSubtraction"
     CATEGORY = cat
 
-    def ExIntSubtraction(self, input_value, subtracted_value):
-        result = input_value - subtracted_value
+    def ExIntSubtraction(self, int_value, subtracted_value):
+        result = int_value - subtracted_value
         return (result, str(result), subtracted_value,)
     
