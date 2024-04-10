@@ -128,7 +128,7 @@ class LogicNot:
     CATEGORY = cat
     
     def LogicNotEx(self, bool,):
-        return (not bool, str(bool),)
+        return (not bool, str(not bool),)
     
 class EvenOrOdd:
     '''   
