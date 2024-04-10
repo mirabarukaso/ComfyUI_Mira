@@ -122,13 +122,13 @@ class LogicNot:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN",)
-    RETURN_NAMES = ("not_bool",)
+    RETURN_TYPES = ("BOOLEAN","STRING")
+    RETURN_NAMES = ("not_bool", "result")
     FUNCTION = "LogicNotEx"
     CATEGORY = cat
     
     def LogicNotEx(self, bool,):
-        return (not bool,)
+        return (not bool, str(bool),)
     
 class EvenOrOdd:
     '''   
@@ -147,14 +147,14 @@ class EvenOrOdd:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN",)
-    RETURN_NAMES = ("bool_Odd_True",)
+    RETURN_TYPES = ("BOOLEAN", "STRING")
+    RETURN_NAMES = ("bool_Odd_True", "result")
     FUNCTION = "EvenOrOddEx"
     CATEGORY = cat
     
     def EvenOrOddEx(self, num,):       
         if num & 1:
-            return (True,)
+            return (True, 'True',)
         else:
-            return (False,)    
+            return (False, 'False',)
     

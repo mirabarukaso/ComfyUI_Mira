@@ -11,7 +11,7 @@ git clone https://github.com/mirabarukaso/ComfyUI_Mira.git
 
 ------
 
-## Basic Functions   
+## Functions   
 ### Mask
 #### Create Tilling PNG Mask 
 Create a `Tilling` PNG image with Color Mask stack for regional conditioning mask.   
@@ -198,6 +198,7 @@ Ideas from [comfyui-lama-remover](https://github.com/Layer-norm/comfyui-lama-rem
 | `Top_R` | Create mask from top right. |
 | `Bottom_L` | Create mask from bottom left. |
 | `Bottom_R` | Create mask from bottom right. |  
+| `EdgeToEdge` | Preserve the N pixels at the outermost edges of the image to prevent image noise. Set to 0 for borderless. |
 | `Intenisity` | `Intenisity` of Mask, set to `1.0` for solid Mask. |
 | `Blur` | The intensity of blur around the edge of Mask, set to `0` for a solid edge. |
         

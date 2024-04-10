@@ -993,6 +993,8 @@ class CreateWatermarkRemovalMask:
     Bottom_L        - Create mask from bottom left.
     Bottom_R        - Create mask from bottom right.    
     
+    EdgeToEdge      - Preserve the N pixels at the outermost edges of the image to prevent image noise.  Set to 0 for borderless.
+    
     Intenisity      - The intenisity of Mask, 1 for Soild.
     Blur            - The amount of Blur, 0 for Soild.    
         
@@ -1009,10 +1011,12 @@ class CreateWatermarkRemovalMask:
                 "Mask_W": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
                 "Mask_H": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
                 
-                "Top_L": ("BOOLEAN", {"default": True}),
-                "Top_R": ("BOOLEAN", {"default": True}),
+                "Top_L": ("BOOLEAN", {"default": False}),
+                "Top_R": ("BOOLEAN", {"default": False}),
                 "Bottom_L": ("BOOLEAN", {"default": True}),
-                "Bottom_R": ("BOOLEAN", {"default": True}),                
+                "Bottom_R": ("BOOLEAN", {"default": False}),                
+                
+                "EdgeToEdge": ("INT", { "default": 1, "min": 0, "max": 16, "step": 1, "display": "number" }),
                                 
                 "Intenisity": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 1.0, "step": 0.1, "display": "number" }),
                 "Blur": ("FLOAT", { "default": 0.0, "min": 0.0, "step": 0.5, "display": "number" }),
@@ -1024,29 +1028,29 @@ class CreateWatermarkRemovalMask:
     FUNCTION = "CreateWatermarkRemovalMaskEx"
     CATEGORY = cat
     
-    def CreateWatermarkRemovalMaskEx(self, C_Width, C_Height, Mask_W, Mask_H, Top_L, Top_R, Bottom_L, Bottom_R, Intenisity, Blur):      
+    def CreateWatermarkRemovalMaskEx(self, C_Width, C_Height, Mask_W, Mask_H, Top_L, Top_R, Bottom_L, Bottom_R, EdgeToEdge, Intenisity, Blur):      
         if (Mask_W*2) > C_Width:
             Mask_W = C_Width / 2
         
         if (Mask_H*2) > C_Height:
             Mask_H = C_Height / 2        
                 
-        masks = []
+        masks = []       
         
         if True == Top_L:
-            mask = create_mask_with_canvas(C_Width, C_Height, 0, 0, Mask_W, Mask_H, Intenisity, Blur)
+            mask = create_mask_with_canvas(C_Width, C_Height, 0 + EdgeToEdge, 0 + EdgeToEdge, Mask_W, Mask_H, Intenisity, Blur)
             masks.append(mask)
             
         if True == Top_R:
-            mask = create_mask_with_canvas(C_Width, C_Height, C_Width - Mask_W, 0, Mask_W, Mask_H, Intenisity, Blur)
+            mask = create_mask_with_canvas(C_Width, C_Height, C_Width - Mask_W - EdgeToEdge, 0 + EdgeToEdge, Mask_W, Mask_H, Intenisity, Blur)
             masks.append(mask)
         
         if True == Bottom_L:
-            mask = create_mask_with_canvas(C_Width, C_Height, 0, C_Height - Mask_H, Mask_W, Mask_H, Intenisity, Blur)
+            mask = create_mask_with_canvas(C_Width, C_Height, 0 + EdgeToEdge, C_Height - Mask_H - EdgeToEdge, Mask_W, Mask_H, Intenisity, Blur)
             masks.append(mask)
                 
         if True == Bottom_R:
-            mask = create_mask_with_canvas(C_Width, C_Height, C_Width - Mask_W, C_Height - Mask_H, Mask_W, Mask_H, Intenisity, Blur)
+            mask = create_mask_with_canvas(C_Width, C_Height, C_Width - Mask_W - EdgeToEdge, C_Height - Mask_H - EdgeToEdge, Mask_W, Mask_H, Intenisity, Blur)
             masks.append(mask)
             
         if len(masks) > 0:
