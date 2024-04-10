@@ -43,6 +43,25 @@ class NumeralToString:
             result += str(type(numeral))
             return (result,)
         
+class OneFloat:
+    '''
+    1 Float
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
+            },
+        }
+                
+    RETURN_TYPES = ("FLOAT",)
+    RETURN_NAMES = ("float_1",)
+    FUNCTION = "OneFloatEx"
+    CATEGORY = cat
+    
+    def OneFloatEx(self, float_1, ):
+        return (float_1, )
 
 class TwoFloats:
     '''
@@ -52,8 +71,8 @@ class TwoFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01}),
             },
         }
                 
@@ -73,10 +92,10 @@ class FourFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_3": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_4": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01}),
             },
         }
                 
@@ -96,12 +115,12 @@ class SixFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_3": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_4": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_5": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_6": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_5": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_6": ("FLOAT", {"default": 1.0, "step": 0.01}),
             },
         }
                 
@@ -121,14 +140,14 @@ class EightFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_3": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_4": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_5": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_6": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_7": ("FLOAT", {"default": 1.0, "step": 0.1}),
-                "float_8": ("FLOAT", {"default": 1.0, "step": 0.1}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_5": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_6": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_7": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_8": ("FLOAT", {"default": 1.0, "step": 0.01}),
             },
         }
                 

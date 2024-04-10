@@ -29,10 +29,10 @@ class IntMultiplication:
 
     RETURN_TYPES = ("INT","STRING",)
     RETURN_NAMES = ("Result (INT)", "Result (STRING)",)
-    FUNCTION = "ExIntMultiplication"
+    FUNCTION = "IntMultiplicationEx"
     CATEGORY = cat
 
-    def IntMultiplication(self, int_value, multiply_value):
+    def IntMultiplicationEx(self, int_value, multiply_value):
         result = int_value * multiply_value
         return (result, str(result),)
     

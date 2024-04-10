@@ -1,5 +1,5 @@
 from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
-from .Numeral import NumeralToString, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
+from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
@@ -16,6 +16,7 @@ NODE_CLASS_MAPPINGS = {
     "IntSubtraction"            : IntSubtraction,
     
     "NumeralToString"           : NumeralToString,
+    "OneFloat"                  : OneFloat,
     "TwoFloats"                 : TwoFloats,
     "FourFloats"                : FourFloats,
     "SixFloats"                 : SixFloats,
@@ -62,6 +63,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "IntSubtraction"            : "Integer Subtraction",
     
     "NumeralToString"           : "Convert Numeral to String",
+    "OneFloat"                  : "1 Float",
     "TwoFloats"                 : "2 Floats",
     "FourFloats"                : "4 Floats",
     "SixFloats"                 : "6 Floats",
