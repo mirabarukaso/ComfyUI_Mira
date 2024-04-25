@@ -142,12 +142,17 @@ Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to
 #### PngRectangles to Mask (List)
 Convert ranged `PngRectangles` to Mask with Mask `Intenisity` and `Blur` function.
 
-| Inputs | Description |
+| Inputs (Common) | Description |
 | --- | --- |
 | `PngRectangles` | List from ` Mira/Mask/Create PNG Mask` |
 | `Intenisity` | `Intenisity` of Mask, set to `1.0` for solid Mask. |
 | `Blur` | The intensity of blur around the edge of Mask, set to `0` for a solid edge. |
 | `Start_At_Index` | The first block index number you want. |
+
+| Inputs (Single Mask) | Description |
+| --- | --- |
+| `Overlap` | Combine the `Previous` or `Next` Masks into current Mask. `None` for disable. |
+| `Overlap_Count` | How many `Previous` or `Next` Masks you want to combine. |
 
 | Outputs | Description |
 | --- | --- |
@@ -157,7 +162,9 @@ Convert ranged `PngRectangles` to Mask with Mask `Intenisity` and `Blur` functio
 | `mask_[0-9]` | Masks List with specified `Intenisity` and `Blur`. |
 
 Example   
-<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_pngrect2masks.png" width=35% height=35%>   
+| ***Normal*** | ***Overlap*** |
+| --- | --- |
+| <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_pngrect2masks.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_pngrect2masks_overlap.png" width=35% height=35%>  |
 
 ------
 #### Create Mask With Canvas   

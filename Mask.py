@@ -10,6 +10,31 @@ import re
 
 cat = "Mira/Mask"
 
+def combine_mask(masks):
+    if len(masks) > 0:
+        if 1 == len(masks) :
+            final_mask = masks[0]
+        else:
+            final_mask = masks[0]
+            for index in range(1, len(masks)):
+                output = final_mask.reshape((-1, final_mask.shape[-2], final_mask.shape[-1])).clone()
+                
+                left, top = (0, 0)
+                right, bottom = (min(left + final_mask.shape[-1], masks[index].shape[-1]), min(top + final_mask.shape[-2], masks[index].shape[-2]))
+                visible_width, visible_height = (right - left, bottom - top,)
+
+                source_portion = final_mask[:, :visible_height, :visible_width]
+                destination_portion = masks[index][:, top:bottom, left:right]
+
+                output[:, top:bottom, left:right] = destination_portion + source_portion    
+                
+                final_mask = output     
+    else:
+        # dummy
+        final_mask = create_mask_with_canvas(0, 0, 0, 0, 8, 8, 0, 0)
+    
+    return final_mask
+
 def mask_blur(blur, mask):
     # refer: https://github.com/cubiq/ComfyUI_essentials
     # MaskBlur MaskBatch  
@@ -815,7 +840,7 @@ def CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index,
                 mask = mask = CreateMask(PngRectangles, 0, destinationMask, Intenisity, Blur)
             else:
                 if (sizePngRectangles - 1) == index:
-                    print("index = " + str(index))
+                    # print("index = " + str(index))
                     mask = CreateMask(PngRectangles, index, destinationMask, Intenisity, Blur)                
                 else:
                     mask_dest = CreateMask(PngRectangles, index, destinationMask, Intenisity, Blur)
@@ -835,6 +860,21 @@ def CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index,
     return masks
         
 class PngRectanglesToMask:
+    '''
+    Convert PngRectangles to selected Mask with Mask Intenisity and Blur function.
+    This function creates Mask directly from Rectangles data.
+    
+    Inputs:
+    PngRectangles   - List from Create PNG Mask
+    Intenisity      - The intenisity of Mask, 1 for Soild.
+    Blur            - The amount of Blur, 0 for Soild.
+    Start_At_Index  - The first Block id to start
+    Overlap         - Combine the `Previous` or `Next` Masks into current Mask. `None` for disable.
+    Overlap_Count   - How many `Previous` or `Next` Masks you want to combine.
+        
+    Outputs:
+    mask            - Mask for anyone who want a Mask
+    '''
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -861,6 +901,13 @@ class PngRectanglesToMask:
                     "step": 1,
                     "display": "number" 
                 }),
+                "Overlap": (["None", "Previous", "Next"], {"display": "string"}),
+                "Overlap_Count": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "step": 1,
+                    "display": "number" 
+                }),
             },
         }
                     
@@ -869,9 +916,29 @@ class PngRectanglesToMask:
     FUNCTION = "PngRectanglesToMaskEx"
     CATEGORY = cat
     
-    def PngRectanglesToMaskEx(self, PngRectangles, Intenisity, Blur, Start_At_Index):
-        masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, Start_At_Index + 1)
-        return (masks[0],)    
+    def PngRectanglesToMaskEx(self, PngRectangles, Intenisity, Blur, Start_At_Index, Overlap, Overlap_Count):
+        if "Previous" == Overlap:
+            if 0 == Start_At_Index:
+                masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, Start_At_Index + 1)
+                final_mask = masks[0]
+            else:
+                tmp_index = Start_At_Index - Overlap_Count
+                if(tmp_index < 0):
+                    tmp_index = 0
+                masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, tmp_index, Start_At_Index + 1)
+                final_mask = combine_mask(masks)
+        elif "Next" == Overlap:
+            sizePngRectangles = len(PngRectangles) - 1
+            tmp_index = Start_At_Index + Overlap_Count + 1
+            if(tmp_index > sizePngRectangles):
+                tmp_index = sizePngRectangles
+            masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, tmp_index)
+            final_mask = combine_mask(masks)
+        else:
+            masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, Start_At_Index + 1)
+            final_mask = masks[0]
+                    
+        return (final_mask,)    
     
 class PngRectanglesToMaskList:
     '''
@@ -1054,27 +1121,10 @@ class CreateWatermarkRemovalMask:
             masks.append(mask)
             
         if len(masks) > 0:
-            if 1 == len(masks) :
-                final_mask = masks[0]
-            else:
-                final_mask = masks[0]
-                for index in range(1, len(masks)):
-                    output = final_mask.reshape((-1, final_mask.shape[-2], final_mask.shape[-1])).clone()
-                    
-                    left, top = (0, 0)
-                    right, bottom = (min(left + final_mask.shape[-1], masks[index].shape[-1]), min(top + final_mask.shape[-2], masks[index].shape[-2]))
-                    visible_width, visible_height = (right - left, bottom - top,)
-    
-                    source_portion = final_mask[:, :visible_height, :visible_width]
-                    destination_portion = masks[index][:, top:bottom, left:right]
-    
-                    output[:, top:bottom, left:right] = destination_portion + source_portion    
-                    
-                    final_mask = output     
+            final_mask = combine_mask(masks)
         else:
             final_mask = create_mask_with_canvas(C_Width, C_Height, 0, 0, C_Width, C_Height, Intenisity, Blur)
-                                              
-         
+                                                       
         return (final_mask,)
     
     
