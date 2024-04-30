@@ -51,7 +51,7 @@ class OneFloat:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
             },
         }
                 
@@ -71,8 +71,8 @@ class TwoFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
             },
         }
                 
@@ -92,10 +92,10 @@ class FourFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
             },
         }
                 
@@ -115,12 +115,12 @@ class SixFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_5": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_6": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_5": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_6": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
             },
         }
                 
@@ -140,14 +140,14 @@ class EightFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_5": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_6": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_7": ("FLOAT", {"default": 1.0, "step": 0.01}),
-                "float_8": ("FLOAT", {"default": 1.0, "step": 0.01}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_5": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_6": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_7": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_8": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
             },
         }
                 
