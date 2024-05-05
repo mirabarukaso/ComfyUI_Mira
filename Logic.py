@@ -124,19 +124,17 @@ class SixBooleanTrigger:
                 "bool_4": ("BOOLEAN", {"default": False,}),
                 "bool_5": ("BOOLEAN", {"default": False,}),
                 "bool_6": ("BOOLEAN", {"default": False,}),
-                "bool_7": ("BOOLEAN", {"default": False,}),
-                "bool_8": ("BOOLEAN", {"default": False,}),
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN_LIST",)
-    RETURN_NAMES = ("bool_1","bool_2","bool_3","bool_4","bool_5","bool_6","bool_list",)
+    RETURN_TYPES = ("BOOLEAN_LIST",)
+    RETURN_NAMES = ("bool_list",)
     FUNCTION = "SixBooleanTriggerEx"
     CATEGORY = cat
     
     def SixBooleanTriggerEx(self, bool_1, bool_2, bool_3, bool_4, bool_5, bool_6):
         bool_list = [bool_1, bool_2, bool_3, bool_4, bool_5, bool_6]
-        return (bool_1, bool_2, bool_3, bool_4, bool_5, bool_6, bool_list,)
+        return (bool_list,)
     
 class EightBooleanTrigger:
     '''
@@ -154,17 +152,19 @@ class EightBooleanTrigger:
                 "bool_4": ("BOOLEAN", {"default": False,}),
                 "bool_5": ("BOOLEAN", {"default": False,}),
                 "bool_6": ("BOOLEAN", {"default": False,}),
+                "bool_7": ("BOOLEAN", {"default": False,}),
+                "bool_8": ("BOOLEAN", {"default": False,}),
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN_LIST",)
-    RETURN_NAMES = ("bool_1","bool_2","bool_3","bool_4","bool_5","bool_6", "bool_7", "bool_8","bool_list",)                
+    RETURN_TYPES = ("BOOLEAN_LIST",)
+    RETURN_NAMES = ("bool_list",)                
     FUNCTION = "EightBooleanTriggerEx"
     CATEGORY = cat
     
     def EightBooleanTriggerEx(self, bool_1, bool_2, bool_3, bool_4, bool_5, bool_6, bool_7, bool_8):
         bool_list = [bool_1, bool_2, bool_3, bool_4, bool_5, bool_6, bool_7, bool_8]
-        return (bool_1, bool_2, bool_3, bool_4, bool_5, bool_6, bool_7, bool_8, bool_list,)    
+        return (bool_list,)    
     
 class LogicNot:
     '''   
