@@ -1,6 +1,14 @@
 import math
-
 cat = "Mira/Logic"
+
+class AlwaysEqualProxy(str):
+#ComfyUI-Logic 
+#refer: https://github.com/theUpsider/ComfyUI-Logic
+    def __eq__(self, _):
+        return True
+
+    def __ne__(self, _):
+        return False
 
 def CheckEvenOrOdd(num):       
     if num & 1:
@@ -266,7 +274,7 @@ class EvenOrOddList:
     
     def EvenOrOddListEx(self, integer, quantity, NOT_filling):        
         bool_list = []
-        string_list = 'Input = ' + str(integer) + 'Times = ' + str(len(str(integer))) + '\nResults\n'
+        string_list = 'Input = ' + str(integer) + ' Times = ' + str(len(str(integer))) + '\nResults\n'
         new_seed = integer       
         swap = False
         
@@ -389,4 +397,39 @@ class BooleanListInterpreter8:
             
         return (new_list[0],new_list[1],new_list[2],new_list[3],new_list[4],new_list[5],new_list[6],new_list[7],)
     
+class FunctionSwap:
+    """
+    Swap `func1` and `func2` outputs depends on `trigger`.
+    
+    Inputs:
+    swap    - True or False
+    func1   - Any function. E.g. `Mask_1`.
+    func1   - Any function. E.g. `Mask_2`.
+    
+    Outputs:
+    | swap  |   A   |   B   |
+    | True  | func2 | func1 |
+    | False | func1 | func2 |
+    """
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "trigger": ("BOOLEAN", {"default": False, "display":"input",}),
+                "func1": (AlwaysEqualProxy("*"),),
+                "func2": (AlwaysEqualProxy("*"),),
+            },
+        }
+
+    RETURN_TYPES = (AlwaysEqualProxy("*"), AlwaysEqualProxy("*"),)
+    RETURN_NAMES = ("A", "B", )
+    FUNCTION = "FunctionSwapEx"
+    CATEGORY = cat
+
+    def FunctionSwapEx(self, trigger, func1, func2):
+        if True is trigger:
+            return (func2, func1,)
+        else:
+            return (func1, func2,)    
     

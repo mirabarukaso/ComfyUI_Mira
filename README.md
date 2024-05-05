@@ -373,6 +373,22 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_evenoroddlist.png" width=35% height=35%>   
 
 ------
+#### Function Swap
+Swap `func1` and `func2` outputs depends on `trigger`.
+    
+| Inputs | Description |
+| --- | --- |
+| `swap` | `True` or `False` |
+| `func1` | Any function. E.g. `Mask_1`. |
+| `func2` |  Any function. E.g. `Mask_2`. |
+    
+| Outputs | A | B |
+| --- | --- | --- |
+| swap  |   A   |   B   |
+| `True`  | func2 | func1 |
+| `False` | func1 | func2 |
+
+------
 ### Numeral
 #### Convert Numeral to String
 Convert `Integer` or `Float` to String.   
@@ -440,6 +456,7 @@ Example
 
 ## Change Logs
 #### 2024.05.05 Ver 0.4.1.0   
+・Add Function Swap
 ・Add Even or Odd List
 ・Add Bools from List
 ・Add Floats from List

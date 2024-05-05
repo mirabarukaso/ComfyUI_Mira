@@ -1,9 +1,9 @@
 from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
-from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg, StepsAndCfgAndWH
+from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
-from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8
+from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap
 def __init__(self):
     pass
     
@@ -24,7 +24,6 @@ NODE_CLASS_MAPPINGS = {
     "FloatListInterpreter4"     : FloatListInterpreter4,
     "FloatListInterpreter8"     : FloatListInterpreter8,
     "StepsAndCfg"               : StepsAndCfg,
-    "StepsAndCfgAndWH"          : StepsAndCfgAndWH,
         
     "CanvasCreatorAdvanced"     : CanvasCreatorAdvanced,
     "CanvasCreatorSimple"       : CanvasCreatorSimple,
@@ -55,6 +54,7 @@ NODE_CLASS_MAPPINGS = {
     "BooleanListInterpreter1"   : BooleanListInterpreter1,
     "BooleanListInterpreter4"   : BooleanListInterpreter4,
     "BooleanListInterpreter8"   : BooleanListInterpreter8,
+    "FunctionSwap"              : FunctionSwap,
     
     "TextBox"                                   : TextBox,
     "TextWithBooleanSwitchAndCommonTextInput"   : TextWithBooleanSwitchAndCommonTextInput,
@@ -78,7 +78,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "FloatListInterpreter4"     : "4 Floats from List",
     "FloatListInterpreter8"     : "8 Floats from List",
     "StepsAndCfg"               : "Steps & Cfg",
-    "StepsAndCfgAndWH"          : "Steps & Cfg & WH",
     
     "CanvasCreatorAdvanced"     : "Create Canvas Advanced",
     "CanvasCreatorSimple"       : "Create Canvas",
@@ -109,6 +108,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BooleanListInterpreter1"   : "1 Bool from List",
     "BooleanListInterpreter4"   : "4 Bools from List",
     "BooleanListInterpreter8"   : "8 Bools from List",
+    "FunctionSwap"              : "Function Swap",
     
     "TextBox"                                   : "Text Box",
     "TextWithBooleanSwitchAndCommonTextInput"   : "Text Switcher",

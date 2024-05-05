@@ -260,7 +260,7 @@ class StepsAndCfg:
         return {
             "required": {
                 "steps": ("INT", {"default": 22, "step": 1, "min": 1}),
-                "cfg": ("FLOAT", {"default": 8.0, "step": 0.1, "min": 1.0}),
+                "cfg": ("FLOAT", {"default": 8.0, "step": 0.01, "min": 1.0}),
             },
         }
                 
@@ -272,37 +272,4 @@ class StepsAndCfg:
     def StepsAndCFGEx(self, steps, cfg):
         return (steps, cfg,)
     
-class StepsAndCfgAndWH:
-    '''
-    Steps and CFG and Width and Height
-    '''
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "steps": ("INT", {"default": 22, "step": 1, "min": 1}),
-                "cfg": ("FLOAT", {"default": 8.0, "step": 0.1, "min": 1.0}),
-                "width": ("INT", {
-                    "default": 576,
-                    "min": 16,
-                    "step": 8,
-                    "display": "number" 
-                }),
-                "height": ("INT", {
-                    "default": 1024,
-                    "min": 16,
-                    "step": 8,
-                    "display": "number" 
-                }),
-            },
-        }
-                
-    RETURN_TYPES = ("INT", "FLOAT", "INT", "INT",)
-    RETURN_NAMES = ("STEPS", "CFG", "Width", "Height",)
-    FUNCTION = "StepsAndCfgAndWHEx"
-    CATEGORY = cat
-    
-    def StepsAndCfgAndWHEx(self, steps, cfg, width, height):
-        return (steps, cfg, width, height,)
-    
-    
+
