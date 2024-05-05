@@ -60,7 +60,6 @@ class TwoBooleanTrigger:
     bool        - Boolean trigger
     
     Outputs:
-    bool        - Boolean value same as input
     bool_list   - Boolean list for `BooleanListInterpreter`
     '''
     @classmethod
@@ -72,14 +71,14 @@ class TwoBooleanTrigger:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN","BOOLEAN","BOOLEAN_LIST",)
-    RETURN_NAMES = ("bool_1","bool_2","bool_list",)
+    RETURN_TYPES = ("BOOLEAN_LIST",)
+    RETURN_NAMES = ("bool_list",)
     FUNCTION = "TwoBooleanTriggerEx"
     CATEGORY = cat
     
     def TwoBooleanTriggerEx(self, bool_1, bool_2,):
         bool_list = [bool_1, bool_2]
-        return (bool_1, bool_2, bool_list,)
+        return (bool_list,)
     
 class FourBooleanTrigger:
     '''
@@ -98,14 +97,14 @@ class FourBooleanTrigger:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN","BOOLEAN_LIST",)
-    RETURN_NAMES = ("bool_1","bool_2","bool_3","bool_4","bool_list",)
+    RETURN_TYPES = ("BOOLEAN_LIST",)
+    RETURN_NAMES = ("bool_list",)
     FUNCTION = "FourBooleanTriggerEx"
     CATEGORY = cat
     
     def FourBooleanTriggerEx(self, bool_1, bool_2, bool_3, bool_4):
         bool_list = [bool_1, bool_2, bool_3, bool_4]
-        return (bool_1, bool_2, bool_3, bool_4, bool_list,)
+        return (bool_list,)
 
 class SixBooleanTrigger:
     '''

@@ -324,6 +324,16 @@ Example
 #### Boolean
 Few `Boolean` stacks.   
 
+| Inputs | Description |
+| --- | --- |
+| `bool_N` | Triggers. |
+| `bool_list`  | Boolean List from `N Bool` |
+
+| Outputs | Description |
+| --- | --- |
+| `bool_N`  | Bool value. |
+| `bool_list`  | Boolean List to `N Bool from List` |
+
 #### Logic NOT
 Always return `not Boolean`
     
