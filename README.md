@@ -456,11 +456,11 @@ Example
 
 ## Change Logs
 #### 2024.05.05 Ver 0.4.1.0   
-・Add Function Swap
-・Add Even or Odd List
-・Add Bools from List
-・Add Floats from List
-・Func enhancement
+・Add Function Swap   
+・Add Even or Odd List   
+・Add Bools from List   
+・Add Floats from List   
+・Func enhancement   
 
 #### 2024.04.06 Ver 0.4.0.0   
 ・Add Create Nested Rectangle PNG Mask   
