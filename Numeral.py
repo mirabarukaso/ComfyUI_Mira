@@ -51,7 +51,7 @@ class OneFloat:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
             },
         }
                 

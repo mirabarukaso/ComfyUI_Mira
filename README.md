@@ -341,6 +341,28 @@ Check if a `Integer` is odd or even.
 | `Odd` | `True` |
 
 ------
+#### Even or Odd List
+Checks whether each `digit` (decimal) of the input `integer` is odd or even, and returns `true` for even numbers and `false` for odd numbers.    
+The final output is a `Boolean List` which is connected to the `Boolean List Interpreter`.    
+If the input `Number of digits` is less than the `Requirement`, it will go back to the lowest digit to re-recognize and complete the list,    
+and the way the list is completed can be chosen as `as is` or `not`.    
+The output node `String` displays the actual results.   
+
+| Inputs | Description |
+| --- | --- |
+| `integer` | Recommend connect to `Seed Generator` |
+| `quantity` | Length of the `Boolean list`, if `quantity` is greater than `len(str(integer))`, will trigger `filling` for extra bits.|
+| `NOT_filling` | Filling algorithm, `Enable` for switch between `NOT` and `AS IS` in future loop, `Disable` for `AS IS` in every loop. |
+
+| Outputs | Description |
+| --- | --- |
+| `bool_list` | Boolean list |
+| `result` | String result |
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_evenoroddlist.png" width=35% height=35%>   
+
+------
 ### Numeral
 #### Convert Numeral to String
 Convert `Integer` or `Float` to String.   
@@ -397,12 +419,16 @@ Example
 ------
 
 ## Change Logs
+#### 2024.05.05 Ver 0.4.1.0   
+・Add Even or Odd List
+・Func enhancement
+
 #### 2024.04.06 Ver 0.4.0.0   
 ・Add Create Nested Rectangle PNG Mask   
 ・Add Random Nested Layouts   
 ・Add Integer to Float Multiplication   
 ・Bugfix   
-・Func enchantment   
+・Func enhancement   
 
 v0.3.9.0   
 ・Add Create Watermark Removal Mask    

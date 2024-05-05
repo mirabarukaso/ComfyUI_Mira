@@ -3,7 +3,7 @@ from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, SixFloats
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
-from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, LogicNot, EvenOrOdd
+from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8
 def __init__(self):
     pass
     
@@ -20,7 +20,7 @@ NODE_CLASS_MAPPINGS = {
     "TwoFloats"                 : TwoFloats,
     "FourFloats"                : FourFloats,
     "SixFloats"                 : SixFloats,
-    "EightFloats"               : EightFloats,
+    "EightFloats"               : EightFloats,    
     "StepsAndCfg"               : StepsAndCfg,
     "StepsAndCfgAndWH"          : StepsAndCfgAndWH,
         
@@ -46,8 +46,13 @@ NODE_CLASS_MAPPINGS = {
     "TwoBooleanTrigger"         : TwoBooleanTrigger,
     "FourBooleanTrigger"        : FourBooleanTrigger,
     "SixBooleanTrigger"         : SixBooleanTrigger,
+    "EightBooleanTrigger"       : EightBooleanTrigger,
     "LogicNot"                  : LogicNot,
     "EvenOrOdd"                 : EvenOrOdd,
+    "EvenOrOddList"             : EvenOrOddList,
+    "BooleanListInterpreter1"   : BooleanListInterpreter1,
+    "BooleanListInterpreter4"   : BooleanListInterpreter4,
+    "BooleanListInterpreter8"   : BooleanListInterpreter8,
     
     "TextBox"                                   : TextBox,
     "TextWithBooleanSwitchAndCommonTextInput"   : TextWithBooleanSwitchAndCommonTextInput,
@@ -93,8 +98,13 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TwoBooleanTrigger"         : "2 Bool",
     "FourBooleanTrigger"        : "4 Bool",
     "SixBooleanTrigger"         : "6 Bool",
+    "EightBooleanTrigger"       : "8 Bool",
     "LogicNot"                  : "Not",
     "EvenOrOdd"                 : "Even or Odd",
+    "EvenOrOddList"             : "Even or Odd List",
+    "BooleanListInterpreter1"   : "1 Bool from List",
+    "BooleanListInterpreter4"   : "4 Bool from List",
+    "BooleanListInterpreter8"   : "8 Bool from List",
     
     "TextBox"                                   : "Text Box",
     "TextWithBooleanSwitchAndCommonTextInput"   : "Text Switcher",
