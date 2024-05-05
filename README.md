@@ -380,6 +380,16 @@ Convert `Integer` or `Float` to String.
 #### Floats
 And, few `Float` stacks.   
 
+| Inputs | Description |
+| --- | --- |
+| `float_N` | Triggers. |
+| `float_list`  | Float List from `N Float` |
+
+| Outputs | Description |
+| --- | --- |
+| `float_N`  | Float value. |
+| `float_list`  | Float List to `N Float from List` |
+
 ------
 ### Arithmetic (WIP as I need......)
 Addition, Subtraction, Multiplication and Division.   
@@ -431,6 +441,8 @@ Example
 ## Change Logs
 #### 2024.05.05 Ver 0.4.1.0   
 ・Add Even or Odd List
+・Add Bools from List
+・Add Floats from List
 ・Func enhancement
 
 #### 2024.04.06 Ver 0.4.0.0   

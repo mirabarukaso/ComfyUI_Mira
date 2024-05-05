@@ -1,5 +1,5 @@
 from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
-from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, SixFloats, EightFloats, StepsAndCfg, StepsAndCfgAndWH
+from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg, StepsAndCfgAndWH
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
@@ -19,8 +19,10 @@ NODE_CLASS_MAPPINGS = {
     "OneFloat"                  : OneFloat,
     "TwoFloats"                 : TwoFloats,
     "FourFloats"                : FourFloats,
-    "SixFloats"                 : SixFloats,
     "EightFloats"               : EightFloats,    
+    "FloatListInterpreter1"     : FloatListInterpreter1,
+    "FloatListInterpreter4"     : FloatListInterpreter4,
+    "FloatListInterpreter8"     : FloatListInterpreter8,
     "StepsAndCfg"               : StepsAndCfg,
     "StepsAndCfgAndWH"          : StepsAndCfgAndWH,
         
@@ -71,8 +73,10 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "OneFloat"                  : "1 Float",
     "TwoFloats"                 : "2 Floats",
     "FourFloats"                : "4 Floats",
-    "SixFloats"                 : "6 Floats",
     "EightFloats"               : "8 Floats",
+    "FloatListInterpreter1"     : "1 Float from List",
+    "FloatListInterpreter4"     : "4 Floats from List",
+    "FloatListInterpreter8"     : "8 Floats from List",
     "StepsAndCfg"               : "Steps & Cfg",
     "StepsAndCfgAndWH"          : "Steps & Cfg & WH",
     
@@ -95,16 +99,16 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CreateWatermarkRemovalMask": "Create Watermark Removal Mask",
     
     "SingleBooleanTrigger"      : "1 Bool",
-    "TwoBooleanTrigger"         : "2 Bool",
-    "FourBooleanTrigger"        : "4 Bool",
-    "SixBooleanTrigger"         : "6 Bool",
-    "EightBooleanTrigger"       : "8 Bool",
+    "TwoBooleanTrigger"         : "2 Bools",
+    "FourBooleanTrigger"        : "4 Bools",
+    "SixBooleanTrigger"         : "6 Bools",
+    "EightBooleanTrigger"       : "8 Bools",
     "LogicNot"                  : "Not",
     "EvenOrOdd"                 : "Even or Odd",
     "EvenOrOddList"             : "Even or Odd List",
     "BooleanListInterpreter1"   : "1 Bool from List",
-    "BooleanListInterpreter4"   : "4 Bool from List",
-    "BooleanListInterpreter8"   : "8 Bool from List",
+    "BooleanListInterpreter4"   : "4 Bools from List",
+    "BooleanListInterpreter8"   : "8 Bools from List",
     
     "TextBox"                                   : "Text Box",
     "TextWithBooleanSwitchAndCommonTextInput"   : "Text Switcher",

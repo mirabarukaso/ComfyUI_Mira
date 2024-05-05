@@ -1,5 +1,21 @@
 cat = "Mira/Numeral"
 
+def FloatListInterpreter(float_list, Start_At_Index, times = 1):
+    new_list = []
+    index = Start_At_Index
+    list_len = len(float_list)
+    
+    for _ in range(times):
+        if index >= list_len:
+            index = 0
+            
+        new_float = float_list[index]
+        new_list.append(new_float)      
+        index = index + 1
+        
+    return (new_list)              
+
+
 class AlwaysEqualProxy(str):
 #ComfyUI-Logic 
 #refer: https://github.com/theUpsider/ComfyUI-Logic
@@ -71,8 +87,8 @@ class TwoFloats:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
+                "float_1": ("FLOAT", {"default": 1.0, "step": 0.0001}),
+                "float_2": ("FLOAT", {"default": 1.0, "step": 0.0001}),
             },
         }
                 
@@ -99,39 +115,15 @@ class FourFloats:
             },
         }
                 
-    RETURN_TYPES = ("FLOAT","FLOAT","FLOAT","FLOAT",)
-    RETURN_NAMES = ("float_1","float_2","float_3","float_4",)
+    RETURN_TYPES = ("FLOAT_LIST",)
+    RETURN_NAMES = ("float_list",)
     FUNCTION = "FourFloatsEx"
     CATEGORY = cat
     
     def FourFloatsEx(self, float_1, float_2, float_3, float_4):
-        return (float_1, float_2, float_3, float_4, )
+        float_list = [float_1, float_2, float_3, float_4,]
+        return (float_list,)
 
-class SixFloats:
-    '''
-    6 Floats
-    '''
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
-                "float_2": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
-                "float_3": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
-                "float_4": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
-                "float_5": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
-                "float_6": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
-            },
-        }
-                
-    RETURN_TYPES = ("FLOAT","FLOAT","FLOAT","FLOAT","FLOAT","FLOAT",)
-    RETURN_NAMES = ("float_1","float_2","float_3","float_4","float_5","float_6",)
-    FUNCTION = "SixFloatsEx"
-    CATEGORY = cat
-    
-    def SixFloatsEx(self, float_1, float_2, float_3, float_4, float_5, float_6):
-        return (float_1, float_2, float_3, float_4, float_5, float_6,)
-    
 class EightFloats:
     '''
     8 Floats
@@ -151,13 +143,113 @@ class EightFloats:
             },
         }
                 
-    RETURN_TYPES = ("FLOAT","FLOAT","FLOAT","FLOAT","FLOAT","FLOAT","FLOAT","FLOAT",)
-    RETURN_NAMES = ("float_1","float_2","float_3","float_4","float_5","float_6","float_7","float_8",)
-    FUNCTION = "SixFloatsEx"
+    RETURN_TYPES = ("FLOAT_LIST",)
+    RETURN_NAMES = ("float_list",)
+    FUNCTION = "EightFloatsEx"
     CATEGORY = cat
     
-    def SixFloatsEx(self, float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8):
-        return (float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8,)
+    def EightFloatsEx(self, float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8):
+        float_list = [float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8]
+        return (float_list,)
+
+class FloatListInterpreter1:  
+    '''   
+    Decode `Float` value(s) from `Float list`.
+    
+    Inputs:
+    float_list      - Float list
+    Start_At_Index  - If `Start_At_Index` is greater than length of `Float list`, it will restart from `0`
+    
+    Outputs:
+    float(0~N)      - Float list    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "float_list": ("FLOAT_LIST", {
+                    "display": "input", 
+                }),
+                "Start_At_Index": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),                
+            },            
+        }
+        
+    RETURN_TYPES = ("FLOAT", )
+    RETURN_NAMES = ("float", )
+    FUNCTION = "FloatListInterpreter1Ex"
+    CATEGORY = cat
+    
+    def FloatListInterpreter1Ex(self, float_list, Start_At_Index):
+        new_list = FloatListInterpreter(float_list, Start_At_Index)
+            
+        return (new_list[0],)
+class FloatListInterpreter4:  
+    '''   
+    Same as FloatListInterpreter1
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "float_list": ("FLOAT_LIST", {
+                    "display": "input", 
+                }),
+                "Start_At_Index": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),                
+            },            
+        }
+        
+    RETURN_TYPES = ("FLOAT", "FLOAT", "FLOAT", "FLOAT",)
+    RETURN_NAMES = ("float_1", "float_2", "float_3", "float_4", )
+    FUNCTION = "FloatListInterpreter4Ex"
+    CATEGORY = cat
+    
+    def FloatListInterpreter4Ex(self, float_list, Start_At_Index):
+        new_list = FloatListInterpreter(float_list, Start_At_Index, 4)
+            
+        return (new_list[0],new_list[1],new_list[2],new_list[3],)
+    
+class FloatListInterpreter8:  
+    '''   
+    Same as FloatListInterpreter1
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "float_list": ("FLOAT_LIST", {
+                    "display": "input", 
+                }),
+                "Start_At_Index": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),                
+            },            
+        }
+        
+    RETURN_TYPES = ("FLOAT", "FLOAT", "FLOAT", "FLOAT","FLOAT", "FLOAT", "FLOAT", "FLOAT",)
+    RETURN_NAMES = ("float_1", "float_2", "float_3", "float_4", "float_5", "float_6", "float_7", "float_8",)
+    FUNCTION = "FloatListInterpreter8Ex"
+    CATEGORY = cat
+    
+    def FloatListInterpreter8Ex(self, float_list, Start_At_Index):
+        new_list = FloatListInterpreter(float_list, Start_At_Index, 8)
+            
+        return (new_list[0],new_list[1],new_list[2],new_list[3],new_list[4],new_list[5],new_list[6],new_list[7],)
     
 class StepsAndCfg:
     '''
