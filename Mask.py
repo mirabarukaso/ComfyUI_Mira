@@ -1,3 +1,4 @@
+import math
 from PIL import Image
 import random
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageSequence
@@ -586,7 +587,7 @@ class PngColorMasksToString:
     
     def ColorMasksToStringEx(self, PngColorMasks, Index):        
         if len(PngColorMasks) <= Index:
-            print('Mira: ERROR Index is greater than Mask count! Will use 0')
+            #print('Mira: ERROR Index is greater than Mask count! Will use 0')
             Index = 0
         
         ret = ('#{:02X}{:02X}{:02X}'.format(PngColorMasks[Index][0], PngColorMasks[Index][1], PngColorMasks[Index][2]))
@@ -628,7 +629,7 @@ class PngColorMasksToRGB:
     
     def ColorMasksToRGBEx(self, PngColorMasks, Index):        
         if len(PngColorMasks) <= Index:
-            print('Mira: ERROR Index is greater than Mask count! Will use 0')
+            #print('Mira: ERROR Index is greater than Mask count! Will use 0')
             Index = 0
             
         R = PngColorMasks[Index][0]                             
@@ -824,7 +825,7 @@ def CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index,
     Width = PngRectangles[sizePngRectangles][2]
     Height = PngRectangles[sizePngRectangles][3]    
     
-    print("sizePngRectangles = " + str(sizePngRectangles))
+    #print("sizePngRectangles = " + str(sizePngRectangles))
     destinationMask = torch.full((1,Height, Width), 0, dtype=torch.float32, device="cpu")       
     
     # Check Tilling or Nested
@@ -1126,5 +1127,100 @@ class CreateWatermarkRemovalMask:
             final_mask = create_mask_with_canvas(C_Width, C_Height, 0, 0, C_Width, C_Height, Intenisity, Blur)
                                                        
         return (final_mask,)
+
+class CreateCircleMask:
+    '''
+    ***Used to thought that would be fun, but it doesn't works well, let me know if you create something fun with it***
+    
+    Create Circle Mask   
+    `Intenisity` and `Blur` are not working properly....
+        
+    Inputs:
+    Width, Height       - Canvas size.
+            
+    Optional Input:
+    ***You need connect at least ONE of them***
+    opt_circle          - A custom circle information to overrive current settings.            
+    circles_provider    - Connect from `Circles Random Generator`
+    
+    Outputs:
+    PngImage            - Preview Image
+    Mask                - The Mask
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "optional": {
+                "opt_circle": ("CIRCLE_LIST", {
+                    "display": "input" 
+                }),      
+                "circles_provider": ("CIRCLES_LIST", {
+                    "display": "input" 
+                }),                             
+            },
+            "required": {
+                "Width": ("INT", {
+                    "default": 576,
+                    "min": 16,
+                    "step": 8,
+                    "display": "number" 
+                }),
+                "Height": ("INT", {
+                    "default": 1024,
+                    "min": 16,
+                    "step": 8,
+                    "display": "number" 
+                }),              
+            },
+        }
+        
+    RETURN_TYPES = ('IMAGE', 'MASK', 'STRING',)
+    RETURN_NAMES = ('PngImage', 'Mask','Debug',)
+    FUNCTION = "CreateCircleMaskEx"
+    CATEGORY = cat
+    
+    def CreateCircleMaskEx(self, Width, Height, circles_provider = None, opt_circle = None):
+        if None is not opt_circle:
+            circles_provider = opt_circle
+        
+        if None is circles_provider and None is opt_circle:
+            print('***Mira: [Create Circle Mask] -> Connect at least ONE opt node.')
+            return (None, None, "Mira:Connect at least ONE opt node")
+            
+        RGB = (255,0,255)
+        PngImage = Image.new("RGBA", [Width, Height])
+        PngDraw = ImageDraw.Draw(PngImage)
+        PngDraw.rectangle([0, 0, Width, Height], fill=(0, 0, 0))
+        DebugMessage = 'Mira:\n'
+            
+        circle_count = len(circles_provider)
+        DebugMessage += 'circle_count = ' + str(circle_count) + '\n'
+
+        for circle in circles_provider:
+            X = circle[0]
+            Y = circle[1]
+            diameter = circle[2]
+            dount = circle[3]
+            dount_size = circle[4]
+            
+            DebugMessage += 'Draw [' + str(X) + ',' +  str(Y) + ',' +  str(diameter) + ',' + str(dount) + ',' + str(dount_size) + ']\n'
+            PngDraw.ellipse((X, Y, X + diameter, Y + diameter), fill=(RGB))
+            if True is dount:
+                dount_diameter = math.floor(diameter * dount_size)
+                half_dount_diameter = math.floor(dount_diameter / 2)
+                half_diameter = math.floor(diameter / 2)
+                
+                DebugMessage += 'Draw dount [' + str(X + half_diameter - half_dount_diameter) + ',' +  str(Y + half_diameter - half_dount_diameter) + ',' +  str(dount_diameter) + ']\n'
+                PngDraw.ellipse((X + half_diameter - half_dount_diameter, Y + half_diameter - half_dount_diameter, X + half_diameter + half_dount_diameter, Y + half_diameter + half_dount_diameter), fill=(0, 0, 0))
+                                
+        output_image = LoadImagePNG(PngImage)   
+
+        # ComfyUI ImageColorToMask
+        temp = (torch.clamp(output_image, 0, 1.0) * 255.0).round().to(torch.int)
+        temp = torch.bitwise_left_shift(temp[:,:,:,0], 16) + torch.bitwise_left_shift(temp[:,:,:,1], 8) + temp[:,:,:,2]
+        final_mask = torch.where(temp == (255<<16|0<<8|255), 255, 0).float()    
+                        
+        return (output_image, final_mask, DebugMessage,)
     
     

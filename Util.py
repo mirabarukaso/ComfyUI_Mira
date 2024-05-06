@@ -349,6 +349,7 @@ class RandomTillingLayouts:
         colums = random.randrange(min_colums, max_colums + 1)        
         #print("Mira: colums: " + str(colums))
     
+        random.seed(rnd_seed)
         row_and_colum_info = '[' + str(rnd_seed) + '][' + str(colums) + ","
         layouts = ""    
         if 0 == colums:
@@ -461,6 +462,7 @@ class RandomNestedLayouts:
         bool3 = bool(random.getrandbits(1))
         bool4 = bool(random.getrandbits(1))
     
+        random.seed(rnd_seed)
         generator_info = '[' + str(rnd_seed) + '][' + str(nested) + '][' + str(bool1) + ',' + str(bool2) + ',' + str(bool3) + ',' + str(bool4) + ']@'
         layouts = ""  
         
@@ -495,5 +497,229 @@ class SeedGenerator:
     
     def SeedGeneratorEx(self, seed):
         return(seed,)
+    
+class CirclesGenerator:
+    '''
+    ***Used to thought that would be fun, but it doesn't works well, let me know if you create something fun with it***
+    
+    `Circles Generator` connect to `Create Circle Mask`
+    Generate a circle with random position, if you need to generate it at the specified position, please connect the `optional Circle Creator`, after connecting it will bypass the setting information within this node.
+    
+    Inputs:
+    X, Y, Width, Height         - Zone where you want create circles, set to `0, 0, C_W, C_H` for whole canvas
+    counts                      - How many circles?
+    diameter_min, diameter_max  - The `min` and `max` diameter size.
+    dount, dount_size           - Enable to create `dount circle`, `dount_size` controls the precent of inner circle diameter.
+    overlap                     - When `Disable`, node will check each circle carefuly to ensure there's no `overlap` on each other.   
+                                  ***Warning: If you put too much circle on a small zone and `Disable` overlap, it may take a few minutes (depends on retire times) and still has overlap circles.***
+    overlap_retry               - Define how may retry times when overlaped. 
+    
+    rnd_seed                    - Connect to the `Seed Generator` node, then use `Global Seed (Inspire)` node to control it properly.
+                
+    Outputs:
+    circle_list                 - A list of all randomized circles information, connect it to `Create Circle Mask -> circle_provider`
+    Width, Height               - AS IS, may need for `Create Circle Mask` 
+    '''        
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "X": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "Y": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),                  
+                "Width": ("INT", {
+                    "default": 576,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "Height": ("INT", {
+                    "default": 1024,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),    
+                
+                "counts": ("INT", {
+                    "default": 1, 
+                    "min": 1, 
+                    "max": 256,
+                }),                
+                "diameter_min": ("INT", {
+                    "default": 32, 
+                    "min": 1, 
+                    "max": 512,
+                }), 
+                "diameter_max": ("INT", {
+                    "default": 32, 
+                    "min": 1, 
+                    "max": 512,
+                }),                        
+                "dount": ("BOOLEAN", {"default": False}),
+                "dount_size": ("FLOAT", {
+                    "default": 0.5, 
+                    "min": 0.1, 
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                
+                "overlap": ("BOOLEAN", {"default": True}),
+                "overlap_retry": ("INT", {
+                    "default": 128,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 32,
+                    "display": "number" 
+                }),
+                
+                "rnd_seed": (AlwaysEqualProxy('*'), {
+                    "default": 0, 
+                    "min": 0, 
+                    "max": 0xffffffffffffffff,
+                    "display": "input" 
+                }),
+            },            
+        }
+        
+    RETURN_TYPES = ("CIRCLES_LIST", "INT", "INT",)
+    RETURN_NAMES = ("circles_provider", "Width", "Height", )
+    FUNCTION = "CirclesRandomGeneratorEx"
+    CATEGORY = cat
+        
+    def CirclesRandomGeneratorEx(self, X, Y, Width, Height, counts, diameter_min, diameter_max, dount, dount_size, overlap, overlap_retry, rnd_seed):
+        def CheckOverlap(circle_list, overlap, overlap_retry, X, Y, Width, Height):
+            retry = not overlap
+            r_times = 0
+            
+            c_X = random.randrange(X, Width)
+            c_Y = random.randrange(Y, Height)
+                    
+            while True is retry:
+                retry = False
+                r_times += 1
+                if r_times == overlap_retry:
+                    #print('Mira: retry failed')
+                    break
+                
+                for circle in circle_list:
+                    e_X = circle[0]
+                    e_Y = circle[1]
+                    dim = circle[2]
+                    
+                    if e_X <= c_X <= (e_X + dim):
+                        retry = True
+                        if e_X + dim >= Width:
+                            c_X = random.randrange(X, e_X + dim)
+                            c_Y = random.randrange(Y, Height)
+                        else:
+                            c_X = random.randrange(e_X + dim, Width)
+                            c_Y = random.randrange(Y, Height)
+                        break
+                    
+                    if e_Y <= c_Y <= (e_Y + dim):
+                        retry = True
+                        if e_Y + dim >= Height:
+                            c_Y = random.randrange(Y, e_Y + dim)
+                            c_X = random.randrange(X, Width)
+                        else:
+                            c_Y = random.randrange(e_Y + dim, Height)
+                            c_X = random.randrange(X, Width)
+                        break
+                    
+            return c_X, c_Y
+    
+        circle_list = []               
+        if diameter_min > diameter_max:
+            diameter_min = diameter_max
+            
+        if X >= Width:
+            X = 0
+        
+        if Y >= Height:
+            Y = 0
+            
+        random.seed(rnd_seed)
+        for _ in range(counts):                                
+            if diameter_min == diameter_max:
+                diameter = diameter_min
+            else:
+                diameter = random.randrange(diameter_min, diameter_max)
+                
+            c_X, c_Y = CheckOverlap(circle_list, overlap, overlap_retry, X, Y, Width - diameter, Height - diameter)
+                
+            is_dount = dount
+            is_dount_size = dount_size
+            
+            circle = (c_X, c_Y, diameter, is_dount, is_dount_size)
+            #print('Draw ' + str(circle) + ' len = ' + str(len(circle)) + '\n')
+            circle_list.append(circle)
+            
+        return(circle_list, Width, Height,)
+
+class CircleCreator:
+    '''
+    ***Used to thought that would be fun, but it doesn't works well, let me know if you create something fun with it***
+    
+    `Circle Creator` connect to `Create Circle Mask`    
+    Create a custom circle.
+    
+    Inputs:
+    c_X, c_Y                - ***NOTE:*** This is the `Top Left` position of your circle, not the center.
+    diameter            - Diameter of the circle.
+    dount, dount_size   - Enable to create `dount circle`, `dount_size` controls the precent of inner circle diameter.
+            
+    Outputs:
+    opt_circle          - An override node, connect to `Create Circle Mask->opt_circle`
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "c_X": ("INT", {
+                    "default": 256,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),
+                "c_Y": ("INT", {
+                    "default": 256,
+                    "min": 0,
+                    "step": 1,
+                    "display": "number" 
+                }),                                                  
+                "diameter": ("INT", {
+                    "default": 128, 
+                    "min": 1, 
+                    "max": 4096,
+                }),                       
+                "dount": ("BOOLEAN", {"default": False}),                
+                "dount_size": ("FLOAT", {
+                    "default": 0.5, 
+                    "min": 0.1, 
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+            },            
+        }
+        
+    RETURN_TYPES = ("CIRCLE_LIST", )
+    RETURN_NAMES = ("opt_circle", )
+    FUNCTION = "CircleCreatorEx"
+    CATEGORY = cat
+    
+    def CircleCreatorEx(self, c_X, c_Y, diameter, dount, dount_size):        
+        circle_list = []
+        circle = (c_X, c_Y, diameter, dount, dount_size)
+        circle_list.append(circle)        
+        return (circle_list, )
     
     

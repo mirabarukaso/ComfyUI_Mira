@@ -1,7 +1,7 @@
 from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
 from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg
-from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
-from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask
+from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator, CirclesGenerator, CircleCreator
+from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateCircleMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap
 def __init__(self):
@@ -31,6 +31,8 @@ NODE_CLASS_MAPPINGS = {
     "RandomTillingLayouts"      : RandomTillingLayouts,
     "RandomNestedLayouts"       : RandomNestedLayouts,
     "SeedGenerator"             : SeedGenerator,
+    "CirclesGenerator"          : CirclesGenerator,
+    "CircleCreator"             : CircleCreator,
     
     "CreateTillingPNGMask"      : CreateTillingPNGMask,
     "CreateNestedPNGMask"       : CreateNestedPNGMask,
@@ -42,6 +44,7 @@ NODE_CLASS_MAPPINGS = {
     "PngRectanglesToMaskList"   : PngRectanglesToMaskList,
     "CreateMaskWithCanvas"      : CreateMaskWithCanvas,
     "CreateWatermarkRemovalMask": CreateWatermarkRemovalMask,
+    "CreateCircleMask"          : CreateCircleMask,
     
     "SingleBooleanTrigger"      : SingleBooleanTrigger,
     "TwoBooleanTrigger"         : TwoBooleanTrigger,
@@ -85,6 +88,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "RandomTillingLayouts"      : "Random Tilling Layouts",
     "RandomNestedLayouts"       : "Random Nested Layouts",
     "SeedGenerator"             : "Seed Generator",
+    "CirclesGenerator"          : "Circles Generator",
+    "CircleCreator"             : "Circle Creator",
     
     "CreateTillingPNGMask"      : "Create Tilling PNG Mask",
     "CreateNestedPNGMask"       : "Create Nested PNG Mask",
@@ -96,6 +101,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PngRectanglesToMaskList"   : "PngRectangles to Masks",
     "CreateMaskWithCanvas"      : "Create Mask With Canvas",
     "CreateWatermarkRemovalMask": "Create Watermark Removal Mask",
+    "CreateCircleMask"          : "Create Circle Mask",
     
     "SingleBooleanTrigger"      : "1 Bool",
     "TwoBooleanTrigger"         : "2 Bools",
