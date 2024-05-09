@@ -1,14 +1,20 @@
+from PIL import Image
 import math
+from .Mask import LoadImagePNG
+from .Util import AlwaysEqualProxy
+
 cat = "Mira/Logic"
+cat74 = "Mira/Logic/74"
 
-class AlwaysEqualProxy(str):
-#ComfyUI-Logic 
-#refer: https://github.com/theUpsider/ComfyUI-Logic
-    def __eq__(self, _):
-        return True
-
-    def __ne__(self, _):
-        return False
+def CheckXOR(A = None, B = None):
+    if None is A and None is B:
+        return None            
+    elif None is not A and None is B:
+        return A            
+    elif None is A and None is not B:
+        return B           
+    #elif None is not A and None is not B:
+    return None
 
 def CheckEvenOrOdd(num):       
     if num & 1:
@@ -433,3 +439,137 @@ class FunctionSwap:
         else:
             return (func1, func2,)    
     
+class SN74LVC1G125:
+    '''
+    Single Bus Buffer Gate With Enable
+    
+    |  OE   |  A   |
+    | True  |  Y   |
+    | False | None |
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "OE": ("BOOLEAN", {"default": True, "display":"input",}),
+                "A": (AlwaysEqualProxy("*"),),
+            },
+        }
+        
+    RETURN_TYPES = (AlwaysEqualProxy("*"), )
+    RETURN_NAMES = ("Y",)
+    FUNCTION = "SN74LVC1G125Ex"
+    CATEGORY = cat74
+
+    def SN74LVC1G125Ex(self, OE, A):
+        if True is OE:
+            return (A,)
+        else:
+            return (None,)    
+        
+class NoneToZero:
+    '''   
+    Check if the `check_none` is None, then set return value to `0`.
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "check_none": (AlwaysEqualProxy("*"),),
+                "ret_img": ("IMAGE", {"display":"input"}),
+                "ret_float": ("FLOAT", {"default": 1.0, "step": 0.0001}),
+                "ret_int": ("INT", {"default": 1, "step": 1}),
+            },
+        }
+        
+    RETURN_TYPES = ("FLOAT", "INT", "IMAGE", AlwaysEqualProxy("*"),)
+    RETURN_NAMES = ("ret_float", "ret_int", "ret_img", "none_image",)
+    FUNCTION = "NoneToZeroEx"
+    CATEGORY = cat
+
+    def NoneToZeroEx(self, check_none, ret_float, ret_int, ret_img):
+        if None is check_none:
+            PngImage = Image.new("RGB", [2, 2])
+            output_image = LoadImagePNG(PngImage)   
+            return (0.0, 0, output_image, None, )
+        else:
+            return (ret_float, ret_int, ret_img, ret_img, )
+
+# 74 Family               
+class SN74HC1G86:
+    '''
+    Single 2-Input Exclusive-OR Gate
+    
+    |   A   |   B   |   Y  |
+    | True  | True  | None |
+    | False | False | None |
+    | True  | False |  A   |
+    | False | True  |  B   |
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "optional": {
+                "A": (AlwaysEqualProxy("*"),),
+                "B": (AlwaysEqualProxy("*"),),
+            },
+            "required": {
+            },
+        }
+        
+    RETURN_TYPES = (AlwaysEqualProxy("*"), )
+    RETURN_NAMES = ("Y",)
+    FUNCTION = "SN74HC86Ex"
+    CATEGORY = cat74
+    
+    def SN74HC86Ex(self, A = None, B = None):
+                
+        Y = CheckXOR(A, B)
+        return (Y,)
+        
+        
+class SN74HC86:
+    '''
+    Quadruple 2-Input Exclusive-OR Gates
+    
+    |   A   |   B   |   Y  |
+    | True  | True  | None |
+    | False | False | None |
+    | True  | False |  A   |
+    | False | True  |  B   |
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "optional": {
+                "A1": (AlwaysEqualProxy("*"),),
+                "B1": (AlwaysEqualProxy("*"),),
+                "A2": (AlwaysEqualProxy("*"),),
+                "B2": (AlwaysEqualProxy("*"),),
+                "A3": (AlwaysEqualProxy("*"),),
+                "B3": (AlwaysEqualProxy("*"),),
+                "A4": (AlwaysEqualProxy("*"),),
+                "B4": (AlwaysEqualProxy("*"),),
+            },
+            "required": {
+            },
+        }
+        
+    RETURN_TYPES = (AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), )
+    RETURN_NAMES = ("1Y", "2Y", "3Y", "4Y",)
+    FUNCTION = "SN74HC86Ex"
+    CATEGORY = cat74
+    
+    def SN74HC86Ex(self, A1 = None, B1 = None, A2 = None, B2 = None, A3 = None, B3 = None, A4 = None, B4 = None):
+                
+        Y1 = CheckXOR(A1, B1)
+        Y2 = CheckXOR(A2, B2)
+        Y3 = CheckXOR(A3, B3)
+        Y4 = CheckXOR(A4, B4)
+        
+        return (Y1, Y2, Y3, Y4,)
+        
+        

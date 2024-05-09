@@ -1,5 +1,4 @@
 import math
-from PIL import Image
 import random
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageSequence
 from PIL.PngImagePlugin import PngInfo

@@ -350,6 +350,25 @@ Check if a `Integer` is odd or even.
 | `Even` | `False` |
 | `Odd` | `True` |
 
+#### None To Zero
+Check if the `check_none` is None, then set return value to `0`.   
+
+This is a `spoofing Node` to `mess up` with `other Nodes`. Imaging everyothers could follow this rule to create their `Custom Node`, the `ComfyUI` could be more `Logic`.   
+***The extra logic calls do add a bit of system overhead, but it's Python, so who cares?***   
+
+| Inputs | Description |
+| --- | --- |
+| `check_none` | `None` or `NOT None` from `74 family` |
+| `ret_float` | The `float` result when `NOT None`  |
+| `ret_int` | The `intenger` result when `NOT None` |
+
+| Outputs | Description |
+| --- | --- |
+| `ret_float` | `AS IS` when `NOT None`, and `0` when `None`  |
+| `ret_int` | `AS IS` when `NOT None`, and `0` when `None`  |
+| `ret_image` | `AS IS` when `NOT None`, and `2x2 img` when `None`  |
+| `none_image` | `AS IS` when `NOT None`, and `None` when `None`  |
+
 ------
 #### Even or Odd List
 Checks whether each `digit` (decimal) of the input `integer` is odd or even, and returns `true` for even numbers and `false` for odd numbers.    
@@ -387,6 +406,35 @@ Swap `func1` and `func2` outputs depends on `trigger`.
 | swap  |   A   |   B   |
 | `True`  | func2 | func1 |
 | `False` | func1 | func2 |
+
+------
+### Logic-74
+In case you didn't know about `74 family`, refer to [List of 7400-series integrated circuits](https://en.wikipedia.org/wiki/List_of_7400-series_integrated_circuits)   
+
+#### SN74LVC1G125
+Single Bus Buffer Gate With Enable   
+    
+|  OE   |  A   |
+| --- | --- |
+| True  |  Y   |
+| False | None |
+
+------
+#### SN74HC1G86
+Single 2-Input Exclusive-OR(XOR) Gate    
+
+#### SN74HC86
+Quadruple 2-Input Exclusive-OR(XOR) Gates   
+    
+|   A   |   B   |   Y  |
+| --- | --- | --- |
+| True  | True  | None |
+| False | False | None |
+| True  | False |  A   |
+| False | True  |  B   |
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_SN74HC86.png" width=35% height=35%>   
 
 ------
 ### Numeral
@@ -455,8 +503,14 @@ Example
 ------
 
 ## Change Logs
+#### 2024.05.09 Ver 0.4.2.0   
+・Add SN74LVC1G125   
+・Add SN74HC1G86, SN74HC86   
+・Add NoneToZero
+・Add Create Circle Mask (Test)   
+
 #### 2024.05.05 Ver 0.4.1.0   
-・Add Function Swap   
+・Add Function Swap    
 ・Add Even or Odd List   
 ・Add Bools from List   
 ・Add Floats from List   

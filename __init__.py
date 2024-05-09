@@ -3,7 +3,8 @@ from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloa
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator, CirclesGenerator, CircleCreator
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateCircleMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
-from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap
+from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, NoneToZero
+from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
 def __init__(self):
     pass
     
@@ -58,6 +59,11 @@ NODE_CLASS_MAPPINGS = {
     "BooleanListInterpreter4"   : BooleanListInterpreter4,
     "BooleanListInterpreter8"   : BooleanListInterpreter8,
     "FunctionSwap"              : FunctionSwap,
+    "NoneToZero"                : NoneToZero,
+    
+    "SN74LVC1G125"              : SN74LVC1G125,
+    "SN74HC1G86"                : SN74HC1G86,
+    "SN74HC86"                  : SN74HC86,
     
     "TextBox"                                   : TextBox,
     "TextWithBooleanSwitchAndCommonTextInput"   : TextWithBooleanSwitchAndCommonTextInput,
@@ -115,6 +121,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BooleanListInterpreter4"   : "4 Bools from List",
     "BooleanListInterpreter8"   : "8 Bools from List",
     "FunctionSwap"              : "Function Swap",
+    "NoneToZero"                : "None To 0",
+    
+    "SN74LVC1G125"              : "SN74LVC1G125",
+    "SN74HC1G86"                : "SN74HC1G86",
+    "SN74HC86"                  : "SN74HC86",
     
     "TextBox"                                   : "Text Box",
     "TextWithBooleanSwitchAndCommonTextInput"   : "Text Switcher",
