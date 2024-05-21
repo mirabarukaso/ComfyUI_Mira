@@ -1222,4 +1222,44 @@ class CreateCircleMask:
                         
         return (output_image, final_mask, DebugMessage,)
     
+class CreateSimpleMask:
+    '''
+    Create Simple Mask
+    
+    Inputs:
+    Width           - Mask width
+    Height          - Mask height
+    Intenisity      - The intenisity of Mask, 1 for Soild.
+        
+    Outputs:
+    mask            - New mask with defined cavans    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "Width": ("INT", {
+                    "default": 576,
+                    "min": 16,
+                    "step": 8,
+                    "display": "number" 
+                }),
+                "Height": ("INT", {
+                    "default": 1024,
+                    "min": 16,
+                    "step": 8,
+                    "display": "number" 
+                }),
+                "Intenisity": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 1.0, "step": 0.1, "display": "number" }),
+            },            
+        }
+                
+    RETURN_TYPES = ("MASK",)
+    RETURN_NAMES = ("mask",)
+    FUNCTION = "CreateSimpleMaskEx"
+    CATEGORY = cat
+    
+    def CreateSimpleMaskEx(self, Width, Height, Intenisity):
+        return create_mask_with_canvas(Width, Height, 0, 0, Width, Height, Intenisity, 0)
     

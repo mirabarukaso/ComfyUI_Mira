@@ -506,7 +506,7 @@ Example
 #### 2024.05.09 Ver 0.4.2.0   
 ・Add SN74LVC1G125   
 ・Add SN74HC1G86, SN74HC86   
-・Add NoneToZero
+・Add NoneToZero   
 ・Add Create Circle Mask (Test)   
 
 #### 2024.05.05 Ver 0.4.1.0   
