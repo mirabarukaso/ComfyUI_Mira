@@ -502,7 +502,7 @@ Example
 SDXL without `74 triggers` and `(customized) Ultimate SD Upscale`   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/overview02.png" width=50% height=50%>
    
-SDXL
+SDXL    
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/overview01.png" width=50% height=50%>
 
 ------
