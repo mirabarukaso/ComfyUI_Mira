@@ -34,7 +34,8 @@ class TextWithBooleanSwitchAndCommonTextInput:
     common_text             - Common text input for quality tags and etc, leave it blank if you don't need it.
         
     Outputs:
-    text        - A combined text output    
+    text                    - Combined text output   
+    text_alt                - Alternative combined text output    
     '''
     @classmethod
     def INPUT_TYPES(s):
@@ -61,22 +62,22 @@ class TextWithBooleanSwitchAndCommonTextInput:
             },
         }
                 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text",)
+    RETURN_TYPES = ("STRING", "STRING",)
+    RETURN_NAMES = ("text","alt_text",)
     FUNCTION = "TextWithBooleanSwitchAndCommonTextInputEx"
     CATEGORY = cat
     
     def TextWithBooleanSwitchAndCommonTextInputEx(self, use_text2, common_text_at_front, text1, text2, common_text):
         if True == common_text_at_front:
             if True == use_text2:
-                return (common_text + text2,)
+                return (common_text + text2, common_text + text1,)
             else:
-                return (common_text + text1,)
+                return (common_text + text1, common_text + text2,)
         else:
             if True == use_text2:
-                return (text2 + common_text,)
+                return (text2 + common_text, text1 + common_text,)
             else:
-                return (text1 + common_text,)
+                return (text1 + common_text, text2 + common_text,)
 
 class TextCombinerSix:
     '''
