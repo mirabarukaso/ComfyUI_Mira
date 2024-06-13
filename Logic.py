@@ -227,7 +227,7 @@ class EvenOrOdd:
     CATEGORY = cat
     
     def EvenOrOddEx(self, num,):       
-        return (CheckEvenOrOdd(num),)
+        return CheckEvenOrOdd(num)
     
 class EvenOrOddList:
     '''   
