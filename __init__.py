@@ -1,7 +1,7 @@
 from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
 from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator, CirclesGenerator, CircleCreator
-from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateCircleMask, CreateSimpleMask
+from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, CreatePolygonPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateCircleMask, CreateSimpleMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, NoneToZero
 from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
@@ -37,6 +37,7 @@ NODE_CLASS_MAPPINGS = {
     
     "CreateTillingPNGMask"      : CreateTillingPNGMask,
     "CreateNestedPNGMask"       : CreateNestedPNGMask,
+    "CreatePolygonPNGMask"      : CreatePolygonPNGMask,
     "CreateSimpleMask"          : CreateSimpleMask,
     "PngColorMasksToString"     : PngColorMasksToString,
     "PngColorMasksToRGB"        : PngColorMasksToRGB,
@@ -100,6 +101,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     
     "CreateTillingPNGMask"      : "Create Tilling PNG Mask",
     "CreateNestedPNGMask"       : "Create Nested PNG Mask",
+    "CreatePolygonPNGMask"      : "Create Polygon PNG Mask",
     "CreateSimpleMask"          : "Create Simple Mask",
     "PngColorMasksToString"     : "PngColor Mask to HEX String",
     "PngColorMasksToRGB"        : "PngColor Mask to INT RGB",
