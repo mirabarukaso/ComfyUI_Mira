@@ -2,7 +2,7 @@ from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultip
 from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator, CirclesGenerator, CircleCreator
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, CreatePolygonPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateCircleMask, CreateSimpleMask
-from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo
+from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo, TextSwitcherTwoWays, TextSwitcherThreeWays
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, NoneToZero
 from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
 def __init__(self):
@@ -71,6 +71,8 @@ NODE_CLASS_MAPPINGS = {
     "TextWithBooleanSwitchAndCommonTextInput"   : TextWithBooleanSwitchAndCommonTextInput,
     "TextCombinerSix"                           : TextCombinerSix,
     "TextCombinerTwo"                           : TextCombinerTwo,
+    "TextSwitcherTwoWays"                       : TextSwitcherTwoWays,
+    "TextSwitcherThreeWays"                     : TextSwitcherThreeWays,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -135,6 +137,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TextWithBooleanSwitchAndCommonTextInput"   : "Text Switcher",
     "TextCombinerSix"                           : "Text Combiner 6",
     "TextCombinerTwo"                           : "Text Combiner 2",
+    "TextSwitcherTwoWays"                       : "Text Switcher Two Ways",
+    "TextSwitcherThreeWays"                     : "Text Switcher Three Ways",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]

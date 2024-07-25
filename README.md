@@ -321,6 +321,59 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_text_switcher.png" width=35% height=35%>   
 
 ------
+#### Text Combiner 
+Simply combine text inputs together, switch them to `input node` as you wish, then connect to `Text Switcher` or `Simple Text Box`   
+
+| Inputs | Description |
+| --- | --- |
+| `text1-6` | Default output text. |
+
+| Outputs | Description |
+| --- | --- |
+| `text`  | A combined text output. |
+
+For `Text Combiner Six`, you can use my naming logic to make the whole workflow easier to understand.   
+
+| Inputs | Description |
+| --- | --- |
+| `text1` | All common `prompts` for model required. e.g. `score_9, score_8_up, score_7_up, score_6_up, score_5_up, best quality, masterpiece,`|
+| `text2`| Base information for what you want. e.g. camera `front view, low angle view,`, style `cyberpunk, reflection,`, location `street, outdoors,`, characters (number) `1anthro` |
+| `text3` | The Charater's pose information. e.g. `smile, standing, open mouth, looking at viewer,`|
+| `text4` | The Charater's race and outlook information. e.g. `anthro dragon, no pupils, cowboy shot, (4 fingers:1.2), claws, (hair slicked back:1.1),` and ` (two-tone scales, (blue scales:1.2), grey stomach scales, cyan striped, cyan hair, black sclera, gold eyes:1.1), (wet, shark dragon, shark tail, (skin-covered dragon horn:1.3), arm fins, ear fins, gills, (mohawk:0.9), sidelocks:1.1), `|
+| `text5` | LoRA trigger words. |
+| `text6` | Any addional informaion you want. e.g. `glowing eyes, ` |
+
+------
+#### Text Switcher Two/Three Ways
+Found a satisfied random number and didn't want to mess up your regional nodes too much?   
+***Reminder: In case you are not use a symmetrical(`1:1:1`) Mask, do not forget your `Mask Layout`***
+
+| Inputs | Description |
+| --- | --- |
+| `text1-3` | Full combined text before Regional confiton |
+| `switch` | Boolean/List for how to switch outputs |
+        
+| Outputs | Description |
+| --- | --- |
+| `text1-3` | As is, but switched order |
+
+Three ways      
+| Switch | Output |
+| --- | --- |
+| `False` | `text1` `text2` |
+| `True` |  `text2` `text1` |
+
+Three ways      
+| Switch | Output |
+| --- | --- |
+| 1 | 123 |
+| 2 | 132 |
+| 3 | 213 |
+| 4 | 231 |
+| 5 | 312 |
+| 6 | 321 |
+
+------
 ### Logic
 #### Boolean
 Few `Boolean` stacks.   
@@ -508,6 +561,9 @@ SDXL
 ------
 
 ## Latest Change Log
+#### 2024.07.25 Ver 0.4.3.0
+・Add Text Switcher Two/Three Ways
+
 #### 2024.06.07 Ver 0.4.2.1   
 ・Modify Text Switcher now support `alternative text output` for `regional condition 2 charaters`   
 ・Move old logs to `CHANGELOGS.md`   

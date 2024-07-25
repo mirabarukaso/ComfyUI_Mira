@@ -136,3 +136,105 @@ class TextCombinerTwo:
     
     def TextCombinerTwoEx(self, text1, text2):
         return (text1 + text2,)
+
+class TextSwitcherTwoWays:
+    '''
+    Text Switcher Two Ways
+    In face that's for my Mask Layouts
+    
+    Inputs:
+    text1        - Input text1
+    text2        - Input text2    
+    switch       - When ENABLED, will switch output as `text2` and `text1`
+        
+    Outputs:
+    text         - As is text1 or text 2
+    textA        - As is text1 or text 2    
+      
+    | Switch | Output      |
+    | False  | text1 text2 |
+    | True   | text2 text1 |
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text1": ("STRING", {"display": "input"}),
+                "text2": ("STRING", {"display": "input"}),
+                "switch": ("BOOLEAN", {"default": False,}),      
+            },
+        }
+                
+    RETURN_TYPES = ("STRING","STRING",)
+    RETURN_NAMES = ("text1","text2",)
+    FUNCTION = "TextSwitcherTwoWaysEx"
+    CATEGORY = cat
+    
+    def TextSwitcherTwoWaysEx(self, text1, text2, switch):
+        if True is switch:
+            return (text2, text1,)
+    
+        return (text1, text2,)
+        
+class TextSwitcherThreeWays:
+    '''
+    Text Switcher Three Ways
+    Found a satisfied random number and didn't want to mess up your regional nodes too much?
+    
+    Inputs:
+    text1        - Input text1
+    text2        - Input text2    
+    text3        - Input text3
+    switch       - List for how to switch 123
+        
+    Outputs:
+    text1        - text1
+    text2        - text2    
+    text3        - text3
+      
+    | S | Out |
+    | 1 | 123 |
+    | 2 | 132 |
+    | 3 | 213 |
+    | 4 | 231 |
+    | 5 | 312 |
+    | 6 | 321 |
+    '''
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text1": ("STRING", {"display": "input"}),
+                "text2": ("STRING", {"display": "input"}),
+                "text3": ("STRING", {"display": "input"}),           
+                "switch": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 6,
+                    "step": 1,
+                    "display": "slider" 
+                }),        
+            },
+        }
+                
+    RETURN_TYPES = ("STRING","STRING","STRING",)
+    RETURN_NAMES = ("text1","text2","text3",)
+    FUNCTION = "TextSwitcherThreeWaysEx"
+    CATEGORY = cat
+    
+    def TextSwitcherThreeWaysEx(self, text1, text2, text3, switch):
+        match switch:
+            case 1: #123
+                return (text1, text2, text3,)
+            case 2: #132
+                return (text1, text3, text2,)
+            case 3: #213
+                return (text2, text1, text3,)
+            case 4: #231
+                return (text2, text3, text1,)
+            case 5: #312
+                return (text3, text1, text2,)
+            case 6: #321
+                return (text3, text2, text1,)
+    
+        return (text1, text2, text3,)
