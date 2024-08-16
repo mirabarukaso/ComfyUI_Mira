@@ -566,6 +566,7 @@ Apparently that only happens with ComfyUI...
 | `bypass`  | Bypass current LoRA. |
 
 | Optional Input | Description |
+| --- | --- |
 | `lora_stack`  | A `STRING` array from previous `LoRA Loader With Name Stacker`.  |
 ***Reminder: leave the locomotive(first one) empty.***
 
