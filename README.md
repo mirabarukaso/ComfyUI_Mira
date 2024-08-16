@@ -572,8 +572,8 @@ Apparently that only happens with ComfyUI...
 
 | Outputs | Description |
 | --- | --- |
-| `MODEL`  | Combined text output. |
-| `CLIP`  | Alternative combined text output. |
+| `MODEL`  | Model |
+| `CLIP`  | CLIP |
 | `lora_stack`  | New `STRING` array with current LoRA name and strength information. AS is when `bypass` is `Enable` or `strengths` are all `0`. |
 ***Reminder: For the 2nd Hires fix, the same LoRA name will be ignored.*** 
 
