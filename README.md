@@ -550,20 +550,43 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_subtraction.png" width=35% height=35%>   
 
 ------
-## Overview - Regional Conditioning Mask with HiRes Fix
+### LoRA
+#### LoRA Loader With Name Stacker
 
-SDXL without `74 triggers` and `(customized) Ultimate SD Upscale`   
-<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/overview02.png" width=50% height=50%>
+A simple LoRA loader with name stacker for any website that could not identify all LoRAs' information from image.   
+Apparently that only happens with ComfyUI...    
+
+| Inputs | Description |
+| --- | --- |
+| `model`  | Your Model node, the `purple` one. |
+| `clip`  | Your Clip node, the `lemon yellow` one. |
+| `lora_name`  | Selected LoRA. |
+| `strength_model`  | LoRA strength for Model. |
+| `strength_clip`  |  LoRA strength for Clip. |
+| `bypass`  | Bypass current LoRA. |
+
+| Optional Input | Description |
+| `lora_stack`  | A `STRING` array from previous `LoRA Loader With Name Stacker`.  |
+***Reminder: leave the locomotive(first one) empty.***
+
+| Outputs | Description |
+| --- | --- |
+| `MODEL`  | Combined text output. |
+| `CLIP`  | Alternative combined text output. |
+| `lora_stack`  | New `STRING` array with current LoRA name and strength information. AS is when `bypass` is `Enable` or `strengths` are all `0`. |
+***Reminder: For the 2nd Hires fix, the same LoRA name will be ignored.*** 
+
+------
+## Overview - Regional Conditioning Mask with HiRes Fix
    
-SDXL    
+SDXL with LoRA Train   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/overview01.png" width=50% height=50%>
 
 ------
 
 ## Latest Change Log
-#### 2024.07.25 Ver 0.4.3.0
-・Add Text Switcher Two/Three Ways
-
-#### 2024.06.07 Ver 0.4.2.1   
-・Modify Text Switcher now support `alternative text output` for `regional condition 2 charaters`   
-・Move old logs to `CHANGELOGS.md`   
+#### 2024.08.16 Ver 0.4.4.0
+・Add LoRA Loader With Name Stacker   
+・・Better performance than LoRA Loader with Block Weight   
+・Remove Create Polygon PNG Mask   
+・Remove Create Circle Mask   

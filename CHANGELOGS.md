@@ -1,4 +1,11 @@
 ## Change Logs
+#### 2024.07.25 Ver 0.4.3.0
+・Add Text Switcher Two/Three Ways
+
+#### 2024.06.07 Ver 0.4.2.1   
+・Modify Text Switcher now support `alternative text output` for `regional condition 2 charaters`   
+・Move old logs to `CHANGELOGS.md`   
+
 #### 2024.05.09 Ver 0.4.2.0   
 ・Add SN74LVC1G125   
 ・Add SN74HC1G86, SN74HC86   

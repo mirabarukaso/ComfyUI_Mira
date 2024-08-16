@@ -1,10 +1,11 @@
 from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
 from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator, CirclesGenerator, CircleCreator
-from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, CreatePolygonPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateCircleMask, CreateSimpleMask
+from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateSimpleMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo, TextSwitcherTwoWays, TextSwitcherThreeWays
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, NoneToZero
 from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
+from .Lora import LoRALoaderWithNameStacker
 def __init__(self):
     pass
     
@@ -37,7 +38,6 @@ NODE_CLASS_MAPPINGS = {
     
     "CreateTillingPNGMask"      : CreateTillingPNGMask,
     "CreateNestedPNGMask"       : CreateNestedPNGMask,
-    "CreatePolygonPNGMask"      : CreatePolygonPNGMask,
     "CreateSimpleMask"          : CreateSimpleMask,
     "PngColorMasksToString"     : PngColorMasksToString,
     "PngColorMasksToRGB"        : PngColorMasksToRGB,
@@ -47,7 +47,6 @@ NODE_CLASS_MAPPINGS = {
     "PngRectanglesToMaskList"   : PngRectanglesToMaskList,
     "CreateMaskWithCanvas"      : CreateMaskWithCanvas,
     "CreateWatermarkRemovalMask": CreateWatermarkRemovalMask,
-    "CreateCircleMask"          : CreateCircleMask,
     
     "SingleBooleanTrigger"      : SingleBooleanTrigger,
     "TwoBooleanTrigger"         : TwoBooleanTrigger,
@@ -73,6 +72,8 @@ NODE_CLASS_MAPPINGS = {
     "TextCombinerTwo"                           : TextCombinerTwo,
     "TextSwitcherTwoWays"                       : TextSwitcherTwoWays,
     "TextSwitcherThreeWays"                     : TextSwitcherThreeWays,
+    
+    "LoRALoaderWithNameStacker" : LoRALoaderWithNameStacker,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -103,7 +104,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     
     "CreateTillingPNGMask"      : "Create Tilling PNG Mask",
     "CreateNestedPNGMask"       : "Create Nested PNG Mask",
-    "CreatePolygonPNGMask"      : "Create Polygon PNG Mask",
     "CreateSimpleMask"          : "Create Simple Mask",
     "PngColorMasksToString"     : "PngColor Mask to HEX String",
     "PngColorMasksToRGB"        : "PngColor Mask to INT RGB",
@@ -113,7 +113,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PngRectanglesToMaskList"   : "PngRectangles to Masks",
     "CreateMaskWithCanvas"      : "Create Mask With Canvas",
     "CreateWatermarkRemovalMask": "Create Watermark Removal Mask",
-    "CreateCircleMask"          : "Create Circle Mask",
     
     "SingleBooleanTrigger"      : "1 Bool",
     "TwoBooleanTrigger"         : "2 Bools",
@@ -139,6 +138,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TextCombinerTwo"                           : "Text Combiner 2",
     "TextSwitcherTwoWays"                       : "Text Switcher Two Ways",
     "TextSwitcherThreeWays"                     : "Text Switcher Three Ways",
+    
+    "LoRALoaderWithNameStacker" : "LoRA Loader With Name Stacker",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
