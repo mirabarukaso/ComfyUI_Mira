@@ -259,8 +259,8 @@ class StepsAndCfg:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "steps": ("INT", {"default": 22, "step": 1, "min": 1}),
-                "cfg": ("FLOAT", {"default": 8.0, "step": 0.01, "min": 1.0}),
+                "steps": ("INT", {"default": 30, "step": 1, "min": 1}),
+                "cfg": ("FLOAT", {"default": 7.0, "step": 0.01, "min": 1.0}),
             },
         }
                 

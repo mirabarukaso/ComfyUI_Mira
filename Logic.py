@@ -22,7 +22,7 @@ def CheckEvenOrOdd(num):
     else:
         return (False, 'False',)
 
-def BooleanListInterpreter(bool_list, Start_At_Index, times = 1):
+def BooleanListInterpreter(bool_list, Start_At_Index, NOT_Mode = False, times = 1):
     new_list = []
     index = Start_At_Index
     list_len = len(bool_list)
@@ -31,8 +31,12 @@ def BooleanListInterpreter(bool_list, Start_At_Index, times = 1):
         # not recommend, but this would be fun
         while index >= list_len:
             index = index - list_len
+        
+        if NOT_Mode is True:
+            new_bool = not bool_list[index]
+        else:
+            new_bool = bool_list[index]
             
-        new_bool = bool_list[index]
         new_list.append(new_bool)      
         index = index + 1
         
@@ -310,6 +314,7 @@ class BooleanListInterpreter1:
     Inputs:
     bool_list       - Boolean list
     Start_At_Index  - If `Start_At_Index` is greater than length of `Boolean list`, it will restart from `0`
+    NOT_Mode       - Inverts the Boolean value from input to output (1->0 0->1)
     
     Outputs:
     bool(0~N)   - Boolean list    
@@ -327,7 +332,10 @@ class BooleanListInterpreter1:
                     "min": 0,
                     "step": 1,
                     "display": "number" 
-                }),                
+                }),            
+                "NOT_Mode": ("BOOLEAN", {
+                    "default": False, 
+                }),    
             },            
         }
         
@@ -336,8 +344,8 @@ class BooleanListInterpreter1:
     FUNCTION = "BooleanListInterpreter1Ex"
     CATEGORY = cat
     
-    def BooleanListInterpreter1Ex(self, bool_list, Start_At_Index):
-        new_list = BooleanListInterpreter(bool_list, Start_At_Index)
+    def BooleanListInterpreter1Ex(self, bool_list, Start_At_Index, NOT_Mode):
+        new_list = BooleanListInterpreter(bool_list, Start_At_Index, NOT_Mode)
             
         return (new_list[0],)
     
@@ -358,7 +366,10 @@ class BooleanListInterpreter4:
                     "min": 0,
                     "step": 1,
                     "display": "number" 
-                }),                
+                }),             
+                "NOT_Mode": ("BOOLEAN", {
+                    "default": False, 
+                }),   
             },            
         }
         
@@ -367,8 +378,8 @@ class BooleanListInterpreter4:
     FUNCTION = "BooleanListInterpreter4Ex"
     CATEGORY = cat
     
-    def BooleanListInterpreter4Ex(self, bool_list, Start_At_Index):
-        new_list = BooleanListInterpreter(bool_list, Start_At_Index, 4)
+    def BooleanListInterpreter4Ex(self, bool_list, Start_At_Index, NOT_Mode):
+        new_list = BooleanListInterpreter(bool_list, Start_At_Index, NOT_Mode, 4)
             
         return (new_list[0],new_list[1],new_list[2],new_list[3],)
     
@@ -390,6 +401,9 @@ class BooleanListInterpreter8:
                     "step": 1,
                     "display": "number" 
                 }),                
+                "NOT_Mode": ("BOOLEAN", {
+                    "default": False, 
+                }), 
             },            
         }
         
@@ -398,8 +412,8 @@ class BooleanListInterpreter8:
     FUNCTION = "BooleanListInterpreter8Ex"
     CATEGORY = cat
     
-    def BooleanListInterpreter8Ex(self, bool_list, Start_At_Index):
-        new_list = BooleanListInterpreter(bool_list, Start_At_Index, 8)
+    def BooleanListInterpreter8Ex(self, bool_list, Start_At_Index, NOT_Mode):
+        new_list = BooleanListInterpreter(bool_list, Start_At_Index, NOT_Mode, 8)
             
         return (new_list[0],new_list[1],new_list[2],new_list[3],new_list[4],new_list[5],new_list[6],new_list[7],)
     

@@ -194,6 +194,7 @@ Example
 Creates multiple `masks` at the corners of the image for subsequent watermark detection and removal.    
 Ideas from [comfyui-lama-remover](https://github.com/Layer-norm/comfyui-lama-remover)
 
+***Reminder: If you disable all 4 corners, the bottom right corner will be enabled by default. ***
 
 | Inputs | Description |
 | --- | --- |
@@ -382,6 +383,7 @@ Few `Boolean` stacks.
 | --- | --- |
 | `bool_N` | Triggers. |
 | `bool_list`  | Boolean List from `N Bool` |
+| `NOT_Mode`  | Inverts the Boolean value from input to output (1->0 0->1) |
 
 | Outputs | Description |
 | --- | --- |
@@ -585,9 +587,8 @@ SDXL with LoRA Train
 
 ------
 
-## Latest Change Log
-#### 2024.08.16 Ver 0.4.4.0
-・Add LoRA Loader With Name Stacker   
-・・Better performance than LoRA Loader with Block Weight   
-・Remove Create Polygon PNG Mask   
-・Remove Create Circle Mask   
+## Latest Change Log   
+#### 2024.10.04 Ver 0.4.4.1   
+・Add `NOT Mode` for all `Bool List`   
+・・For someone who likes to disable all bool triggers   
+・Remove useless code   

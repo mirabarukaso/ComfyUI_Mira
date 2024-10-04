@@ -1,6 +1,13 @@
 ## Change Logs
+
+#### 2024.08.16 Ver 0.4.4.0
+・Add LoRA Loader With Name Stacker   
+・・Better performance than LoRA Loader with Block Weight   
+・Remove Create Polygon PNG Mask   
+・Remove Create Circle Mask   
+
 #### 2024.07.25 Ver 0.4.3.0
-・Add Text Switcher Two/Three Ways
+・Add Text Switcher Two/Three Ways   
 
 #### 2024.06.07 Ver 0.4.2.1   
 ・Modify Text Switcher now support `alternative text output` for `regional condition 2 charaters`   

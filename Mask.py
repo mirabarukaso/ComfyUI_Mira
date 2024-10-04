@@ -153,81 +153,6 @@ def DrawPNG(Width, Height, BlocksCount, DebugMessage, Rectangles):
 
     return PngImage, PngColorMasks, Rectangles, DebugMessage
 
-def DrawPNGasPolygon(Width, Height, BlocksCount, DebugMessage, Rectangles, Type):
-    PngImage = Image.new("RGBA", [Width, Height])
-    PngDraw = ImageDraw.Draw(PngImage)
-    PngColorMasks = []
-    
-    for _ in range(BlocksCount):
-        R = random.randrange(0,255) 
-        G = random.randrange(0,255) 
-        B = random.randrange(0,255) 
-        
-        # Extremely low probability, but it happens....
-        while PngColorMasks.__contains__([R,G,B]):
-            R = random.randrange(0,255) 
-            G = random.randrange(0,255) 
-            B = random.randrange(0,255) 
-            
-        PngColorMasks.append([R,G,B])
-        DebugMessage += '[' + str(R) + ',' + str(G) + ','+ str(B) + '] '
-        DebugMessage += '\n'
-        #print('[' + str(R) + ',' + str(G) + ','+ str(B) + '] ')
-
-    Warp = 0
-    if 'Diagonal' == Type:
-        if 2 >= BlocksCount:       
-            hex_rgb = ' #{:02X}{:02X}{:02X}'.format(PngColorMasks[0][0], PngColorMasks[0][1], PngColorMasks[0][2])
-            DebugMessage += '[' + str(0) +']Draw 0' + str(Rectangles[0]) + ' with ' + str(PngColorMasks[0]) + hex_rgb +'\n'      
-            print('Mira: [' + str(0) +']Draw 0' + str(Rectangles[0]) + ' with ' + str(PngColorMasks[0]) + hex_rgb)  
-            PngDraw.polygon(Rectangles[0], fill=(PngColorMasks[0][0], PngColorMasks[0][1], PngColorMasks[0][2], 255))                
-            
-            hex_rgb = ' #{:02X}{:02X}{:02X}'.format(PngColorMasks[1][1], PngColorMasks[1][1], PngColorMasks[1][2])
-            DebugMessage += '[' + str(1) +']Draw 0' + str(Rectangles[1]) + ' with ' + str(PngColorMasks[1]) + hex_rgb +'\n'      
-            print('Mira: [' + str(1) +']Draw 0' + str(Rectangles[1]) + ' with ' + str(PngColorMasks[1]) + hex_rgb)  
-            PngDraw.polygon(Rectangles[1], fill=(PngColorMasks[1][0], PngColorMasks[1][1], PngColorMasks[1][2], 255))                
-        else:                        
-            for i in range(BlocksCount):
-                hex_rgb = ' #{:02X}{:02X}{:02X}'.format(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2])
-                if 0 == i:
-                    DebugMessage += '[' + str(i) +']Draw 0' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb +'\n'      
-                    print('Mira: [' + str(i) +']Draw 0' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb)  
-                    PngDraw.polygon(Rectangles[i + Warp], fill=(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2], 255))
-                    
-                    hex_rgb = ' #{:02X}{:02X}{:02X}'.format(PngColorMasks[i+1][0], PngColorMasks[i+1][1], PngColorMasks[i+1][2])
-                    Warp += 1
-                    DebugMessage += '[' + str(i) +']Draw 0' + str(Rectangles[i + Warp]) + ' with ' + str(PngColorMasks[i + 1]) + hex_rgb + '\n'
-                    print('Mira: [' + str(i) +']Draw 0' + str(Rectangles[i + Warp]) + ' with ' + str(PngColorMasks[i + 1]) + hex_rgb)  
-                    PngDraw.polygon(Rectangles[i + Warp], fill=(PngColorMasks[i + 1][0], PngColorMasks[i + 1][1], PngColorMasks[i + 1][2], 255))
-                elif (BlocksCount - 1) == i:
-                    hex_rgb = ' #{:02X}{:02X}{:02X}'.format(PngColorMasks[i - 1][0], PngColorMasks[i - 1][1], PngColorMasks[i - 1][2])
-                    DebugMessage += '[' + str(i) +']Draw i' + str(Rectangles[i + Warp]) + ' with ' + str(PngColorMasks[i - 1]) + hex_rgb + '\n'
-                    print('Mira: [' + str(i) +']Draw i' + str(Rectangles[i + Warp]) + ' with ' + str(PngColorMasks[i - 1]) + hex_rgb)  
-                    PngDraw.polygon(Rectangles[i + Warp], fill=(PngColorMasks[i - 1][0], PngColorMasks[i - 1][1], PngColorMasks[i - 1][2], 255))
-                    
-                    Warp += 1
-                    hex_rgb = ' #{:02X}{:02X}{:02X}'.format(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2])
-                    DebugMessage += '[' + str(i) +']Draw i' + str(Rectangles[i + Warp]) + ' with ' + str(PngColorMasks[i]) + hex_rgb +'\n'        
-                    print('Mira: [' + str(i) +']Draw i' + str(Rectangles[i + Warp]) + ' with ' + str(PngColorMasks[i]) + hex_rgb)  
-                    PngDraw.polygon(Rectangles[i + Warp], fill=(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2], 255))
-                else:            
-                    DebugMessage += '[' + str(i) +']Draw Both ' + str(Rectangles[i]) + ' with ' + str(PngColorMasks[i]) + hex_rgb +'\n'        
-                    print('Mira: [' + str(i) +']Draw Both' + str(Rectangles[i + Warp]) + ' with ' + str(PngColorMasks[i]) + hex_rgb)  
-                    PngDraw.polygon(Rectangles[i + Warp], fill=(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2], 255))
-                    Warp += 1
-                    print('Mira: [' + str(i) +']Draw Both' + str(Rectangles[i + Warp]) + ' with ' + str(PngColorMasks[i]) + hex_rgb)  
-                    PngDraw.polygon(Rectangles[i + Warp], fill=(PngColorMasks[i][0], PngColorMasks[i][1], PngColorMasks[i][2], 255))       
-    elif 'TopBottom' == Type:
-        DebugMessage += 'TopBottom WIP\n'
-    elif 'LeftRight' == Type:     
-        DebugMessage += 'LeftRight WIP\n'
-
-    # Add Image Size to last
-    Rectangles.append([0,0,Width,Height])
-    DebugMessage += '\n'
-
-    return PngImage, PngColorMasks, Rectangles, DebugMessage
-
 def CreateTillingPNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage):
     DebugMessage += 'Mira:\nLayout:' + Layout + '\n'
     Rectangles = []
@@ -444,35 +369,7 @@ def CreateNestedPNG(Width, Height, X, Y, unlimit_top, unlimit_bottom, unlimit_le
     PngImage, PngColorMasks, PngRectangles, DebugMessage = DrawPNG(Width, Height, BlocksCount, DebugMessage, Rectangles)   
     
     return PngImage, PngRectangles, PngColorMasks, DebugMessage
-
-def CreateTrianglePoints(Warp_W, Warp_H, SingleBlock_W, SingleBlock_H, WarpTimes, Backslash, Type):
-    if False is Backslash:
-        X1 = Warp_W 
-        X2 = Warp_H
-        Y1 = Warp_W - int(SingleBlock_W * float(WarpTimes))
-        Y2 = Warp_H + int(SingleBlock_H * float(WarpTimes))
-        
-        if False is Type:        
-            Z1 = X1
-            Z2 = Y2
-        else:
-            Z1 = Y1
-            Z2 = X2
-    else:
-        X1 = Warp_W
-        X2 = Warp_H
-        Y1 = Warp_W + int(SingleBlock_W * float(WarpTimes))
-        Y2 = Warp_H + int(SingleBlock_H * float(WarpTimes))    
-        
-        if True is Type:        
-            Z1 = X1
-            Z2 = Y2
-        else:
-            Z1 = Y1
-            Z2 = X2
-            
-    return X1, X2, Y1, Y2, Z1, Z2
-    
+   
 def LoadImagePNG(PngImage):
     #refer: https://github.com/comfyanonymous/ComfyUI/blob/master/nodes.py#L1487
     #       LoadImage
@@ -1212,6 +1109,9 @@ class CreateWatermarkRemovalMask:
             Mask_H = C_Height / 2        
                 
         masks = []       
+        # At least, we need one
+        if False == Top_L and False == Top_R and False == Bottom_L and False == Bottom_R:
+            Bottom_R = True
         
         if True == Top_L:
             mask = create_mask_with_canvas(C_Width, C_Height, 0 + EdgeToEdge, 0 + EdgeToEdge, Mask_W, Mask_H, Intenisity, Blur)
