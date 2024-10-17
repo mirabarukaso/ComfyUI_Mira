@@ -575,7 +575,6 @@ class ImageSharpness:
     Inputs:
     src_image           - Source Image
     level               - Sharpness Level, default is 1.0
-    p                   - Probability of the image being sharpened, default is 1.0
             
     Outputs:
     image               - Torched Image                    
@@ -593,13 +592,7 @@ class ImageSharpness:
                     "step": 0.001,
                     "min": 0, 
                     "max": 10
-                }),
-                "p": ("FLOAT", {
-                    "default": 0.5, 
-                    "step": 0.001,
-                    "min": 0, 
-                    "max": 10
-                }),         
+                }),       
             },            
         }
         
@@ -608,9 +601,9 @@ class ImageSharpness:
     FUNCTION = "ImageSharpnessEx"
     CATEGORY = cat_image
     
-    def ImageSharpnessEx(self, src_image, level, p):         
+    def ImageSharpnessEx(self, src_image, level):         
         img = DecodeImage(src_image)            
-        img_adj = con.adjust_sharpness(img, level, p)                     
+        img_adj = con.adjust_sharpness(img, level)                     
         result = EncodeImage(img_adj)
         
         return(result,)
