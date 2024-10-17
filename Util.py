@@ -1,5 +1,9 @@
 import math
 import random
+import torch
+import numpy as np
+from PIL import Image
+import torchvision.transforms.functional as con
 
 class AlwaysEqualProxy(str):
 #ComfyUI-Logic 
@@ -11,6 +15,17 @@ class AlwaysEqualProxy(str):
         return False
 
 cat = "Mira/Util"
+cat_image = "Mira/Util/Image"
+
+def DecodeImage(src_image):
+    i = 255. * src_image[0].cpu().numpy()
+    img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))    
+    return img
+
+def EncodeImage(src_image):
+    img = np.array(src_image).astype(np.float32) / 255.0
+    img = torch.from_numpy(img)[None,]
+    return img
 
 def SafeCheck(Width = 16, Height = 16, Batch = 1, HiResMultiplier = 1.0):
         if 16 > Width:
@@ -480,4 +495,276 @@ class SeedGenerator:
     
     def SeedGeneratorEx(self, seed):
         return(seed,)
+
+class ImageGrayscale:
+    '''
+    Convert Image to Grayscale
     
+    Inputs:
+    src_image           - Source Image
+            
+    Outputs:
+    image               - Torched Image                    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }),          
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageGrayscaleEx"
+    CATEGORY = cat_image
+    
+    def ImageGrayscaleEx(self, src_image):         
+        img = DecodeImage(src_image)            
+        img_adj = con.to_grayscale(img)                     
+        result = EncodeImage(img_adj)
+        
+        return(result,)    
+class ImageContrast:
+    '''
+    Adjust Image Contrast
+    
+    Inputs:
+    src_image           - Source Image
+    level               - Contrast Level, default is 1.0
+            
+    Outputs:
+    image               - Torched Image                    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }),       
+                "level": ("FLOAT", {
+                    "default": 1.0, 
+                    "step": 0.001,
+                    "min": 0, 
+                    "max": 10
+                }),         
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageContrastEx"
+    CATEGORY = cat_image
+    
+    def ImageContrastEx(self, src_image, level):         
+        img = DecodeImage(src_image)            
+        img_adj = con.adjust_contrast(img, level)                     
+        result = EncodeImage(img_adj)
+        
+        return(result,)
+    
+class ImageSharpness:
+    '''
+    Adjust Image Sharpness
+    
+    Inputs:
+    src_image           - Source Image
+    level               - Contrast Level, default is 1.0
+            
+    Outputs:
+    image               - Torched Image                    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }),       
+                "level": ("FLOAT", {
+                    "default": 1.0, 
+                    "step": 0.001,
+                    "min": 0, 
+                    "max": 10
+                }),         
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageSharpnessEx"
+    CATEGORY = cat_image
+    
+    def ImageSharpnessEx(self, src_image, level):         
+        img = DecodeImage(src_image)            
+        img_adj = con.adjust_sharpness(img, level)                     
+        result = EncodeImage(img_adj)
+        
+        return(result,)
+    
+class ImageBrightness:
+    '''
+    Adjust Image Brightness
+    
+    Inputs:
+    src_image           - Source Image
+    level               - Contrast Level, default is 1.0
+            
+    Outputs:
+    image               - Torched Image                    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }),       
+                "level": ("FLOAT", {
+                    "default": 1.0, 
+                    "step": 0.001,
+                    "min": 0, 
+                    "max": 10
+                }),         
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageBrightnessEx"
+    CATEGORY = cat_image
+    
+    def ImageBrightnessEx(self, src_image, level):         
+        img = DecodeImage(src_image)            
+        img_adj = con.adjust_brightness(img, level)                     
+        result = EncodeImage(img_adj)
+        
+        return(result,)
+    
+class ImageSaturation:
+    '''
+    Adjust Image Saturation
+    
+    Inputs:
+    src_image           - Source Image
+    level               - Contrast Level, default is 0.0
+            
+    Outputs:
+    image               - Torched Image                    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }),       
+                "level": ("FLOAT", {
+                    "default": 0.0, 
+                    "step": 0.001,
+                    "min": 0, 
+                    "max": 10
+                }),         
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageSaturationEx"
+    CATEGORY = cat_image
+    
+    def ImageSaturationEx(self, src_image, level):         
+        img = DecodeImage(src_image)            
+        img_adj = con.adjust_saturation(img, level)                     
+        result = EncodeImage(img_adj)
+        
+        return(result,)
+
+class ImageHUE:
+    '''
+    Adjust Image HUE
+    
+    Inputs:
+    src_image           - Source Image
+    level               - Contrast Level, default is 0.0
+            
+    Outputs:
+    image               - Torched Image                    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }),       
+                "level": ("FLOAT", {
+                    "default": 0.0, 
+                    "step": 0.001,
+                    "min": -0.5, 
+                    "max": 0.5
+                }),         
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageHUEEx"
+    CATEGORY = cat_image
+    
+    def ImageHUEEx(self, src_image, level):         
+        img = DecodeImage(src_image)            
+        img_adj = con.adjust_hue(img, level)                     
+        result = EncodeImage(img_adj)
+        
+        return(result,)
+
+class ImageGamma:
+    '''
+    Adjust Image Gamma
+    
+    Inputs:
+    src_image           - Source Image
+    level               - Contrast Level, default is 0.0
+            
+    Outputs:
+    image               - Torched Image                    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }),       
+                "level": ("FLOAT", {
+                    "default": 0.0, 
+                    "step": 0.001,
+                    "min": 0, 
+                    "max": 10
+                }),         
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageGammaEx"
+    CATEGORY = cat_image
+    
+    def ImageGammaEx(self, src_image, level):         
+        img = DecodeImage(src_image)            
+        img_adj = con.adjust_gamma(img, level)                     
+        result = EncodeImage(img_adj)
+        
+        return(result,)
+                                                

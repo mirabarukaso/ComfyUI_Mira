@@ -301,6 +301,24 @@ Example
 Random `Seed` Generator for `Random Layouts`, same as normal random seed generator.   
 
 ------
+### Util/Image
+#### Simple Image Adjustment Utilities    
+
+All nodes can be used in a daisy chain.    
+
+| --- | --- |
+| `To Grayscale` | N/A |
+| `Adjust Contrast` | 0 ~ 10 |
+| `Adjust Sharpness` | 0 ~ 10  |
+| `Adjust Brightness` | 0 ~ 10 |
+| `Adjust Saturation` | 0 ~ 10 |
+| `Adjust HUE` | -0.5 ~ 0.5 | 
+| `Adjust Gamma` | 0 ~ 10 |
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_image_adjust.png" width=35% height=35%>   
+
+------
 ### Text
 #### Text Switcher
 Selects `text1` or `text2` depending on the `use_text2` and automatically adds `common_text` for output.
@@ -588,6 +606,17 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
+#### 2024.10.04 Ver 0.4.5.0   
+・Add a few simple image adjustment utilities    
+・・Util/Image    
+・・`To Grayscale`    
+・・`Adjust Contrast`   
+・・`Adjust Sharpness`   
+・・`Adjust Brightness`   
+・・`Adjust Saturation`   
+・・`Adjust HUE`   
+・・`Adjust Gamma`    
+
 #### 2024.10.04 Ver 0.4.4.1   
 ・Add `NOT Mode` for all `Bool List`   
 ・・For someone who likes to disable all bool triggers   
