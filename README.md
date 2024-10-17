@@ -306,6 +306,7 @@ Random `Seed` Generator for `Random Layouts`, same as normal random seed generat
 
 All nodes can be used in a daisy chain.    
 
+| Node | Description |
 | --- | --- |
 | `To Grayscale` | N/A |
 | `Adjust Contrast` | 0 ~ 10 |
