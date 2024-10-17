@@ -575,7 +575,7 @@ class ImageSharpness:
     Inputs:
     src_image           - Source Image
     level               - Sharpness Level, default is 1.0
-    level               - probability of the image being sharpened, default is 1.0
+    p                   - Probability of the image being sharpened, default is 1.0
             
     Outputs:
     image               - Torched Image                    
