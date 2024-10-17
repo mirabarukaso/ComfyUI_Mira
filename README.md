@@ -607,7 +607,7 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
-#### 2024.10.04 Ver 0.4.5.0   
+#### 2024.10.17 Ver 0.4.5.0   
 ・Add a few simple image adjustment utilities    
 ・・Util/Image    
 ・・`To Grayscale`    
