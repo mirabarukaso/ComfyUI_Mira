@@ -1,7 +1,7 @@
 from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
 from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
-from .Util import ImageGrayscale, ImageContrast, ImageSharpness, ImageBrightness, ImageSaturation, ImageHUE, ImageGamma
+from .Util import ImageGrayscale, ImageContrast, ImageSharpness, ImageBrightness, ImageSaturation, ImageHUE, ImageGamma, ImageColorTransfer
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateSimpleMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo, TextSwitcherTwoWays, TextSwitcherThreeWays
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, NoneToZero
@@ -42,7 +42,8 @@ NODE_CLASS_MAPPINGS = {
     "ImageSaturation"           : ImageSaturation,
     "ImageHUE"                  : ImageHUE,
     "ImageGamma"                : ImageGamma,
-    
+    "ImageColorTransfer"        : ImageColorTransfer,
+
     "CreateTillingPNGMask"      : CreateTillingPNGMask,
     "CreateNestedPNGMask"       : CreateNestedPNGMask,
     "CreateSimpleMask"          : CreateSimpleMask,
@@ -114,6 +115,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageSaturation"           : "Adjust Saturation",
     "ImageHUE"                  : "Adjust HUE",
     "ImageGamma"                : "Adjust Gamma",
+    "ImageColorTransfer"        : "Color Transfer",
     
     "CreateTillingPNGMask"      : "Create Tilling PNG Mask",
     "CreateNestedPNGMask"       : "Create Nested PNG Mask",

@@ -1,5 +1,10 @@
 ## Change Logs
 
+#### 2024.10.04 Ver 0.4.4.1   
+・Add `NOT Mode` for all `Bool List`   
+・・For someone who likes to disable all bool triggers   
+・Remove useless code   
+
 #### 2024.08.16 Ver 0.4.4.0
 ・Add LoRA Loader With Name Stacker   
 ・・Better performance than LoRA Loader with Block Weight   

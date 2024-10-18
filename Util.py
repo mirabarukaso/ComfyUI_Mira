@@ -4,6 +4,7 @@ import torch
 import numpy as np
 from PIL import Image
 import torchvision.transforms.functional as con
+import cv2
 
 class AlwaysEqualProxy(str):
 #ComfyUI-Logic 
@@ -767,4 +768,69 @@ class ImageGamma:
         result = EncodeImage(img_adj)
         
         return(result,)
-                                                
+                                                                
+class ImageColorTransfer:
+    '''
+    Refer to: https://en.wikipedia.org/wiki/Image_color_transfer
+    
+    Image Color Transfer
+    
+    Inputs:
+    src_image           - Source Image
+    ref_image           - Reference image. The colors of this Image will applied to the Source Image
+            
+    Outputs:
+    image               - Output Image                    
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }),       
+                "ref_image": ("IMAGE", {
+                    "default": None, 
+                }),              
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageColorTransferEx"
+    CATEGORY = cat_image
+    
+    def ImageColorTransferEx(self, src_image, ref_image):       
+        
+        def ConvertToTorch(src_image):            
+            i = 255. * src_image[0].cpu().numpy()
+            array_image = np.clip(i, 0, 255).astype(np.uint8)
+            return torch.from_numpy(array_image.astype(np.float32)).clone()
+        
+        def color_transfer(source_img, target_img):
+            """
+            Source Code refer to: https://qiita.com/hideo130/items/f4a8f340016951107646
+            Outstanding performance than for/for/for loop
+            
+            source_img: lab image tensor
+            target_img: lab image tensor
+
+            return:参照画像（target img）の色に変換した入力画像(source img)
+            """
+            source_mean = torch.mean(source_img, dim=[0, 1])
+            target_mean = torch.mean(target_img, dim=[0, 1])
+            source_std = torch.std(source_img, dim=[0, 1], unbiased=False)
+            target_std = torch.std(target_img, dim=[0, 1], unbiased=False)
+            new_lab_img = torch.div(target_std, source_std) * \
+                (source_img - source_mean) + target_mean
+            return new_lab_img    
+        
+        s = ConvertToTorch(src_image)       
+        r = ConvertToTorch(ref_image)        
+        new_lab_img = color_transfer(s, r)       
+        img_adj = new_lab_img.to('cpu').detach().numpy().copy()
+        result = EncodeImage(img_adj)
+        
+        return(result,)                                           
+    

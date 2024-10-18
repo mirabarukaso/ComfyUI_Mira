@@ -320,6 +320,17 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_image_adjust.png" width=35% height=35%>   
 
 ------
+#### Image Color Transfer    
+   
+Refer to    
+https://en.wikipedia.org/wiki/Image_color_transfer    
+https://www.cs.tau.ac.il/~turkel/imagepapers/ColorTransfer.pdf    
+https://qiita.com/hideo130/items/f4a8f340016951107646    
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_color_transfer.png" width=35% height=35%>   
+
+------
 ### Text
 #### Text Switcher
 Selects `text1` or `text2` depending on the `use_text2` and automatically adds `common_text` for output.
@@ -607,6 +618,9 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
+#### 2024.10.18 Ver 0.4.5.1   
+・Add `Util/Image/Color Transfer`    
+
 #### 2024.10.17 Ver 0.4.5.0   
 ・Add a few simple image adjustment utilities    
 ・・Util/Image    
@@ -617,8 +631,3 @@ SDXL with LoRA Train
 ・・`Adjust Saturation`   
 ・・`Adjust HUE`   
 ・・`Adjust Gamma`    
-
-#### 2024.10.04 Ver 0.4.4.1   
-・Add `NOT Mode` for all `Bool List`   
-・・For someone who likes to disable all bool triggers   
-・Remove useless code   
