@@ -29,6 +29,11 @@ def EncodeImage(src_image):
     img = torch.from_numpy(img)[None,]
     return img
 
+def ConvertToNP(src_image):            
+    i = 255. * src_image[0].cpu().numpy()
+    array_image = np.clip(i, 0, 255).astype(np.uint8)
+    return array_image.astype(np.float32)           
+
 def SafeCheck(Width = 16, Height = 16, Batch = 1, HiResMultiplier = 1.0):
         if 16 > Width:
             Width = 16
@@ -803,12 +808,7 @@ class ImageColorTransfer:
     FUNCTION = "ImageColorTransferEx"
     CATEGORY = cat_image
     
-    def ImageColorTransferEx(self, src_image, ref_image, method):               
-        def ConvertToNP(src_image):            
-            i = 255. * src_image[0].cpu().numpy()
-            array_image = np.clip(i, 0, 255).astype(np.uint8)
-            return array_image.astype(np.float32)           
-                
+    def ImageColorTransferEx(self, src_image, ref_image, method):                               
         PT = ColorTransfer()        
         new_img = None
         if "Mean" == method:
@@ -835,6 +835,16 @@ class ImageColorTransfer:
 class ImageToneCurve:
     '''
     Image Tone Curve
+    
+    Adjust the overall brightness using the `RGB Channels` or `Brightness` node.
+    
+    Inputs:
+    src_image           - Source Image
+    low                 - Increase shadow range
+    high                - Increase highlight range
+            
+    Outputs:
+    image               - Output Image  
     '''
     
     @classmethod
@@ -873,5 +883,62 @@ class ImageToneCurve:
         
         result = EncodeImage(new_img)        
         return(result,)  
+
+class ImageRGBChannel:
+    '''
+    Image RGB Channel
+    
+    Inputs:
+    src_image           - Source Image
+    R/G/B               - Colour magnification value, less than 1.0 means attenuation
+            
+    Outputs:
+    image               - Output Image  
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }), 
+                "Red": ("FLOAT", {
+                    "default": 1.0, 
+                    "step": 0.01,
+                    "min": 0, 
+                    "max": 5
+                }),       
+                "Green": ("FLOAT", {
+                    "default": 1.0, 
+                    "step": 0.01,
+                    "min": 0, 
+                    "max": 5
+                }),       
+                "Blue": ("FLOAT", {
+                    "default": 1.0, 
+                    "step": 0.01,
+                    "min": 0, 
+                    "max": 5
+                }),     
+            },            
+        }
         
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageRGBChannelEx"
+    CATEGORY = cat_image
+    
+    def ImageRGBChannelEx(self, src_image, Red, Green, Blue):                       
+        s = DecodeImage(src_image)     
+        r, g, b = s.split()        
         
+        r = r.point(lambda i: i * Red)
+        g = g.point(lambda i: i * Green)        
+        b = b.point(lambda i: i * Blue)
+        
+        new_img = Image.merge('RGB', (r, g, b))        
+        result = EncodeImage(new_img)        
+        return(result,)  
+    
+    

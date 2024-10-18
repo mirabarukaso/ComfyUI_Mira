@@ -316,6 +316,7 @@ All nodes can be used in a daisy chain.
 | `Adjust HUE` | -0.5 ~ 0.5 | 
 | `Adjust Gamma` | 0 ~ 10 |
 | `Adjust Tone Curve` | S-Curve -10 ~ 10 | 
+| `RGB Channel` | 0 ~ 5 |
 
 Example   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_image_adjust.png" width=35% height=35%>   
@@ -632,8 +633,9 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
-#### 2024.10.19 Ver 0.4.5.3   
-・Add `Util/Image/Adjust Tone Curve`       
+#### 2024.10.19 Ver 0.4.5.5   
+・Add `Util/Image/Adjust Tone Curve`     
+・Add `Util/Image/RGB Channel`    
 
 #### 2024.10.18 Ver 0.4.5.2   
 ・Add `methods` for `Util/Image/Color Transfer`    
