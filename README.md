@@ -4,7 +4,11 @@ A custom node for [ComfyUI](https://github.com/comfyanonymous/ComfyUI/) to impro
 ------
 
 ## Installation
-`Clone` the repository to custom_nodes in your `ComfyUI\custom_nodes` directory:
+Search `ComfyUI_Mira` in your `ComfyUI` -> `Manager` -> `Custom Nodes Manager`, then click `Install`   
+
+or   
+
+`Clone` the repository to custom_nodes in your `ComfyUI\custom_nodes` directory:   
 ```
 git clone https://github.com/mirabarukaso/ComfyUI_Mira.git
 ```
