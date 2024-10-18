@@ -831,4 +831,47 @@ class ImageColorTransfer:
         result = EncodeImage(new_img)
         
         return(result,)                                           
+
+class ImageToneCurve:
+    '''
+    Image Tone Curve
+    '''
     
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "src_image": ("IMAGE", {
+                    "default": None, 
+                }), 
+                "low": ("FLOAT", {
+                    "default": -1.0, 
+                    "step": 0.01,
+                    "min": -10, 
+                    "max": 10
+                }),       
+                "high": ("FLOAT", {
+                    "default": 1.0, 
+                    "step": 0.01,
+                    "min": -10, 
+                    "max": 10
+                }), 
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "ImageToneCurveEx"
+    CATEGORY = cat_image
+        
+    def ImageToneCurveEx(self, src_image, low, high):       
+        y = np.arctan(np.linspace(low, high, 256))
+        y = 255 / (y.max() - y.min()) * (y - y.max()) + 255
+        
+        s = np.array(DecodeImage(src_image), dtype=np.uint8)
+        new_img = cv2.LUT(s, y).astype(np.uint8)
+        
+        result = EncodeImage(new_img)        
+        return(result,)  
+        
+        

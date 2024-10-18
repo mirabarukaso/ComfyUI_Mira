@@ -315,6 +315,7 @@ All nodes can be used in a daisy chain.
 | `Adjust Saturation` | 0 ~ 10 |
 | `Adjust HUE` | -0.5 ~ 0.5 | 
 | `Adjust Gamma` | 0 ~ 10 |
+| `Adjust Tone Curve` | S-Curve -10 ~ 10 | 
 
 Example   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_image_adjust.png" width=35% height=35%>   
@@ -329,7 +330,7 @@ https://en.wikipedia.org/wiki/Image_color_transfer
 color_transfer.py credits to pengbo-learn(GitHub)    
 
 Special Thanks    
-https://github.com/chia56028/Color-Transfer-between-Images
+https://github.com/chia56028/Color-Transfer-between-Images    
 https://qiita.com/hideo130/items/f4a8f340016951107646    
 
 Image Resolution 2336 x 3488    
@@ -631,6 +632,9 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
+#### 2024.10.19 Ver 0.4.5.3   
+・Add `Util/Image/Adjust Tone Curve`       
+
 #### 2024.10.18 Ver 0.4.5.2   
 ・Add `methods` for `Util/Image/Color Transfer`    
 
