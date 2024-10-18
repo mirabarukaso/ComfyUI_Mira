@@ -333,12 +333,12 @@ https://github.com/chia56028/Color-Transfer-between-Images
 https://qiita.com/hideo130/items/f4a8f340016951107646    
 
 Image Resolution 2336 x 3488    
-| Method | Device | Time |
+| Method | Speed | Time |
 | --- | --- | --- |
-| `mean` | GPU | 1.768s |
-| `lab` | GPU | 2.469s
-| `pdf` | CPU  | 18.096s |
-| `pdf + regrain` | CPU | 49.796s |
+| `mean` | Instantly | 1.768s |
+| `lab` | Almost Instantly | 2.469s
+| `pdf` | Slow  | 18.096s |
+| `pdf + regrain` | Go for a walk | 49.796s |
 
 Example   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_color_transfer.png" width=35% height=35%>   
