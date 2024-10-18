@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 import torchvision.transforms.functional as con
 import cv2
+from .color_transfer import ColorTransfer
 
 class AlwaysEqualProxy(str):
 #ComfyUI-Logic 
@@ -590,9 +591,9 @@ class ImageSharpness:
                 }),       
                 "level": ("FLOAT", {
                     "default": 1.0, 
-                    "step": 0.001,
+                    "step": 0.1,
                     "min": 0, 
-                    "max": 10
+                    "max": 100
                 }),       
             },            
         }
@@ -792,7 +793,8 @@ class ImageColorTransfer:
                 }),       
                 "ref_image": ("IMAGE", {
                     "default": None, 
-                }),              
+                }),
+                "method" : (['Mean', 'Lab', 'Pdf', 'Pdf+Regrain'], ),
             },            
         }
         
@@ -801,36 +803,32 @@ class ImageColorTransfer:
     FUNCTION = "ImageColorTransferEx"
     CATEGORY = cat_image
     
-    def ImageColorTransferEx(self, src_image, ref_image):       
-        
-        def ConvertToTorch(src_image):            
+    def ImageColorTransferEx(self, src_image, ref_image, method):               
+        def ConvertToNP(src_image):            
             i = 255. * src_image[0].cpu().numpy()
             array_image = np.clip(i, 0, 255).astype(np.uint8)
-            return torch.from_numpy(array_image.astype(np.float32)).clone()
-        
-        def color_transfer(source_img, target_img):
-            """
-            Source Code refer to: https://qiita.com/hideo130/items/f4a8f340016951107646
-            Outstanding performance than for/for/for loop
+            return array_image.astype(np.float32)           
+                
+        PT = ColorTransfer()        
+        new_img = None
+        if "Mean" == method:
+            s = ConvertToNP(src_image)       
+            r = ConvertToNP(ref_image)       
+            new_img = PT.mean_std_transfer(img_arr_in=s, img_arr_ref=r)
+        elif "Lab" == method:
+            s = np.array(DecodeImage(src_image), dtype=np.uint8)
+            r = np.array(DecodeImage(ref_image), dtype=np.uint8)
+            new_img = PT.lab_transfer(img_arr_in=s, img_arr_ref=r)
+        elif "Pdf" == method:
+            s = ConvertToNP(src_image)       
+            r = ConvertToNP(ref_image)       
+            new_img = PT.pdf_transfer(img_arr_in=s, img_arr_ref=r, regrain=False)
+        else:
+            s = ConvertToNP(src_image)       
+            r = ConvertToNP(ref_image)       
+            new_img = PT.pdf_transfer(img_arr_in=s, img_arr_ref=r, regrain=True) 
             
-            source_img: lab image tensor
-            target_img: lab image tensor
-
-            return:参照画像（target img）の色に変換した入力画像(source img)
-            """
-            source_mean = torch.mean(source_img, dim=[0, 1])
-            target_mean = torch.mean(target_img, dim=[0, 1])
-            source_std = torch.std(source_img, dim=[0, 1], unbiased=False)
-            target_std = torch.std(target_img, dim=[0, 1], unbiased=False)
-            new_lab_img = torch.div(target_std, source_std) * \
-                (source_img - source_mean) + target_mean
-            return new_lab_img    
-        
-        s = ConvertToTorch(src_image)       
-        r = ConvertToTorch(ref_image)        
-        new_lab_img = color_transfer(s, r)       
-        img_adj = new_lab_img.to('cpu').detach().numpy().copy()
-        result = EncodeImage(img_adj)
+        result = EncodeImage(new_img)
         
         return(result,)                                           
     

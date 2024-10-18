@@ -310,7 +310,7 @@ All nodes can be used in a daisy chain.
 | --- | --- |
 | `To Grayscale` | N/A |
 | `Adjust Contrast` | 0 ~ 10 |
-| `Adjust Sharpness` | 0 ~ 10  |
+| `Adjust Sharpness` | 0 ~ 100  |
 | `Adjust Brightness` | 0 ~ 10 |
 | `Adjust Saturation` | 0 ~ 10 |
 | `Adjust HUE` | -0.5 ~ 0.5 | 
@@ -323,9 +323,22 @@ Example
 #### Image Color Transfer    
    
 Refer to    
+https://github.com/pengbo-learn/python-color-transfer/    
 https://en.wikipedia.org/wiki/Image_color_transfer    
-https://www.cs.tau.ac.il/~turkel/imagepapers/ColorTransfer.pdf    
+
+color_transfer.py credits to pengbo-learn(GitHub)    
+
+Special Thanks    
+https://github.com/chia56028/Color-Transfer-between-Images
 https://qiita.com/hideo130/items/f4a8f340016951107646    
+
+Image Resolution 2336 x 3488    
+| Method | Device | Time |
+| --- | --- | --- |
+| `mean` | GPU | 1.768s |
+| `lab` | GPU | 2.469s
+| `pdf` | CPU  | 18.096s |
+| `pdf + regrain` | CPU | 49.796s |
 
 Example   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_color_transfer.png" width=35% height=35%>   
@@ -377,7 +390,7 @@ For `Text Combiner Six`, you can use my naming logic to make the whole workflow 
 ------
 #### Text Switcher Two/Three Ways
 Found a satisfied random number and didn't want to mess up your regional nodes too much?   
-***Reminder: In case you are not use a symmetrical(`1:1:1`) Mask, do not forget your `Mask Layout`***
+**Reminder: In case you are not use a symmetrical(`1:1:1`) Mask, do not forget your `Mask Layout`**
 
 | Inputs | Description |
 | --- | --- |
@@ -618,6 +631,9 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
+#### 2024.10.18 Ver 0.4.5.2   
+・Add `methods` for `Util/Image/Color Transfer`    
+
 #### 2024.10.18 Ver 0.4.5.1   
 ・Add `Util/Image/Color Transfer`    
 
