@@ -33,7 +33,7 @@ NODE_CLASS_MAPPINGS = {
     "CanvasCreatorBasic"        : CanvasCreatorBasic,
     "RandomTillingLayouts"      : RandomTillingLayouts,
     "RandomNestedLayouts"       : RandomNestedLayouts,
-    "SeedGenerator"             : SeedGenerator,
+    "SeedGeneratorMira"         : SeedGenerator,
     
     "ImageGrayscale"            : ImageGrayscale,
     "ImageContrast"             : ImageContrast,
@@ -43,7 +43,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageHUE"                  : ImageHUE,
     "ImageGamma"                : ImageGamma,
     "ImageToneCurve"            : ImageToneCurve,
-    "ImageColorTransfer"        : ImageColorTransfer,
+    "ImageColorTransferMira"    : ImageColorTransfer,
     "ImageRGBChannel"           : ImageRGBChannel,
 
     "CreateTillingPNGMask"      : CreateTillingPNGMask,
@@ -108,7 +108,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CanvasCreatorBasic"        : "Create Canvas H/W only",
     "RandomTillingLayouts"      : "Random Tilling Layouts",
     "RandomNestedLayouts"       : "Random Nested Layouts",
-    "SeedGenerator"             : "Random Seed Generator",
+    "SeedGeneratorMira"         : "Random Seed Generator",
     
     "ImageGrayscale"            : "To Grayscale",
     "ImageContrast"             : "Adjust Contrast",
@@ -118,7 +118,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageHUE"                  : "Adjust HUE",
     "ImageGamma"                : "Adjust Gamma",
     "ImageToneCurve"            : "Tone Curve",
-    "ImageColorTransfer"        : "Color Transfer",
+    "ImageColorTransferMira"    : "Color Transfer",
     "ImageRGBChannel"           : "RGB Channel",
     
     "CreateTillingPNGMask"      : "Create Tilling PNG Mask",

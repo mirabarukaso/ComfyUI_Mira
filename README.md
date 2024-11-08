@@ -637,23 +637,5 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
-#### 2024.10.19 Ver 0.4.5.5   
-・Add `Util/Image/Adjust Tone Curve`     
-・Add `Util/Image/RGB Channel`    
-
-#### 2024.10.18 Ver 0.4.5.2   
-・Add `methods` for `Util/Image/Color Transfer`    
-
-#### 2024.10.18 Ver 0.4.5.1   
-・Add `Util/Image/Color Transfer`    
-
-#### 2024.10.17 Ver 0.4.5.0   
-・Add a few simple image adjustment utilities    
-・・Util/Image    
-・・`To Grayscale`    
-・・`Adjust Contrast`   
-・・`Adjust Sharpness`   
-・・`Adjust Brightness`   
-・・`Adjust Saturation`   
-・・`Adjust HUE`   
-・・`Adjust Gamma`    
+#### 2024.11.08 Ver 0.4.5.6    
+・Rename two nodes `ImageColorTransfer` and `SeedGenerator`    
