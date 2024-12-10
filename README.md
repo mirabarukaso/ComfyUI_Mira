@@ -424,6 +424,37 @@ Three ways
 | 6 | 321 |
 
 ------
+#### Text Loop Combiner   
+Combine input text with current text into a single text array with seprator.    
+
+| Inputs | Description |
+| --- | --- |
+| `text` | Text need to combine with |
+| `seprator` | Seprator character or array |
+| Optional: `text_in` | Text from previous Text Loop Combiner(or other text box) |
+        
+| Outputs | Description |
+| --- | --- |
+| `text_out` | Combined text |
+
+#### Text Wildcard Seprator   
+For someone who wants to select wildcard contents by themselves.    
+Split the wildcard text (TextBox) into multiple segments according to specific characters, and select the specified segment number to output.    
+
+| Inputs | Description |
+| --- | --- |
+| `text` | Input text |
+| `seprator` | Seprator character or array |
+| `switch` | Index of output, current limit is 20(0~19) |
+        
+| Outputs | Description |
+| --- | --- |
+| `text_out` | Selected text |
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_text_switcher.png" width=35% height=35%>   
+
+------
 ### Logic
 #### Boolean
 Few `Boolean` stacks.   
@@ -637,5 +668,8 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
+#### 2024.12.10 Ver 0.4.6.0    
+・Add `TextLoopCombiner` and `TextWildcardSeprator`    
+
 #### 2024.11.08 Ver 0.4.5.6    
 ・Rename two nodes `ImageColorTransfer` and `SeedGenerator`    

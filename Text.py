@@ -238,3 +238,91 @@ class TextSwitcherThreeWays:
                 return (text3, text2, text1,)
     
         return (text1, text2, text3,)
+
+class TextLoopCombiner:
+    '''
+    Text Loop Combiner
+    
+    Combine input text with current text into a single text array with seprator.
+    
+    Optional Input:
+    text_in     - Text from previous Text Loop Combiner(or other text box)
+    
+    Inputs:
+    text        - Text need to combine with
+    seprator    - Seprator character or array
+    
+    Outputs:
+    text_out     - Combined text
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "optional": {
+                "text_in": ("STRING", {"display": "input", "multiline": True}),
+            },
+            "required": {
+                "text": ("STRING", {"display": "input", "multiline": True, "default": ""}),
+                "seprator": ("STRING", {"display": "input", "multiline": False, "default": "|"}),
+            },
+        }
+                
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("text_out",)
+    FUNCTION = "TextLoopCombinerEx"
+    CATEGORY = cat
+    
+    def TextLoopCombinerEx(self, text, seprator, text_in = None):
+        if None is not text_in:
+            text_out = text_in + seprator + text
+        else:
+            text_out = text
+            
+        return (text_out,)   
+    
+    
+class TextWildcardSeprator:
+    '''
+    Text Wildcard Seprator
+    
+    For someone who wants to select wildcard contents by themselves
+    Split the wildcard text (TextBox) into multiple segments according to specific characters, and select the specified segment number to output.
+    
+    Inputs:
+    text         - Input text, e.g. blue cat|orange fox|black dragon|white wolf     
+    seprator     - Seprator character or array. Based on text, our seprator here is |    
+    switch       - Index of output, current limit is 20(0~19). E.g. blue cat[0], orange fox[1], black dragon[2], white wolf[3], blue cat[4] ......
+        
+    Outputs:
+    text_out     - Selected text 
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"display": "input", "multiline": True}),
+                "seprator": ("STRING", {"display": "input", "multiline": False, "default": "|"}),
+                "switch": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 19,
+                    "step": 1
+                }),        
+            },
+        }
+                
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("text_out",)
+    FUNCTION = "TextWildcardSepratorEx"
+    CATEGORY = cat
+    
+    def TextWildcardSepratorEx(self, text, seprator, switch):
+        segments = str(text).split(seprator)
+
+        if switch >= len(segments):
+            switch = switch%len(segments)
+        return (segments[switch],)
+
+    

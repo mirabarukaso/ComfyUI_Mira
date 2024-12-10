@@ -3,7 +3,7 @@ from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloa
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
 from .Util import ImageGrayscale, ImageContrast, ImageSharpness, ImageBrightness, ImageSaturation, ImageHUE, ImageGamma, ImageToneCurve, ImageColorTransfer, ImageRGBChannel
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateSimpleMask
-from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo, TextSwitcherTwoWays, TextSwitcherThreeWays
+from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo, TextSwitcherTwoWays, TextSwitcherThreeWays, TextLoopCombiner, TextWildcardSeprator
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, NoneToZero
 from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
 from .Lora import LoRALoaderWithNameStacker
@@ -82,6 +82,8 @@ NODE_CLASS_MAPPINGS = {
     "TextCombinerTwo"                           : TextCombinerTwo,
     "TextSwitcherTwoWays"                       : TextSwitcherTwoWays,
     "TextSwitcherThreeWays"                     : TextSwitcherThreeWays,
+    "TextLoopCombiner"                          : TextLoopCombiner,
+    "TextWildcardSeprator"                      : TextWildcardSeprator,
     
     "LoRALoaderWithNameStacker" : LoRALoaderWithNameStacker,
 }
@@ -157,6 +159,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TextCombinerTwo"                           : "Text Combiner 2",
     "TextSwitcherTwoWays"                       : "Text Switcher Two Ways",
     "TextSwitcherThreeWays"                     : "Text Switcher Three Ways",
+    "TextLoopCombiner"                          : "Text Loop Combiner",
+    "TextWildcardSeprator"                      : "Text Wildcard Seprator",
     
     "LoRALoaderWithNameStacker" : "LoRA Loader With Name Stacker",
 }
