@@ -452,7 +452,7 @@ Split the wildcard text (TextBox) into multiple segments according to specific c
 | `text_out` | Selected text |
 
 Example   
-<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_text_switcher.png" width=35% height=35%>   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_text_loop_combiner_and_wildcard_seprator.png" width=35% height=35%>   
 
 ------
 ### Logic
