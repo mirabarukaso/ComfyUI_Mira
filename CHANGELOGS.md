@@ -1,5 +1,8 @@
 ## Change Logs
 
+#### 2024.11.08 Ver 0.4.5.6    
+・Rename two nodes `ImageColorTransfer` and `SeedGenerator`    
+
 #### 2024.10.19 Ver 0.4.5.5   
 ・Add `Util/Image/Adjust Tone Curve`     
 ・Add `Util/Image/RGB Channel`    

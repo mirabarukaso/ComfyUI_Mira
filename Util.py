@@ -3,9 +3,11 @@ import random
 import torch
 import numpy as np
 from PIL import Image
-import torchvision.transforms.functional as con
 import cv2
 from .color_transfer import ColorTransfer
+import comfy.utils
+from comfy import model_management
+import torchvision.transforms as T
 
 class AlwaysEqualProxy(str):
 #ComfyUI-Logic 
@@ -49,6 +51,16 @@ def SafeCheck(Width = 16, Height = 16, Batch = 1, HiResMultiplier = 1.0):
         
         return Width, Height, Batch, HiResMultiplier
 
+def Fixeight(num):
+    new_num = int(num)
+    if 0 != math.floor(num)%8:
+        residue = math.floor(num)%8
+        if 3 >= math.floor(num)%8:
+            new_num = math.floor(num) - residue
+        else:
+            new_num = math.floor(num) + 8 - residue    
+    return new_num
+
 class CanvasCreatorBasic:
     '''
     Create Canvas information Width and Height for Latent.
@@ -68,12 +80,14 @@ class CanvasCreatorBasic:
                 "Width": ("INT", {
                     "default": 576,
                     "min": 16,
+                    "max": 4096,
                     "step": 8,
                     "display": "number" 
                 }),
                 "Height": ("INT", {
                     "default": 1024,
                     "min": 16,
+                    "max": 4096,
                     "step": 8,
                     "display": "number" 
                 }),
@@ -110,12 +124,14 @@ class CanvasCreatorSimple:
                 "Width": ("INT", {
                     "default": 576,
                     "min": 16,
+                    "max": 4096,
                     "step": 8,
                     "display": "number" 
                 }),
                 "Height": ("INT", {
                     "default": 1024,
                     "min": 16,
+                    "max": 4096,
                     "step": 8,
                     "display": "number" 
                 }),
@@ -156,7 +172,7 @@ class CanvasCreatorAdvanced:
     Batch           - Batch size for Latent
     HiRes Width     - Width x HiResMultiplier. The result is not the product of the original data, but the nearest multiple of 8.
     HiRes Height    - Height x HiResMultiplier. 
-    Debug           - Debug output
+    HiResMultiplier - Same as Input
     '''
     @classmethod
     def INPUT_TYPES(s):
@@ -165,12 +181,14 @@ class CanvasCreatorAdvanced:
                 "Width": ("INT", {
                     "default": 576,
                     "min": 16,
+                    "max": 4096,
                     "step": 8,
                     "display": "number" 
                 }),
                 "Height": ("INT", {
                     "default": 1024,
                     "min": 16,
+                    "max": 4096,
                     "step": 8,
                     "display": "number" 
                 }),
@@ -186,46 +204,33 @@ class CanvasCreatorAdvanced:
                 }),
                 "HiResMultiplier": ("FLOAT", {
                     "default": 1.5,
-                    "min": 1,
+                    "min": 0.1,
+                    "max": 8,
                     "step": 0.1,
                     "display": "number" 
                 }),
             },
         }
 
-    RETURN_TYPES = ("INT","INT","INT","INT","INT",)
-    RETURN_NAMES = ("Width","Height","Batch","HiRes Width","HiRes Height",)
+    RETURN_TYPES = ("INT","INT","INT","INT","INT","FLOAT")
+    RETURN_NAMES = ("Width","Height","Batch","HiRes Width","HiRes Height","HiResMultiplier",)
     FUNCTION = "CanvasCreatorEx"
     CATEGORY = cat
     
     def CanvasCreatorEx(self, Width, Height, Batch, Landscape, HiResMultiplier):              
         Width, Height, Batch, HiResMultiplier = SafeCheck(Width, Height, Batch, HiResMultiplier)
             
-        HiResWidth = Width * HiResMultiplier
-        HiResHeight = Height * HiResMultiplier        
-        
-        if 0 != math.floor(HiResWidth)%8:
-            residue = math.floor(HiResWidth)%8
-            if 3 >= math.floor(HiResWidth)%8:
-                HiResWidth = math.floor(HiResWidth) - residue
-            else:
-                HiResWidth = math.floor(HiResWidth) + 8 - residue
-            
-        if 0 != math.floor(HiResHeight)%8:
-            residue = math.floor(HiResHeight)%8
-            if 3 >= math.floor(HiResHeight)%8:
-                HiResHeight = math.floor(HiResHeight) - residue
-            else:
-                HiResHeight = math.floor(HiResHeight) + 8 - residue
-        
+        HiResWidth = Fixeight(Width * HiResMultiplier)
+        HiResHeight = Fixeight(Height * HiResMultiplier)
+                
         if(False == Landscape):            
             intHiResHeight = math.floor(HiResHeight)
             intHiResWidth = math.floor(HiResWidth)
-            return(Width, Height, Batch, intHiResWidth, intHiResHeight, )
+            return(Width, Height, Batch, intHiResWidth, intHiResHeight, HiResMultiplier, )
         else:            
             intHiResHeight = math.floor(HiResHeight)
             intHiResWidth = math.floor(HiResWidth)
-            return(Height, Width, Batch, intHiResHeight, intHiResWidth, )
+            return(Height, Width, Batch, intHiResHeight, intHiResWidth, HiResMultiplier, )
         
         
 class RandomTillingLayouts:
@@ -940,5 +945,102 @@ class ImageRGBChannel:
         new_img = Image.merge('RGB', (r, g, b))        
         result = EncodeImage(new_img)        
         return(result,)  
+    
+class UpscaleImageByModelThenResize:
+    '''
+    Upscale Image By Model Then Resize
+    
+    This is an experimental feature for zooming in an image on a model and then zooming out to a specified size (a multiple of 8 in length and width).
+    For example, if the input model zooms the image 4x by default and the node is set to zoom 2x, then the image will first be zoomed 4x using the model and then resized to 2x.
+    
+    Inputs:
+    upscale_model       - Model for upscaling
+    image               - Source Image
+    resize_scale        - Real resize ratio, the result will be the nearest multiple of 8.
+    resize_method       - Resize method, nearest, nearest-exact, bilinear, bicubic
+            
+    Outputs:
+    image               - Output Image  
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": { 
+                "upscale_model": ("UPSCALE_MODEL",),
+                "image": ("IMAGE", {
+                    "default": None, 
+                }), 
+                "resize_scale": ("FLOAT", {
+                    "default": 1.0, 
+                    "step": 0.1,
+                    "min": 0.1, 
+                    "max": 8
+                }),  
+                "resize_method" : (['nearest', 'nearest-exact', 'bilinear', 'bicubic'], ),
+            },
+        }
+        
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "UpscaleImageWithModelEx"
+    CATEGORY = cat_image
+
+    def UpscaleImageWithModelEx(self, upscale_model, image, resize_scale, resize_method):
+        '''
+        Source code credit to ComfyUI
+        Refer to : https://github.com/comfyanonymous/ComfyUI/blob/4b5bcd8ac4e221681e2541c2aa2f665a56ef72de/comfy_extras/nodes_upscale_model.py#L39
+        '''       
+        device = model_management.get_torch_device()
+
+        memory_required = model_management.module_size(upscale_model.model)
+        memory_required += (512 * 512 * 3) * image.element_size() * max(upscale_model.scale, 1.0) * 384.0 #The 384.0 is an estimate of how much some of these models take, TODO: make it more accurate
+        memory_required += image.nelement() * image.element_size()
+        model_management.free_memory(memory_required, device)
+
+        upscale_model.to(device)
+        in_img = image.movedim(-1,-3).to(device)
+
+        tile = 512
+        overlap = 32
+
+        oom = True
+        while oom:
+            try:
+                steps = in_img.shape[0] * comfy.utils.get_tiled_scale_steps(in_img.shape[3], in_img.shape[2], tile_x=tile, tile_y=tile, overlap=overlap)
+                pbar = comfy.utils.ProgressBar(steps)
+                s = comfy.utils.tiled_scale(in_img, lambda a: upscale_model(a), tile_x=tile, tile_y=tile, overlap=overlap, upscale_amount=upscale_model.scale, pbar=pbar)
+                oom = False
+            except model_management.OOM_EXCEPTION as e:
+                tile //= 2
+                if tile < 128:
+                    raise e
+
+        upscale_model.to("cpu")
+        new_img = torch.clamp(s.movedim(-3,-1), min=0, max=1.0)
+        '''
+        End of Source code credit to ComfyUI
+        '''
+                                    
+        if upscale_model.scale != resize_scale:
+            width = image.shape[2]
+            height = image.shape[1]
+            
+            new_width = Fixeight(width*resize_scale)
+            new_height = Fixeight(height*resize_scale)        
+
+            interpolation_mode = T.InterpolationMode.NEAREST
+            if resize_method == 'nearest-exact':
+                interpolation_mode = T.InterpolationMode.NEAREST_EXACT
+            elif resize_method == 'bilinear':
+                interpolation_mode = T.InterpolationMode.BILINEAR
+            elif resize_method == 'bicubic':
+                interpolation_mode = T.InterpolationMode.BICUBIC
+                
+            size = (new_height, new_width)
+            transform = T.Resize(size, interpolation=interpolation_mode)
+            new_img = transform(DecodeImage(new_img))                 
+                           
+        return (EncodeImage(new_img),)
     
     

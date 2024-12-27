@@ -236,7 +236,6 @@ Create Canvas information `Width` and `Height` for Latent with Landscape switch.
 | Advanced |
 | `Batch`  | Batch size. |
 | `HiResMultiplier`  | Automatically calculated (in steps of 8) for HiResFix. |
-| `Debug` | Debug information as String. |
 
 | Outputs | Description |
 | --- | --- |
@@ -245,6 +244,7 @@ Create Canvas information `Width` and `Height` for Latent with Landscape switch.
 | Advanced | 
 | `Batch`  | Batch size. |
 | `HiRes Width` `HiRes Height`  | Width and Height for HiResFix or etc. <br />***NOTE:The result is not the product of the original data, but the nearest multiple of 8.***|
+| `HiResMultiplier`  | Same as input |
 
 ------
 #### Random Tilling Layouts
@@ -348,6 +348,24 @@ Image Resolution 2336 x 3488
 
 Example   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_color_transfer.png" width=35% height=35%>   
+
+------
+#### Upscale Image By Model Then Resize
+
+This is an experimental feature for zooming in an image on a model and then zooming out to a specified size (a multiple of 8 in length and width).     
+
+For example, if the input model zooms the image 4x by default and the node is set to zoom 2x, then the image will first be zoomed 4x using the model and then resized to 2x.    
+    
+| Inputs | Description |
+| --- | --- |
+| `upscale_model` | Model for upscaling |
+| `image` | Source Image |
+| `resize_scale` | Real resize ratio, the result will be the nearest multiple of `8` |
+| `resize_method` | Resize method, `nearest`, `nearest-exact`, `bilinear`, `bicubic` |
+            
+| Outputs | Description |
+| --- | --- |
+| `image` | Output Image |
 
 ------
 ### Text
@@ -530,6 +548,9 @@ Example
 ------
 #### Function Swap
 Swap `func1` and `func2` outputs depends on `trigger`.
+
+**UPDATE!!!**
+Now `func2` is `optional`, if `NOT connected` or `function bypassed`, both `Outputs` will return `func1`.    
     
 | Inputs | Description |
 | --- | --- |
@@ -542,6 +563,24 @@ Swap `func1` and `func2` outputs depends on `trigger`.
 | swap  |   A   |   B   |
 | `True`  | func2 | func1 |
 | `False` | func1 | func2 |
+
+------
+#### Function Select Auto
+Automatically select `func1` or `func2` outputs depends on which one is `NOT None`.   
+`func1` has higher priority.   
+    
+| Inputs | Description |
+| --- | --- |
+| `func1` | Any function. E.g. `Image from Model Image Upscaler `. |
+| `func2` | Any function. E.g. `Image from Vae Decode`. |
+    
+| Outputs | A | B |
+| --- | --- | --- |
+|   Y   |   func1   |   func2   |
+| None  |   None    |   None    |
+| func1 |   func1   |   None    |
+| func1 |   func1   |   func2   |
+| func2 |   None    |   func2   |
 
 ------
 ### Logic-74
@@ -650,6 +689,7 @@ Apparently that only happens with ComfyUI...
 | Optional Input | Description |
 | --- | --- |
 | `lora_stack`  | A `STRING` array from previous `LoRA Loader With Name Stacker`.  |
+
 ***Reminder: leave the locomotive(first one) empty.***
 
 | Outputs | Description |
@@ -657,6 +697,7 @@ Apparently that only happens with ComfyUI...
 | `MODEL`  | Model |
 | `CLIP`  | CLIP |
 | `lora_stack`  | New `STRING` array with current LoRA name and strength information. AS is when `bypass` is `Enable` or `strengths` are all `0`. |
+
 ***Reminder: For the 2nd Hires fix, the same LoRA name will be ignored.*** 
 
 ------
@@ -668,8 +709,16 @@ SDXL with LoRA Train
 ------
 
 ## Latest Change Log   
+#### 2024.12.28 Ver 0.4.7.0    
+・Add `Upscale Image By Model Then Resize`    
+・Add `Function Select Auto`    
+・Change `Canvas Creator Advanced` now returns `HiResMultiplier` same as input   
+・Change `func2` in `Function Swap` change to `optional`   
+**I'll update sample workflow later when I figure out how to combine Normal and Regional in one workflow**
+
+#### 2024.12.22 Ver 0.4.6.1    
+・Remove `Debug` from `Create Canvas Advanced`   
+・Change `Create Canvas` now support max width and height to 4096
+
 #### 2024.12.10 Ver 0.4.6.0    
 ・Add `TextLoopCombiner` and `TextWildcardSeprator`    
-
-#### 2024.11.08 Ver 0.4.5.6    
-・Rename two nodes `ImageColorTransfer` and `SeedGenerator`    

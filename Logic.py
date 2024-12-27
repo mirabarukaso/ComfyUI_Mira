@@ -421,10 +421,12 @@ class FunctionSwap:
     """
     Swap `func1` and `func2` outputs depends on `trigger`.
     
+    Now `func2` is `optional`, if `NOT connected` or `function bypassed`, both `Outputs` will return `func1`.    
+    
     Inputs:
     swap    - True or False
     func1   - Any function. E.g. `Mask_1`.
-    func1   - Any function. E.g. `Mask_2`.
+    func2   - Any function. E.g. `Mask_2`.
     
     Outputs:
     | swap  |   A   |   B   |
@@ -435,10 +437,12 @@ class FunctionSwap:
     @classmethod
     def INPUT_TYPES(s):
         return {
-            "required": {
-                "trigger": ("BOOLEAN", {"default": False, "display":"input",}),
-                "func1": (AlwaysEqualProxy("*"),),
+            "optional": {
                 "func2": (AlwaysEqualProxy("*"),),
+            },
+            "required": {
+                "func1": (AlwaysEqualProxy("*"),),
+                "trigger": ("BOOLEAN", {"default": False, "display":"input",}),
             },
         }
 
@@ -447,11 +451,56 @@ class FunctionSwap:
     FUNCTION = "FunctionSwapEx"
     CATEGORY = cat
 
-    def FunctionSwapEx(self, trigger, func1, func2):
+    def FunctionSwapEx(self, trigger, func1, func2 = None):
+        if func2 is None:
+            return (func1, func1,)
+        
         if True is trigger:
             return (func2, func1,)
         else:
             return (func1, func2,)    
+        
+class FunctionSelectAuto:
+    """
+    Function Select Auto
+    
+    Automatically select `func1` or `func2` outputs depends on which one is `NOT None`.
+    `func1` has higher priority.
+    
+    Inputs:
+    func1   - Any function. E.g. `Image from Model Image Upscaler `.
+    func2   - Any function. E.g. `Image from Vae Decode`.
+    
+    Outputs:
+    |   Y   |   func1   |   func2   |
+    | None  |   None    |   None    |
+    | func1 |   func1   |   None    |
+    | func1 |   func1   |   func2   |
+    | func2 |   None    |   func2   |
+    """
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "optional": {
+                "func1": (AlwaysEqualProxy("*"),),
+                "func2": (AlwaysEqualProxy("*"),),
+            },
+        }
+
+    RETURN_TYPES = (AlwaysEqualProxy("*"),)
+    RETURN_NAMES = ("Y",  )
+    FUNCTION = "FunctionSelectAutoEx"
+    CATEGORY = cat
+
+    def FunctionSelectAutoEx(self, func1 = None, func2 = None):
+        if func1 is None and func2 is None:            
+            return (None, )
+        
+        if func1 is not None:
+            return (func1,)
+        else:
+            return (func2,)
     
 class SN74LVC1G125:
     '''

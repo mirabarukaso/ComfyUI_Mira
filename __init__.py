@@ -1,10 +1,10 @@
 from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultiplication, IntSubtraction
 from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
-from .Util import ImageGrayscale, ImageContrast, ImageSharpness, ImageBrightness, ImageSaturation, ImageHUE, ImageGamma, ImageToneCurve, ImageColorTransfer, ImageRGBChannel
+from .Util import ImageGrayscale, ImageContrast, ImageSharpness, ImageBrightness, ImageSaturation, ImageHUE, ImageGamma, ImageToneCurve, ImageColorTransfer, ImageRGBChannel, UpscaleImageByModelThenResize
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateSimpleMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo, TextSwitcherTwoWays, TextSwitcherThreeWays, TextLoopCombiner, TextWildcardSeprator
-from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, NoneToZero
+from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, FunctionSelectAuto, NoneToZero
 from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
 from .Lora import LoRALoaderWithNameStacker
 def __init__(self):
@@ -44,7 +44,8 @@ NODE_CLASS_MAPPINGS = {
     "ImageGamma"                : ImageGamma,
     "ImageToneCurve"            : ImageToneCurve,
     "ImageColorTransferMira"    : ImageColorTransfer,
-    "ImageRGBChannel"           : ImageRGBChannel,
+    "ImageRGBChannel"           : ImageRGBChannel,    
+    "UpscaleImageByModelThenResize" : UpscaleImageByModelThenResize,
 
     "CreateTillingPNGMask"      : CreateTillingPNGMask,
     "CreateNestedPNGMask"       : CreateNestedPNGMask,
@@ -70,6 +71,7 @@ NODE_CLASS_MAPPINGS = {
     "BooleanListInterpreter4"   : BooleanListInterpreter4,
     "BooleanListInterpreter8"   : BooleanListInterpreter8,
     "FunctionSwap"              : FunctionSwap,
+    "FunctionSelectAuto"        : FunctionSelectAuto,
     "NoneToZero"                : NoneToZero,
     
     "SN74LVC1G125"              : SN74LVC1G125,
@@ -121,7 +123,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageGamma"                : "Adjust Gamma",
     "ImageToneCurve"            : "Tone Curve",
     "ImageColorTransferMira"    : "Color Transfer",
-    "ImageRGBChannel"           : "RGB Channel",
+    "ImageRGBChannel"           : "RGB Channel",    
+    "UpscaleImageByModelThenResize" : "Upscale Image By Model Then Resize",
     
     "CreateTillingPNGMask"      : "Create Tilling PNG Mask",
     "CreateNestedPNGMask"       : "Create Nested PNG Mask",
@@ -147,6 +150,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BooleanListInterpreter4"   : "4 Bools from List",
     "BooleanListInterpreter8"   : "8 Bools from List",
     "FunctionSwap"              : "Function Swap",
+    "FunctionSelectAuto"        : "Function Select Auto",
     "NoneToZero"                : "None To 0",
     
     "SN74LVC1G125"              : "SN74LVC1G125",
