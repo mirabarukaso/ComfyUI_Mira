@@ -567,7 +567,7 @@ Now `func2` is `optional`, if `NOT connected` or `function bypassed`, both `Outp
 ------
 #### Function Select Auto
 Automatically select `func1` or `func2` outputs depends on which one is `NOT None`.   
-`func1` has higher priority.   
+Supports `ANY(*)` inputs, `func1` has higher priority.   
     
 | Inputs | Description |
 | --- | --- |
@@ -581,6 +581,9 @@ Automatically select `func1` or `func2` outputs depends on which one is `NOT Non
 | func1 |   func1   |   None    |
 | func1 |   func1   |   func2   |
 | func2 |   None    |   func2   |
+
+Example   
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_function_select_auto.png" width=35% height=35%>   
 
 ------
 ### Logic-74
@@ -703,7 +706,8 @@ Apparently that only happens with ComfyUI...
 ------
 ## Overview - Regional Conditioning Mask with HiRes Fix
    
-SDXL with LoRA Train   
+Illustrious XL    
+
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/overview01.png" width=50% height=50%>
 
 ------
@@ -714,7 +718,6 @@ SDXL with LoRA Train
 ・Add `Function Select Auto`    
 ・Change `Canvas Creator Advanced` now returns `HiResMultiplier` same as input   
 ・Change `func2` in `Function Swap` change to `optional`   
-**I'll update sample workflow later when I figure out how to combine Normal and Regional in one workflow**
 
 #### 2024.12.22 Ver 0.4.6.1    
 ・Remove `Debug` from `Create Canvas Advanced`   

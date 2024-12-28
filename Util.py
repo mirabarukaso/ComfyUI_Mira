@@ -972,7 +972,7 @@ class UpscaleImageByModelThenResize:
                     "default": None, 
                 }), 
                 "resize_scale": ("FLOAT", {
-                    "default": 1.0, 
+                    "default": 1.5, 
                     "step": 0.1,
                     "min": 0.1, 
                     "max": 8
@@ -1021,13 +1021,16 @@ class UpscaleImageByModelThenResize:
         '''
         End of Source code credit to ComfyUI
         '''
-                                    
+        #print('resize_scale: ' + str(resize_scale))
+        #print('upscale_model.scale: ' + str(upscale_model.scale))        
         if upscale_model.scale != resize_scale:
             width = image.shape[2]
             height = image.shape[1]
             
             new_width = Fixeight(width*resize_scale)
             new_height = Fixeight(height*resize_scale)        
+            #print('new_width: ' + str(new_width))
+            #print('new_height: ' + str(new_height))
 
             interpolation_mode = T.InterpolationMode.NEAREST
             if resize_method == 'nearest-exact':
@@ -1039,8 +1042,9 @@ class UpscaleImageByModelThenResize:
                 
             size = (new_height, new_width)
             transform = T.Resize(size, interpolation=interpolation_mode)
-            new_img = transform(DecodeImage(new_img))                 
-                           
-        return (EncodeImage(new_img),)
-    
+            new_img = transform(DecodeImage(new_img))
+                        
+            return (EncodeImage(new_img),)
+        
+        return (new_img,)
     
