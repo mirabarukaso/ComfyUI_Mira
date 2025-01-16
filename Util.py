@@ -7,6 +7,7 @@ import cv2
 from .color_transfer import ColorTransfer
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel
 import torchvision.transforms as T
+import torchvision.transforms.functional as con
 
 class AlwaysEqualProxy(str):
 #ComfyUI-Logic 
