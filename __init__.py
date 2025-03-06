@@ -7,6 +7,8 @@ from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombiner
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, FunctionSelectAuto, NoneToZero
 from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
 from .Lora import LoRALoaderWithNameStacker
+from .lanner0403_illustrious_character_select import lanner0403_llm_prompt_gen_node, lanner0403_illustrious_character_select, lanner0403_illustrious_character_select_en, local_llm_prompt_gen
+
 def __init__(self):
     pass
     
@@ -78,7 +80,7 @@ NODE_CLASS_MAPPINGS = {
     "SN74HC1G86"                : SN74HC1G86,
     "SN74HC86"                  : SN74HC86,
     
-    "TextBox"                                   : TextBox,
+    "TextBoxMira"                               : TextBox,
     "TextWithBooleanSwitchAndCommonTextInput"   : TextWithBooleanSwitchAndCommonTextInput,
     "TextCombinerSix"                           : TextCombinerSix,
     "TextCombinerTwo"                           : TextCombinerTwo,
@@ -88,6 +90,11 @@ NODE_CLASS_MAPPINGS = {
     "TextWildcardSeprator"                      : TextWildcardSeprator,
     
     "LoRALoaderWithNameStacker" : LoRALoaderWithNameStacker,
+    
+    "lanner0403_llm_prompt_gen_node"            : lanner0403_llm_prompt_gen_node,
+    "lanner0403_illustrious_character_select"   : lanner0403_illustrious_character_select,
+    "lanner0403_illustrious_character_select_en" : lanner0403_illustrious_character_select_en,
+    "local_llm_prompt_gen"                      : local_llm_prompt_gen,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -157,7 +164,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SN74HC1G86"                : "SN74HC1G86",
     "SN74HC86"                  : "SN74HC86",
     
-    "TextBox"                                   : "Text Box",
+    "TextBoxMira"                               : "Text Box",
     "TextWithBooleanSwitchAndCommonTextInput"   : "Text Switcher",
     "TextCombinerSix"                           : "Text Combiner 6",
     "TextCombinerTwo"                           : "Text Combiner 2",
@@ -167,6 +174,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TextWildcardSeprator"                      : "Text Wildcard Seprator",
     
     "LoRALoaderWithNameStacker" : "LoRA Loader With Name Stacker",
+    
+    "lanner0403_llm_prompt_gen_node"            : "AI Prompt Generator",
+    "local_llm_prompt_gen"                      : "Local AI Prompt Generator (llama.cpp)",
+    "lanner0403_illustrious_character_select"   : "WAI illustrious Character Select CN",
+    "lanner0403_illustrious_character_select_en" : "WAI illustrious Character Select EN",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
