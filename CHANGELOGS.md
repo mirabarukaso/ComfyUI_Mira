@@ -1,5 +1,18 @@
 ## Change Logs
 
+#### 2024.12.28 Ver 0.4.7.0    
+・Add `Upscale Image By Model Then Resize`    
+・Add `Function Select Auto`    
+・Change `Canvas Creator Advanced` now returns `HiResMultiplier` same as input   
+・Change `func2` in `Function Swap` change to `optional`   
+
+#### 2024.12.22 Ver 0.4.6.1    
+・Remove `Debug` from `Create Canvas Advanced`   
+・Change `Create Canvas` now support max width and height to 4096
+
+#### 2024.12.10 Ver 0.4.6.0    
+・Add `TextLoopCombiner` and `TextWildcardSeprator`    
+
 #### 2024.11.08 Ver 0.4.5.6    
 ・Rename two nodes `ImageColorTransfer` and `SeedGenerator`    
 
