@@ -703,15 +703,17 @@ Apparently that only happens with ComfyUI...
 | `lora_stack`  | New `STRING` array with current LoRA name and strength information. AS is when `bypass` is `Enable` or `strengths` are all `0`. |
 
 ***Reminder: For the 2nd Hires fix, the same LoRA name will be ignored.*** 
+
 ------
-## WAI illustrious Character Select
-ComfyUI version of [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)    
+### WAI illustrious Character Select
+#### ComfyUI version of [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)    
 A 129MB thumbnail will download on first run, may take a few seconds, please don't panic....        
 
 To use Remote `AI Promor Generator`, you need add your private `API KEY` to `custom_nodes/ComfyUI_Mira/json/settings.json`    
 
 Example   
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_wai_character_selecter.png" width=35% height=35%>   
+
 ------
 ## Overview - Regional Conditioning Mask with HiRes Fix
    
