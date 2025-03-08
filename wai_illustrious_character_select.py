@@ -28,7 +28,7 @@ llm_config = {
 }
 
 wai_illustrious_character_select_files = [       
-    {'name': 'settings', 'file_path': os.path.join(json_folder, 'settings.json'), 'url': 'local'},
+    {'name': 'settings', 'file_path': os.path.join(json_folder, 'settings.json'), 'url': 'https://raw.githubusercontent.com/mirabarukaso/ComfyUI_Mira/refs/heads/main/json/wai_settings.json'},
     {'name': 'wai_character', 'file_path': os.path.join(json_folder, 'wai_characters.csv'), 'url':'https://raw.githubusercontent.com/mirabarukaso/character_select_stand_alone_app/refs/heads/main/json/wai_characters.csv'},
     {'name': 'wai_image', 'file_path': os.path.join(json_folder, 'wai_character_thumbs.json'), 'url': 'https://huggingface.co/datasets/flagrantia/character_select_stand_alone_app/resolve/main/wai_character_thumbs.json'},
 ]
