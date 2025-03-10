@@ -1,0 +1,6 @@
+numpy
+opencv_python
+Pillow
+Requests
+torch
+torchvision
