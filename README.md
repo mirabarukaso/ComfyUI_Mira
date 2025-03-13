@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 ## Functions   
 ### Mask
-#### Create Tilling PNG Mask 
+Create Tilling PNG Mask   
 Create a `Tilling` PNG image with Color Mask stack for regional conditioning mask.   
 Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-regional-prompter)
 
@@ -54,7 +54,7 @@ Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-r
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_f.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2rgb_12321_t.png" width=35% height=35%> |
 
 ------
-#### Create Nested Rectangles PNG Mask 
+Create Nested Rectangles PNG Mask   
 Create a `Nested Rectangles` PNG image with Color Mask stack for regional conditioning mask.   
 Ideas from [Watermark Removal](https://github.com/mirabarukaso/ComfyUI_Mira?tab=readme-ov-file#create-watermark-removal-mask)   
 
@@ -87,7 +87,7 @@ Ideas from [Watermark Removal](https://github.com/mirabarukaso/ComfyUI_Mira?tab=
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createnestedpng.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createnestedpng_ub.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createnestedpng_ubr_b16.png" width=35% height=35%> |
 
 ------
-#### PngColor Masks to Mask List
+PngColor Masks to Mask List   
 Convert ranged `PngColorMasks` to Masks with(or without) Blur. **Dunno if there is a proper way to solve the output problem.**   
 Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 
@@ -107,7 +107,7 @@ Ideas from [ComfyUI_essentials](https://github.com/cubiq/ComfyUI_essentials)
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2mask_solid.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_mask2mask_blur.png" width=35% height=35%> |
 
 ------
-#### PngColor Mask to HEX String
+PngColor Mask to HEX String   
 Convert specified `Index` of `PngColorMasks` to HEX value. e.g. `RGB(255,0,255)` to `#FF00FF`
 
 | Inputs | Description |
@@ -120,7 +120,7 @@ Convert specified `Index` of `PngColorMasks` to HEX value. e.g. `RGB(255,0,255)`
 | `mask_color` | The color RGB in HEX for `Regional Conditioning By Color Mask (Inspire)` or etc. |
 
 ------
-#### PngColor Mask to INT RGB
+PngColor Mask to INT RGB    
 Convert specified `Index` `PngColorMasks` to RGB value for `🔧 Mask From Color` or etc. e.g. `RGB(255,0,255)` 
 
 | Inputs | Description |
@@ -135,7 +135,7 @@ Convert specified `Index` `PngColorMasks` to RGB value for `🔧 Mask From Color
 | `B` | Blue |
 
 ------
-#### PngColor Masks to List
+PngColor Masks to List   
 Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to solve the output problem.**
 
 | Inputs | Description |
@@ -148,7 +148,7 @@ Convert ranged `PngColorMasks` to HEX value. **Dunno if there is a proper way to
 | `mask_color_[0-9]` | The color RGB in HEX for `Regional Conditioning By Color Mask (Inspire)` or etc. |
 
 ------
-#### PngRectangles to Mask (List)
+PngRectangles to Mask (List)    
 Convert ranged `PngRectangles` to Mask with Mask `Intenisity` and `Blur` function.
 
 | Inputs (Common) | Description |
@@ -176,7 +176,7 @@ Example
 | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_pngrect2masks.png" width=35% height=35%> | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_pngrect2masks_overlap.png" width=35% height=35%>  |
 
 ------
-#### Create Mask With Canvas   
+Create Mask With Canvas      
 Create a new `mask` on defined `cavans`.   
 In case you need `merge` multiple `masks`, try search `MaskComposite` with `operation add`.   
     
@@ -199,7 +199,7 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_createmaskwithcavans.png" width=35% height=35%>   
 
 ------
-#### Create Watermark Removal Mask
+Create Watermark Removal Mask     
 Creates multiple `masks` at the corners of the image for subsequent watermark detection and removal.    
 Ideas from [comfyui-lama-remover](https://github.com/Layer-norm/comfyui-lama-remover)
 
@@ -229,7 +229,7 @@ Ideas from [comfyui-lama-remover](https://github.com/Layer-norm/comfyui-lama-rem
 
 ------
 ### Util
-#### Create Canvas
+Create Canvas    
 Create Canvas information `Width` and `Height` for Latent with Landscape switch. There's an advanced version also controls `Batch` and `HiResMultiplier`.
 
 | Inputs | Description |
@@ -252,7 +252,7 @@ Create Canvas information `Width` and `Height` for Latent with Landscape switch.
 | `HiResMultiplier`  | Same as input |
 
 ------
-#### Random Tilling Layouts
+Random Tilling Layouts    
 Random Tilling Mask `Layout` Generator for `Create Tilling PNG Mask -> Layout`   
 
 **Highly recommend connect the output `layout` or `Create PNG Mask -> Debug` to `ShowText` node.**   
@@ -286,7 +286,7 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_random_layouts.png" width=35% height=35%>   
 
 ------
-#### Random Nested Mask Layouts
+Random Nested Mask Layouts    
 Random Nested Mask `Layout` Generator for `Create Nested PNG Mask -> Layout`  
     
 **Known Issue** same as upper one.
@@ -306,12 +306,12 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_random_nested_layouts.png" width=35% height=35%>   
 
 ------
-#### Seed Generator
+Seed Generator    
 Random `Seed` Generator for `Random Layouts`, same as normal random seed generator.   
 
 ------
-### Util/Image
-#### Simple Image Adjustment Utilities    
+### Util/Image    
+Simple Image Adjustment Utilities    
 
 All nodes can be used in a daisy chain.    
 
@@ -331,7 +331,7 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_image_adjust.png" width=35% height=35%>   
 
 ------
-#### Image Color Transfer    
+Image Color Transfer      
    
 Refer to    
 https://github.com/pengbo-learn/python-color-transfer/    
@@ -355,7 +355,7 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_color_transfer.png" width=35% height=35%>   
 
 ------
-#### Upscale Image By Model Then Resize
+Upscale Image By Model Then Resize     
 
 This is an experimental feature for zooming in an image on a model and then zooming out to a specified size (a multiple of 8 in length and width).     
 
@@ -376,7 +376,7 @@ Use 2x model for fast scale and resize, 8x model for best result.
 
 ------
 ### Text
-#### Text Switcher
+Text Switcher    
 Selects `text1` or `text2` depending on the `use_text2` and automatically adds `common_text` for output.
 
 | Inputs | Description |
@@ -396,7 +396,7 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_text_switcher.png" width=35% height=35%>   
 
 ------
-#### Text Combiner 
+Text Combiner      
 Simply combine text inputs together, switch them to `input node` as you wish, then connect to `Text Switcher` or `Simple Text Box`   
 
 | Inputs | Description |
@@ -419,7 +419,7 @@ For `Text Combiner Six`, you can use my naming logic to make the whole workflow 
 | `text6` | Any addional informaion you want. e.g. `glowing eyes, ` |
 
 ------
-#### Text Switcher Two/Three Ways
+Text Switcher Two/Three Ways     
 Found a satisfied random number and didn't want to mess up your regional nodes too much?   
 **Reminder: In case you are not use a symmetrical(`1:1:1`) Mask, do not forget your `Mask Layout`**
 
@@ -449,7 +449,7 @@ Three ways
 | 6 | 321 |
 
 ------
-#### Text Loop Combiner   
+Text Loop Combiner     
 Combine input text with current text into a single text array with seprator.    
 
 | Inputs | Description |
@@ -462,7 +462,7 @@ Combine input text with current text into a single text array with seprator.
 | --- | --- |
 | `text_out` | Combined text |
 
-#### Text Wildcard Seprator   
+Text Wildcard Seprator      
 For someone who wants to select wildcard contents by themselves.    
 Split the wildcard text (TextBox) into multiple segments according to specific characters, and select the specified segment number to output.    
 
@@ -481,7 +481,7 @@ Example
 
 ------
 ### Logic
-#### Boolean
+Boolean    
 Few `Boolean` stacks.   
 
 | Inputs | Description |
@@ -495,7 +495,7 @@ Few `Boolean` stacks.
 | `bool_N`  | Bool value. |
 | `bool_list`  | Boolean List to `N Bool from List` |
 
-#### Logic NOT
+Logic NOT    
 Always return `not Boolean`
     
 | Input | Output |
@@ -503,7 +503,7 @@ Always return `not Boolean`
 | `True` | `False` |
 | `False` | `True` |
 
-#### Even or Odd
+Even or Odd    
 Check if a `Integer` is odd or even.   
 
 | Input | Output |
@@ -511,7 +511,7 @@ Check if a `Integer` is odd or even.
 | `Even` | `False` |
 | `Odd` | `True` |
 
-#### None To Zero
+None To Zero    
 Check if the `check_none` is None, then set return value to `0`.   
 
 This is a `spoofing Node` to `mess up` with `other Nodes`. Imaging everyothers could follow this rule to create their `Custom Node`, the `ComfyUI` could be more `Logic`.   
@@ -531,7 +531,7 @@ This is a `spoofing Node` to `mess up` with `other Nodes`. Imaging everyothers c
 | `none_image` | `AS IS` when `NOT None`, and `None` when `None`  |
 
 ------
-#### Even or Odd List
+Even or Odd List   
 Checks whether each `digit` (decimal) of the input `integer` is odd or even, and returns `true` for even numbers and `false` for odd numbers.    
 The final output is a `Boolean List` which is connected to the `Boolean List Interpreter`.    
 If the input `Number of digits` is less than the `Requirement`, it will go back to the lowest digit to re-recognize and complete the list,    
@@ -553,7 +553,7 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_evenoroddlist.png" width=35% height=35%>   
 
 ------
-#### Function Swap
+Function Swap    
 Swap `func1` and `func2` outputs depends on `trigger`.
 
 **UPDATE!!!**
@@ -572,7 +572,7 @@ Now `func2` is `optional`, if `NOT connected` or `function bypassed`, both `Outp
 | `False` | func1 | func2 |
 
 ------
-#### Function Select Auto
+Function Select Auto    
 Automatically select `func1` or `func2` outputs depends on which one is `NOT None`.   
 Supports `ANY(*)` inputs, `func1` has higher priority.   
     
@@ -596,7 +596,7 @@ Example
 ### Logic-74
 In case you didn't know about `74 family`, refer to [List of 7400-series integrated circuits](https://en.wikipedia.org/wiki/List_of_7400-series_integrated_circuits)   
 
-#### SN74LVC1G125
+SN74LVC1G125    
 Single Bus Buffer Gate With Enable   
     
 |  OE   |  A   |
@@ -604,11 +604,10 @@ Single Bus Buffer Gate With Enable
 | True  |  Y   |
 | False | None |
 
-------
-#### SN74HC1G86
+SN74HC1G86    
 Single 2-Input Exclusive-OR(XOR) Gate    
 
-#### SN74HC86
+SN74HC86    
 Quadruple 2-Input Exclusive-OR(XOR) Gates   
     
 |   A   |   B   |   Y  |
@@ -623,10 +622,10 @@ Example
 
 ------
 ### Numeral
-#### Convert Numeral to String
+Convert Numeral to String    
 Convert `Integer` or `Float` to String.   
 
-#### Floats
+Floats
 And, few `Float` stacks.   
 
 | Inputs | Description |
@@ -645,7 +644,7 @@ Addition, Subtraction, Multiplication and Division.
 
 **Multiplier now renamed to Arithmetic.**
 
-#### Multiplication
+Multiplication    
 `Integer` and `Float` Multiplier with various output interfaces.   
 There is also an `Integer to Float` Multiplier, connect to `Seed Generator` (x0.1) for `Even or Odd` and `Text Switcher`.
 
@@ -661,7 +660,7 @@ There is also an `Integer to Float` Multiplier, connect to `Seed Generator` (x0.
 | `String`  | Convert result to `String`. |
 
 ------
-#### Subtraction
+Subtraction    
 `Integer` Subtraction with various output interfaces.   
 
 **Mostly usage for `Create Mask With Cavans`, connect `Y` with `Result` then connect `height` with `subtracted_value`.**
@@ -682,7 +681,7 @@ Example
 
 ------
 ### LoRA
-#### LoRA Loader With Name Stacker
+LoRA Loader With Name Stacker    
 
 A simple LoRA loader with name stacker for any website that could not identify all LoRAs' information from image.   
 Apparently that only happens with ComfyUI...    
@@ -711,8 +710,8 @@ Apparently that only happens with ComfyUI...
 ***Reminder: For the 2nd Hires fix, the same LoRA name will be ignored.*** 
 
 ------
-### WAI illustrious Character Select
-#### ComfyUI version of [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)    
+### WAI illustrious Character Select    
+ComfyUI version of [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)    
 A 129MB thumbnail will download on first run, may take a few seconds, please don't panic....        
 
 To use Remote `AI Promor Generator`, you need add your private `API KEY` to `custom_nodes/ComfyUI_Mira/json/settings.json`    
@@ -732,7 +731,7 @@ Reminder: Due to ComfyUI update this example may outdated.
 
 ## Latest Change Log   
 
-#### 2025.03.08 Ver 0.4.8.0    
+2025.03.08 Ver 0.4.8.0    
 ・Add `WAI illustrious Character Select`    
 ・Add `AI Prompt Generator`    
 ・Add `Local AI Prompt Generator (llama.cpp)`    
