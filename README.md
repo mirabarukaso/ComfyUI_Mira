@@ -373,6 +373,7 @@ For example, if the input model zooms the image 4x by default and the node is se
 | `image` | Output Image |
 
 Use 2x model for fast scale and resize, 8x model for best result.   
+
 ------
 ### Text
 #### Text Switcher
