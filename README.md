@@ -22,6 +22,8 @@ pip install -r requirements.txt
 
 ## Functions   
 ### Mask
+Before you start, check [the simple example for Regional Condition](https://github.com/mirabarukaso/ComfyUI_Mira/issues/12#issuecomment-2727190727)
+
 Create Tilling PNG Mask   
 Create a `Tilling` PNG image with Color Mask stack for regional conditioning mask.   
 Ideas from [sd-webui-regional-prompter](https://github.com/hako-mikan/sd-webui-regional-prompter)
