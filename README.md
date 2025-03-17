@@ -13,7 +13,7 @@ or
 git clone https://github.com/mirabarukaso/ComfyUI_Mira.git
 ```
 
-If you got error report on loading, you may need run the following commands:   
+If you got error report on loading, you may need run the following command in `ComfyUI\custom_nodes\ComfyUI_Mira` or `ComfyUI\custom_nodes\mira`:   
 ```
 pip install -r requirements.txt
 ```
