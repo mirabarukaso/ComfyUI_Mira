@@ -333,7 +333,7 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_image_adjust.png" width=35% height=35%>   
 
 ------
-Image Color Transfer      
+### Image Color Transfer      
    
 Refer to    
 https://github.com/pengbo-learn/python-color-transfer/    
