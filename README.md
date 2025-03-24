@@ -711,6 +711,43 @@ Apparently that only happens with ComfyUI...
 
 ***Reminder: For the 2nd Hires fix, the same LoRA name will be ignored.*** 
 
+LoRA from Text
+
+This is a blend node that extracts and blends the LoRA information you enter in webui format into the model, as well as the clip.    
+
+Format support:
+```
+<lora:loraname>
+<lora:loraname:model str>
+<lora:loraname:model str:clip str>
+<lora:loraname:model str:clip str:hires model str:hires clip str>
+
+To bypass current LoRA in 1st or 2nd stage, set model and clip str both to 0.  
+<lora:loraname:0:0:1:1>     Only works in 2nd
+<lora:loraname:1:1:0:0>     Only works in 1st
+<lora:loraname:0:0:0:0>     Works, but WHY??? Just delete it.
+```
+
+Prompt Example:    
+```
+solo, masterpiece, best quality, amazing quality,
+<lora:il\[IL]Suurin2-20241120-0214.safetensors:1> suurin
+```
+
+| Inputs | Description |
+| --- | --- |
+| `model`  | From your Model node. |
+| `clip`  | From your Clip node. |
+| `text`  | Text prompt with lora and trigger words. |
+
+| Outputs | Description |
+| --- | --- |
+| `model`  | LoRA strength for Model. |
+| `clip`  |  LoRA strength for Clip. |
+| `model_to_hifix`  | LoRA strength for Model. |
+| `clip_to_hifix`  |  LoRA strength for Clip. |
+| `plain_text`  | Bypass current LoRA. |
+
 ------
 ### WAI illustrious Character Select    
 ComfyUI version of [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)    
@@ -732,6 +769,8 @@ Reminder: Due to ComfyUI update this example may outdated.
 ------
 
 ## Latest Change Log   
+2025.03.25 Ver 0.4.9.0       
+・Add `LoRA from Text`    
 
 2025.03.08 Ver 0.4.8.0    
 ・Add `WAI illustrious Character Select`    

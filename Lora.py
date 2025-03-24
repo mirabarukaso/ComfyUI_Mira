@@ -1,8 +1,53 @@
 import os
+import re
 import comfy.utils
 import folder_paths as comfy_paths
 
 cat = "Mira/Lora"
+
+def extract_bracket_content(input_text: str) -> list:
+    pattern = r'<lora:[^>]*>'
+    return re.findall(pattern, input_text)
+
+def parse_content(content: str) -> list:
+    inner_content = content[1:-1]  
+    if not inner_content.startswith('lora:') or inner_content == 'lora:':
+        return None
+        
+    parts = inner_content[5:].split(':') 
+    name = parts[0]
+    if not name:
+        return None
+    
+    values = [1.0, 1.0, 1.0, 1.0]
+    try:
+        if len(parts) > 1:
+            param_count = len(parts) - 1
+            float_vals = [float(val) for val in parts[1:]]
+            if param_count == 2:
+                values = [float_vals[0], float_vals[1], float_vals[0], float_vals[1]]
+            elif param_count >= 1:
+                for i, val in enumerate(float_vals[:4]):
+                    values[i] = val
+        return [name] + values
+    except ValueError:
+        return None
+
+def remove_brackets(input_text: str) -> str:
+    pattern = r'<lora:[^>]*>'
+    return re.sub(pattern, '', input_text).strip()
+
+def process_text(input_text: str) -> tuple[list, str]:
+    bracket_contents = extract_bracket_content(input_text)
+    
+    lora_result = []
+    for content in bracket_contents:
+        parsed = parse_content(content)
+        if parsed is not None:
+            lora_result.append(parsed)
+            
+    plain_text = remove_brackets(input_text)    
+    return lora_result, plain_text
 
 class LoRALoaderWithNameStacker:
     '''
@@ -82,7 +127,7 @@ class LoRALoaderWithNameStacker:
             self.loaded_lora = (lora_path, lora)
         
         if lora is None:
-            print('Mira: [ERROR][LoRALoaderWithNameStacker] Load LoRA failed return with original Model and Clip >> ' + lora_name)        
+            print(f'Mira: [ERROR][LoRALoaderWithNameStacker] Load LoRA failed return with original Model and Clip >> {lora_name}')        
             return (model, clip, lora_stack)
 
         model_lora, clip_lora = comfy.sd.load_lora_for_models(model, clip, lora, strength_model, strength_clip)
@@ -94,5 +139,71 @@ class LoRALoaderWithNameStacker:
             if False is (lora_name in lora_stack):
                 lora_stack = lora_stack + '<lora:' + lora_name + ':' + str(strength_model) + ':' + str(strength_clip) + '>'
                                 
-        return (model_lora, clip_lora, lora_stack)
+        return (model_lora, clip_lora, lora_stack,)
         
+class LoRAfromText:
+    '''
+    LoRA from Text
+    
+    <loraname>
+    <loraname:model str>
+    <loraname:model str:clip str>
+    <loraname:model str:clip str:hires model str:hires clip str>
+    
+    Inputs:
+    model               - From your Model node.
+    clip                - From your Clip node.
+    text                - Text prompt with lora and trigger words
+            
+    Outputs:
+    model               - Connect to 1st sampler MODEL
+    clip                - Connect to yout positive CLIP Text Encoder
+    model_to_hifix      - Connect to 2nd sampler MODEL, e.g. Hi-res Fix
+    clip_to_hifix       - In case you need change prompts in 2nd stage
+    plain_text          - Connect to your positive CLIP Text Encoder or text combiner
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):        
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "clip": ("CLIP", ),
+                "text": ("STRING", {
+                    "multiline": True, 
+                }),
+            },
+        }
+        
+    RETURN_TYPES = ("MODEL", "CLIP", "MODEL", "CLIP", "STRING")
+    RETURN_NAMES = ("model", "clip", "model_to_hifix", "clip_to_hifix", "plain_text")
+    FUNCTION = "LoRAfromTextEx"
+    CATEGORY = cat
+    
+    def LoRAfromTextEx(self, model, clip, text):                        
+        lora_list, plain_text = process_text(text)
+        #print(f'Mira: [LoRALoaderWithNameStacker] lora_list >> {lora_list}')
+        #print(f'Mira: [LoRALoaderWithNameStacker] plain_text >> {plain_text}')
+        
+        model_1 = model
+        clip_1 = clip        
+        model_2 = model
+        clip_2 = clip
+        for lora_data in lora_list:                
+            lora_name, s1, c1, s2, c2 = lora_data[0], lora_data[1], lora_data[2], lora_data[3], lora_data[4]
+            #print(f'Mira: [LoRALoaderWithNameStacker] lora_data >> {lora_name} {s1} {c1} {s2} {c2}')
+            
+            lora_path = comfy_paths.get_full_path("loras", lora_name)
+            if lora_path is None:
+                print(f'Mira: [ERROR][LoRALoaderWithNameStacker] Load LoRA failed lora_path >> {lora_path}')        
+            else:
+                lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
+                if 0!=s1 and 0!=c1:
+                    model_1, clip_1 = comfy.sd.load_lora_for_models(model_1, clip_1, lora, s1, c1)
+                    
+                if 0!=s2 and 0!=c2:
+                    model_2, clip_2 = comfy.sd.load_lora_for_models(model_2, clip_2, lora, s2, c2)
+        
+        return (model_1, clip_1, model_2, clip_2, plain_text)
+    
+    
