@@ -744,9 +744,9 @@ solo, masterpiece, best quality, amazing quality,
 | --- | --- |
 | `model`  | LoRA strength for Model. |
 | `clip`  |  LoRA strength for Clip. |
-| `model_to_hifix`  | LoRA strength for Model. |
-| `clip_to_hifix`  |  LoRA strength for Clip. |
-| `plain_text`  | Bypass current LoRA. |
+| `model_to_hifix`  | LoRA strength for 2nd Model. |
+| `clip_to_hifix`  |  LoRA strength for 2nd Clip(optional). |
+| `plain_text`  | Text without LoRA info, connect to CLIP Text Encoder. |
 
 ------
 ### WAI illustrious Character Select    
