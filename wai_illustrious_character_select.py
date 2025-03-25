@@ -18,8 +18,6 @@ json_folder = os.path.join(current_dir, "json")
 character_list_cn = ''
 character_list_en = ''
 character_dict = {}
-wai_image_list = []
-wai_image_dict = {}
 
 llm_config = {
     "base_url": "https://api.groq.com/openai/v1/chat/completions",
@@ -29,8 +27,7 @@ llm_config = {
 
 wai_illustrious_character_select_files = [       
     {'name': 'settings', 'file_path': os.path.join(json_folder, 'settings.json'), 'url': 'https://raw.githubusercontent.com/mirabarukaso/ComfyUI_Mira/refs/heads/main/json/settings.json'},
-    {'name': 'wai_character', 'file_path': os.path.join(json_folder, 'wai_characters.csv'), 'url':'https://raw.githubusercontent.com/mirabarukaso/character_select_stand_alone_app/refs/heads/main/json/wai_characters.csv'},
-    {'name': 'wai_image', 'file_path': os.path.join(json_folder, 'wai_character_thumbs.json'), 'url': 'https://huggingface.co/datasets/flagrantia/character_select_stand_alone_app/resolve/main/wai_character_thumbs.json'},
+    {'name': 'wai_character', 'file_path': os.path.join(json_folder, 'wai_characters.csv'), 'url':'https://raw.githubusercontent.com/mirabarukaso/character_select_stand_alone_app/refs/heads/main/json/wai_characters.csv'}
 ]
 
 prime_directive = textwrap.dedent("""\
@@ -251,7 +248,6 @@ class illustrious_character_select:
     Outputs:
     prompt                - Final prompt
     info                  - Debug info
-    thumb_image           - Thumb image from Json file, you can use it for preview...
     '''                       
         
     @classmethod
@@ -275,8 +271,8 @@ class illustrious_character_select:
             },
         }
                         
-    RETURN_TYPES = ("STRING","STRING", "IMAGE",)
-    RETURN_NAMES = ("prompt", "info", "thumb_image",)
+    RETURN_TYPES = ("STRING","STRING",)
+    RETURN_NAMES = ("prompt", "info",)
     FUNCTION = "illustrious_character_select_ex"
     CATEGORY = cat
     
@@ -294,12 +290,7 @@ class illustrious_character_select:
         else:
             rnd_character = character
 
-        chara = character_dict[rnd_character]              
-        md5_chara = get_md5_hash(chara.replace('(','\\(').replace(')','\\)'))         
-        thumb_image = EncodeImage(Image.new('RGB', (128, 128), (128, 128, 128)))        
-        if wai_image_dict.keys().__contains__(md5_chara):
-            thumb_image = base64_to_image(wai_image_dict.get(md5_chara))
-        
+        chara = character_dict[rnd_character]                      
         opt_chara = chara.replace('(', '\\(').replace(')', '\\)')          
         if not opt_chara.endswith(','):
             opt_chara = f'{opt_chara},' 
@@ -310,7 +301,7 @@ class illustrious_character_select:
         prompt = f'{custom_prompt}{opt_chara}'
         info = f'Character:{rnd_character}[{opt_chara}]\nCustom Promot:{custom_prompt}'
                 
-        return (prompt, info, thumb_image, )
+        return (prompt, info, )
     
 class illustrious_character_select_en:
     '''
@@ -339,8 +330,8 @@ class illustrious_character_select_en:
             },
         }
                         
-    RETURN_TYPES = ("STRING","STRING", "IMAGE",)
-    RETURN_NAMES = ("prompt", "info", "thumb_image",)
+    RETURN_TYPES = ("STRING","STRING",)
+    RETURN_NAMES = ("prompt", "info",)
     FUNCTION = "illustrious_character_select_en_ex"
     CATEGORY = cat
     
@@ -358,12 +349,7 @@ class illustrious_character_select_en:
         else:
             rnd_character = character
             
-        chara = rnd_character                                              
-        md5_chara = get_md5_hash(chara.replace('(','\\(').replace(')','\\)'))         
-        thumb_image = EncodeImage(Image.new('RGB', (128, 128), (128, 128, 128)))        
-        if wai_image_dict.keys().__contains__(md5_chara):
-            thumb_image = base64_to_image(wai_image_dict.get(md5_chara))
-        
+        chara = rnd_character                                                      
         opt_chara = chara.replace('(', '\\(').replace(')', '\\)')          
         if not opt_chara.endswith(','):
             opt_chara = f'{opt_chara},'   
@@ -374,7 +360,7 @@ class illustrious_character_select_en:
         prompt = f'{custom_prompt}{opt_chara}'
         info = f'Character:{rnd_character}[{opt_chara}]\nCustom Promot:{custom_prompt}'
                 
-        return (prompt, info, thumb_image, )
+        return (prompt, info, )
 
 def download_file(url, file_path):   
     response = requests.get(url)
@@ -399,7 +385,6 @@ def main():
     global character_list_en
     global character_dict
     global llm_config
-    global wai_image_dict
         
     # download file
     for item in wai_illustrious_character_select_files:
@@ -418,8 +403,6 @@ def main():
                 for line in lines:
                     key, value = line.split(',')
                     character_dict[key.strip()]=value.strip()
-            elif 'wai_image' == name:
-                wai_image_dict = json.load(file)    
         
         character_list_cn = list(character_dict.keys())    
         character_list_cn.insert(0, "random")

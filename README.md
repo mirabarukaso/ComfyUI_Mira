@@ -733,7 +733,6 @@ Prompt Example:
 solo, masterpiece, best quality, amazing quality,
 <lora:il\[IL]Suurin2-20241120-0214.safetensors:1> suurin
 ```
-
 | Inputs | Description |
 | --- | --- |
 | `model`  | From your Model node. |
@@ -751,7 +750,13 @@ solo, masterpiece, best quality, amazing quality,
 ------
 ### WAI illustrious Character Select    
 ComfyUI version of [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)    
-A 129MB thumbnail will download on first run, may take a few seconds, please don't panic....        
+~A 129MB thumbnail will download on first run, may take a few seconds, please don't panic....~       
+
+**Due to useless for ComfyUI, thumbnail removed.**    
+You can manually delete `mira/json/wai_character_thumbs.json`, and you can also delete `wai_characters.csv` for new Character List download           
+If you really need those thumbnail    
+Try [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)     
+And, Online Character Select Simple Advanced App [Hugging Face Space](https://huggingface.co/spaces/flagrantia/character_select_saa)       
 
 To use Remote `AI Promor Generator`, you need add your private `API KEY` to `custom_nodes/ComfyUI_Mira/json/settings.json`    
 
@@ -769,8 +774,9 @@ Reminder: Due to ComfyUI update this example may outdated.
 ------
 
 ## Latest Change Log   
-2025.03.25 Ver 0.4.9.0       
+2025.03.25 Ver 0.4.9.1          
 ・Add `LoRA from Text`    
+・Remove `thumb_image` from `WAI illustrious Character Select`    
 
 2025.03.08 Ver 0.4.8.0    
 ・Add `WAI illustrious Character Select`    
