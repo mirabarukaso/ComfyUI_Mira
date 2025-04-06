@@ -977,7 +977,7 @@ class UpscaleImageByModelThenResize:
                     "min": 0.1, 
                     "max": 8
                 }),  
-                "resize_method" : (['nearest', 'nearest-exact', 'bilinear', 'bicubic'], ),
+                "resize_method" : (['nearest', 'nearest-exact', 'bilinear', 'bicubic', 'lanczos'], ),
             },
         }
         
@@ -1007,6 +1007,8 @@ class UpscaleImageByModelThenResize:
                 interpolation_mode = T.InterpolationMode.BILINEAR
             elif resize_method == 'bicubic':
                 interpolation_mode = T.InterpolationMode.BICUBIC
+            elif resize_method == 'lanczos':
+                interpolation_mode = T.InterpolationMode.LANCZOS
                 
             size = (new_height, new_width)
             transform = T.Resize(size, interpolation=interpolation_mode)
