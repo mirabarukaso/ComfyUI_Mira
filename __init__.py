@@ -8,6 +8,7 @@ from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, 
 from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
 from .Lora import LoRALoaderWithNameStacker, LoRAfromText
 from .wai_illustrious_character_select import llm_prompt_gen_node, illustrious_character_select, illustrious_character_select_en, local_llm_prompt_gen
+from .image_saver.image_saver import ImageSaver
 
 def __init__(self):
     pass
@@ -96,6 +97,8 @@ NODE_CLASS_MAPPINGS = {
     "illustrious_character_select"   : illustrious_character_select,
     "illustrious_character_select_en" : illustrious_character_select_en,
     "local_llm_prompt_gen"           : local_llm_prompt_gen,
+    
+    "ImageSaverMira"                 : ImageSaver,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -181,6 +184,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "local_llm_prompt_gen"           : "Local AI Prompt Generator (llama.cpp)",
     "illustrious_character_select"   : "WAI illustrious Character Select CN",
     "illustrious_character_select_en" : "WAI illustrious Character Select EN",
+    
+    "ImageSaverMira"                 : "Image Saver",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]

@@ -377,6 +377,20 @@ For example, if the input model zooms the image 4x by default and the node is se
 Use 2x model for fast scale and resize, 8x model for best result.   
 
 ------
+Image Saver without civitai stuff    
+**This is a tempoary node solution for my SAA ComfyUI API**    
+I need to ensure that node is stable and not changed by update.   
+
+Forked from https://github.com/alexopus/ComfyUI-Image-Saver    
+Remove download from civitai.com and easy remix    
+
+More detail at: https://github.com/mirabarukaso/character_select_stand_alone_app/issues/5    
+For common usage, use alexopus's ComfyUI-Image-Saver.     
+
+Comparison without and with    
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_image_saver.png" width=35% height=35%>   
+
+------
 ### Text
 Text Switcher    
 Selects `text1` or `text2` depending on the `use_text2` and automatically adds `common_text` for output.
@@ -774,12 +788,9 @@ Reminder: Due to ComfyUI update this example may outdated.
 ------
 
 ## Latest Change Log   
-2025.03.25 Ver 0.4.9.1          
+#### 2025.04.10 Ver 0.4.9.2    
+・Add `Image Saver`    
+
+#### 2025.03.25 Ver 0.4.9.1          
 ・Add `LoRA from Text`    
 ・Remove `thumb_image` from `WAI illustrious Character Select`    
-
-2025.03.08 Ver 0.4.8.0    
-・Add `WAI illustrious Character Select`    
-・Add `AI Prompt Generator`    
-・Add `Local AI Prompt Generator (llama.cpp)`    
-・Fix conflicting node name

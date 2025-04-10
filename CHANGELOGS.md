@@ -1,4 +1,9 @@
 ## Change Logs
+#### 2025.03.08 Ver 0.4.8.0    
+・Add `WAI illustrious Character Select`    
+・Add `AI Prompt Generator`    
+・Add `Local AI Prompt Generator (llama.cpp)`    
+・Fix conflicting node name
 
 #### 2024.12.28 Ver 0.4.7.0    
 ・Add `Upscale Image By Model Then Resize`    
