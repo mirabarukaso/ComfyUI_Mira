@@ -198,10 +198,10 @@ class LoRAfromText:
                 print(f'Mira: [ERROR][LoRALoaderWithNameStacker] Load LoRA failed lora_path >> {lora_path}')        
             else:
                 lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
-                if 0!=s1 and 0!=c1:
+                if 0!=s1 or 0!=c1:
                     model_1, clip_1 = comfy.sd.load_lora_for_models(model_1, clip_1, lora, s1, c1)
                     
-                if 0!=s2 and 0!=c2:
+                if 0!=s2 or 0!=c2:
                     model_2, clip_2 = comfy.sd.load_lora_for_models(model_2, clip_2, lora, s2, c2)
         
         return (model_1, clip_1, model_2, clip_2, plain_text)
