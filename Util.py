@@ -8,6 +8,8 @@ from .color_transfer import ColorTransfer
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel
 import torchvision.transforms as T
 import torchvision.transforms.functional as con
+import folder_paths
+import comfy.utils
 
 class AlwaysEqualProxy(str):
 #ComfyUI-Logic 
@@ -1017,4 +1019,29 @@ class UpscaleImageByModelThenResize:
             return (EncodeImage(new_img),)
         
         return (new_img,)
+
+class CheckpointLoaderSimple:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "ckpt_name": (folder_paths.get_filename_list("checkpoints"), {"tooltip": "The name of the checkpoint (model) to load."}),
+            }
+        }
+    RETURN_TYPES = ("MODEL", "CLIP", "VAE", "STRING")
+    RETURN_NAMES = ("MODEL", "CLIP", "VAE", "model_name")
+    OUTPUT_TOOLTIPS = ("The model used for denoising latents.",
+                       "The CLIP model used for encoding text prompts.",
+                       "The VAE model used for encoding and decoding images to and from latent space.",
+                       "The model_name used for Image Save node to save model name.")
+    FUNCTION = "load_checkpoint_ex"
+
+    CATEGORY = cat
+    DESCRIPTION = "Loads a diffusion model checkpoint, diffusion models are used to denoise latents."
+
+    def load_checkpoint_ex(self, ckpt_name):
+        ckpt_path = folder_paths.get_full_path_or_raise("checkpoints", ckpt_name)
+        out = comfy.sd.load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
+        final_out = (*out[:3], ckpt_name)
+        return final_out
     

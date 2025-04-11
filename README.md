@@ -788,6 +788,9 @@ Reminder: Due to ComfyUI update this example may outdated.
 ------
 
 ## Latest Change Log   
+#### 2025.04.11 Ver 0.4.9.3    
+・Add `Checkpoint Loader with Name`   
+
 #### 2025.04.10 Ver 0.4.9.2    
 ・Add `Image Saver`    
 
