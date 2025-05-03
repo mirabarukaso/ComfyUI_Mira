@@ -84,7 +84,18 @@ class ImageSaver:
             'plms': 'PLMS',
             'uni_pc_bh2': 'UniPC',
             'uni_pc': 'UniPC',
-            'lcm': 'LCM',
+            'lcm': 'LCM',            
+        }
+        
+        self.a1111_schedule_map = {
+            "karras": "Karras", 
+            "exponential": "Exponential", 
+            "sgm_uniform": "SGM Uniform", 
+            "kl_optimal": "KL Optimal", 
+            "simple": "Simple", 
+            "normal": "Normal", 
+            "ddim_uniform": "DDIM", 
+            "beta": "Beta",
         }
 
     def get_civitai_sampler_name(self, sampler_name, scheduler):
@@ -99,10 +110,15 @@ class ImageSaver:
 
             return civitai_name
         else:
-            if scheduler != 'normal':
-                return f"{sampler_name}_{scheduler}"
-            else:
-                return sampler_name
+            return sampler_name
+            
+    def get_a1111_schedule_name(self, scheduler_name):
+        # based on: https://github.com/civitai/civitai/blob/main/src/server/common/constants.ts#L122
+        if scheduler_name in self.a1111_schedule_map:
+            a1111_name = self.a1111_schedule_map[scheduler_name]
+            return a1111_name
+        else:
+            return scheduler_name
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -258,7 +274,7 @@ class ImageSaver:
 
         a111_params = (
             f"{positive_a111_params}{negative_a111_params}\n"
-            f"Steps: {steps}, Sampler: {civitai_sampler_name}, CFG scale: {cfg}, Seed: {seed_value}, "
+            f"Steps: {steps}, Sampler: {civitai_sampler_name}, Schedule type: {self.get_a1111_schedule_name(scheduler)}, CFG scale: {cfg}, Seed: {seed_value}, "
             f"Size: {width}x{height}{clip_skip_str}{model_hash_str}, Model: {basemodelname}{hashes_str}, Version: ComfyUI"
         )
 
