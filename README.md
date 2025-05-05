@@ -788,12 +788,5 @@ Reminder: Due to ComfyUI update this example may outdated.
 ------
 
 ## Latest Change Log   
-#### 2025.04.11 Ver 0.4.9.3    
-・Add `Checkpoint Loader with Name`   
-
-#### 2025.04.10 Ver 0.4.9.2    
-・Add `Image Saver`    
-
-#### 2025.03.25 Ver 0.4.9.1          
-・Add `LoRA from Text`    
-・Remove `thumb_image` from `WAI illustrious Character Select`    
+#### 2025.05.05 Ver 0.4.9.5    
+・Add `character_weight` & `insert_before_character` for `Character Select` nodes        

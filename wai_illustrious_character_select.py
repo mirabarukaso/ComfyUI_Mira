@@ -5,6 +5,7 @@ import textwrap
 import requests
 import json
 import base64
+import math
 from io import BytesIO
 from PIL import Image
 from .Util import EncodeImage
@@ -268,6 +269,8 @@ class illustrious_character_select:
                     "max": 0xffffffffffffffff,
                     "display": "input"
                 }),
+                "character_weight": ("FLOAT", {"default": 1.0, "min": 0.1, "max": 2.0, "step": 0.05}),
+                "insert_before_character" : ("BOOLEAN", {"default": False}),
             },
         }
                         
@@ -276,7 +279,7 @@ class illustrious_character_select:
     FUNCTION = "illustrious_character_select_ex"
     CATEGORY = cat
     
-    def illustrious_character_select_ex(self, character, random_action_seed, custom_prompt = ''):
+    def illustrious_character_select_ex(self, character, random_action_seed, character_weight, insert_before_character, custom_prompt = ''):
         chara = ''
         rnd_character = ''
         
@@ -291,14 +294,20 @@ class illustrious_character_select:
             rnd_character = character
 
         chara = character_dict[rnd_character]                      
-        opt_chara = chara.replace('(', '\\(').replace(')', '\\)')          
+        opt_chara = chara.replace('(', '\\(').replace(')', '\\)')                         
+                    
+        if not math.isclose(character_weight, 1.0):
+            opt_chara = '({}:{:0.2f})'.format(opt_chara, character_weight)
+            
         if not opt_chara.endswith(','):
             opt_chara = f'{opt_chara},' 
-        
+            
         if '' != custom_prompt and not custom_prompt.endswith(','):
             custom_prompt = f'{custom_prompt},'
-            
-        prompt = f'{custom_prompt}{opt_chara}'
+        
+        prompt = f'{opt_chara} {custom_prompt}'
+        if insert_before_character:            
+            prompt = f'{custom_prompt} {opt_chara}'
         info = f'Character:{rnd_character}[{opt_chara}]\nCustom Promot:{custom_prompt}'
                 
         return (prompt, info, )
@@ -327,6 +336,8 @@ class illustrious_character_select_en:
                     "max": 0xffffffffffffffff,
                     "display": "input"
                 }),
+                "character_weight": ("FLOAT", {"default": 1.0, "min": 0.1, "max": 2.0, "step": 0.05}),
+                "insert_before_character" : ("BOOLEAN", {"default": False}),
             },
         }
                         
@@ -335,7 +346,7 @@ class illustrious_character_select_en:
     FUNCTION = "illustrious_character_select_en_ex"
     CATEGORY = cat
     
-    def illustrious_character_select_en_ex(self, character, random_action_seed, custom_prompt = ''):
+    def illustrious_character_select_en_ex(self, character, random_action_seed, character_weight, insert_before_character, custom_prompt = ''):
         chara = ''
         rnd_character = ''
         
@@ -351,13 +362,19 @@ class illustrious_character_select_en:
             
         chara = rnd_character                                                      
         opt_chara = chara.replace('(', '\\(').replace(')', '\\)')          
+        
+        if not math.isclose(character_weight, 1.0):
+            opt_chara = '({}:{:0.2f})'.format(opt_chara, character_weight)
+
         if not opt_chara.endswith(','):
             opt_chara = f'{opt_chara},'   
             
         if '' != custom_prompt and not custom_prompt.endswith(','):
             custom_prompt = f'{custom_prompt},'
-            
-        prompt = f'{custom_prompt}{opt_chara}'
+                    
+        prompt = f'{opt_chara} {custom_prompt}'
+        if insert_before_character:            
+            prompt = f'{custom_prompt} {opt_chara}'
         info = f'Character:{rnd_character}[{opt_chara}]\nCustom Promot:{custom_prompt}'
                 
         return (prompt, info, )

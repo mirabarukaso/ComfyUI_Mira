@@ -1,4 +1,14 @@
 ## Change Logs
+#### 2025.04.11 Ver 0.4.9.3    
+・Add `Checkpoint Loader with Name`   
+
+#### 2025.04.10 Ver 0.4.9.2    
+・Add `Image Saver`    
+
+#### 2025.03.25 Ver 0.4.9.1          
+・Add `LoRA from Text`    
+・Remove `thumb_image` from `WAI illustrious Character Select`    
+
 #### 2025.03.08 Ver 0.4.8.0    
 ・Add `WAI illustrious Character Select`    
 ・Add `AI Prompt Generator`    
