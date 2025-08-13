@@ -1,4 +1,7 @@
 ## Change Logs
+#### 2025.08.14 Ver 0.4.9.4
+・Add `Checkpoint Loader with Name`       
+
 #### 2025.04.11 Ver 0.4.9.3    
 ・Add `Checkpoint Loader with Name`   
 

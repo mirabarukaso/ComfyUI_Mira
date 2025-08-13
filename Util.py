@@ -10,6 +10,9 @@ import torchvision.transforms as T
 import torchvision.transforms.functional as con
 import folder_paths
 import comfy.utils
+import base64
+import gzip
+from io import BytesIO
 
 class AlwaysEqualProxy(str):
 #ComfyUI-Logic 
@@ -1044,4 +1047,27 @@ class CheckpointLoaderSimple:
         out = comfy.sd.load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
         final_out = (*out[:3], ckpt_name)
         return final_out
-    
+
+class GzippedBase64ToImage:    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "base64text":  ("STRING", {"display": "input", "multiline": True}),
+            }
+        }
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    OUTPUT_TOOLTIPS = ("Load Gzipped Base64 Image string from SAA.",
+                       "Convert back to Image for other nodes.")
+    FUNCTION = "GzippedBase64ToImageEx"
+
+    CATEGORY = cat
+    DESCRIPTION = "Load Gzipped Base64 Image string from SAA. Convert back to Image for other nodes."
+
+    def GzippedBase64ToImageEx(self, base64text):        
+        compressed_data = base64.b64decode(base64text)
+        webp_data = gzip.decompress(compressed_data)
+        image = Image.open(BytesIO(webp_data))  
+        return (EncodeImage(image),)
+        
