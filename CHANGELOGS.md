@@ -1,6 +1,9 @@
 ## Change Logs
+#### 2025.08.15 Ver 0.4.9.5
+・Add `Image To Gzipped Base64`       
+
 #### 2025.08.14 Ver 0.4.9.4
-・Add `Checkpoint Loader with Name`       
+・Add `Gzipped Base64 To Image`       
 
 #### 2025.04.11 Ver 0.4.9.3    
 ・Add `Checkpoint Loader with Name`   

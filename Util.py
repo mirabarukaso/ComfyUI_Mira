@@ -1052,22 +1052,48 @@ class GzippedBase64ToImage:
     @classmethod
     def INPUT_TYPES(s):
         return {
-            "required": {
+            "required": {                
                 "base64text":  ("STRING", {"display": "input", "multiline": True}),
             }
         }
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
+    RETURN_TYPES = ("IMAGE", "INT")
+    RETURN_NAMES = ("image", "seed")
     OUTPUT_TOOLTIPS = ("Load Gzipped Base64 Image string from SAA.",
                        "Convert back to Image for other nodes.")
     FUNCTION = "GzippedBase64ToImageEx"
 
-    CATEGORY = cat
+    CATEGORY = cat_image
     DESCRIPTION = "Load Gzipped Base64 Image string from SAA. Convert back to Image for other nodes."
 
     def GzippedBase64ToImageEx(self, base64text):        
         compressed_data = base64.b64decode(base64text)
-        webp_data = gzip.decompress(compressed_data)
-        image = Image.open(BytesIO(webp_data))  
+        ungzip_data = gzip.decompress(compressed_data)
+        image = Image.open(BytesIO(ungzip_data))  
         return (EncodeImage(image),)
+
+class ImageToGzippedBase64:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "image": ("IMAGE", {
+                    "default": None, 
+                }), 
+            }
+        }
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("base64text",)
+    OUTPUT_TOOLTIPS = ("Load Image and Gzipped then convert to Base64 string for SAA.")
+    FUNCTION = "ImageToGzippedBase64Ex"
+
+    CATEGORY = cat_image
+    DESCRIPTION = "Load Image and Gzipped then convert to Base64 string for SAA."
+
+    def ImageToGzippedBase64Ex(self, image):
+        image_pil = DecodeImage(image)
+        temp = BytesIO()
+        image_pil.save(temp, format="png")        
+        compressed_data = gzip.compress(temp.getvalue())        
+        img_str_base64 = base64.b64encode(compressed_data).decode("ascii")
         
+        return (img_str_base64,)
