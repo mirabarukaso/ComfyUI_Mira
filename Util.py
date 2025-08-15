@@ -66,6 +66,16 @@ def Fixeight(num):
             new_num = math.floor(num) + 8 - residue    
     return new_num
 
+def decompress_base64_gzip(base64_string):
+    try:
+        gzipped_data = base64.b64decode(base64_string)
+        decompressed_data = gzip.decompress(gzipped_data)
+        return bytearray(decompressed_data)
+        
+    except Exception as error:
+        print(f'[decompress_base64_gzip]: Error on decompressing: {error}')
+        return None
+    
 class CanvasCreatorBasic:
     '''
     Create Canvas information Width and Height for Latent.
@@ -1056,8 +1066,8 @@ class GzippedBase64ToImage:
                 "base64text":  ("STRING", {"display": "input", "multiline": True}),
             }
         }
-    RETURN_TYPES = ("IMAGE", "INT")
-    RETURN_NAMES = ("image", "seed")
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
     OUTPUT_TOOLTIPS = ("Load Gzipped Base64 Image string from SAA.",
                        "Convert back to Image for other nodes.")
     FUNCTION = "GzippedBase64ToImageEx"
@@ -1065,11 +1075,18 @@ class GzippedBase64ToImage:
     CATEGORY = cat_image
     DESCRIPTION = "Load Gzipped Base64 Image string from SAA. Convert back to Image for other nodes."
 
-    def GzippedBase64ToImageEx(self, base64text):        
-        compressed_data = base64.b64decode(base64text)
-        ungzip_data = gzip.decompress(compressed_data)
-        image = Image.open(BytesIO(ungzip_data))  
-        return (EncodeImage(image),)
+    def GzippedBase64ToImageEx(self, base64text):
+        result = decompress_base64_gzip(base64text)        
+        img = Image.open(BytesIO(result))
+        img.load()
+        if img.mode == "RGBA":            
+            new_img = Image.new("RGB", img.size, (255,255,255))
+            new_img.paste(img, mask=img.split()[3])
+            image = EncodeImage(new_img)        
+        else:
+            image = EncodeImage(img)
+        
+        return (image,)
 
 class ImageToGzippedBase64:
     @classmethod
@@ -1092,7 +1109,7 @@ class ImageToGzippedBase64:
     def ImageToGzippedBase64Ex(self, image):
         image_pil = DecodeImage(image)
         temp = BytesIO()
-        image_pil.save(temp, format="png")        
+        image_pil.save(temp, format="png")
         compressed_data = gzip.compress(temp.getvalue())        
         img_str_base64 = base64.b64encode(compressed_data).decode("ascii")
         

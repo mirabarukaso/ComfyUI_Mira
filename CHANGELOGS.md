@@ -1,4 +1,8 @@
 ## Change Logs
+#### 2025.08.16 Ver 0.4.9.6
+・Bugfix for `Gzipped Base64 To Image`       
+・・RGBA to RGB for openpose     
+
 #### 2025.08.15 Ver 0.4.9.5
 ・Add `Image To Gzipped Base64`       
 
