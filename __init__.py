@@ -2,7 +2,7 @@ from .Arithmetic import IntMultiplication, IntToFloatMultiplication, FloatMultip
 from .Numeral import NumeralToString, OneFloat, TwoFloats, FourFloats, EightFloats, FloatListInterpreter1, FloatListInterpreter4, FloatListInterpreter8, StepsAndCfg
 from .Util import CanvasCreatorAdvanced, CanvasCreatorSimple, CanvasCreatorBasic, RandomTillingLayouts, RandomNestedLayouts, SeedGenerator
 from .Util import ImageGrayscale, ImageContrast, ImageSharpness, ImageBrightness, ImageSaturation, ImageHUE, ImageGamma, ImageToneCurve, ImageColorTransfer, ImageRGBChannel, UpscaleImageByModelThenResize
-from .Util import CheckpointLoaderSimple, GzippedBase64ToImage, ImageToGzippedBase64
+from .Util import CheckpointLoaderSimple, GzippedBase64ToImage, ImageToGzippedBase64, ReverseImageAndAllImages, StackImages
 from .Mask import CreateTillingPNGMask, CreateNestedPNGMask, PngColorMasksToString, PngColorMasksToRGB, PngColorMasksToStringList, PngColorMasksToMaskList, PngRectanglesToMask, PngRectanglesToMaskList, CreateMaskWithCanvas, CreateWatermarkRemovalMask, CreateSimpleMask
 from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombinerSix, TextCombinerTwo, TextSwitcherTwoWays, TextSwitcherThreeWays, TextLoopCombiner, TextWildcardSeprator
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, FunctionSelectAuto, NoneToZero
@@ -53,6 +53,8 @@ NODE_CLASS_MAPPINGS = {
     "CheckpointLoaderSimpleMira" : CheckpointLoaderSimple,
     "GzippedBase64ToImage"      : GzippedBase64ToImage,
     "ImageToGzippedBase64"      : ImageToGzippedBase64,
+    "ReverseImageAndAllImages"   : ReverseImageAndAllImages,
+    "StackImages"            : StackImages, 
 
     "CreateTillingPNGMask"      : CreateTillingPNGMask,
     "CreateNestedPNGMask"       : CreateNestedPNGMask,
@@ -143,6 +145,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CheckpointLoaderSimpleMira" : "Checkpoint Loader with Name",
     "GzippedBase64ToImage"      : "Gzipped Base64 To Image",
     "ImageToGzippedBase64"      : "Image To Gzipped Base64",
+    "ReverseImageAndAllImages"   : "Reverse Images And All Images",
+    "StackImages"               : "Stack Images",
     
     "CreateTillingPNGMask"      : "Create Tilling PNG Mask",
     "CreateNestedPNGMask"       : "Create Nested PNG Mask",

@@ -1114,3 +1114,105 @@ class ImageToGzippedBase64:
         img_str_base64 = base64.b64encode(compressed_data).decode("ascii")
         
         return (img_str_base64,)
+    
+import torch
+
+class ReverseImageAndAllImages:
+    '''
+    Reverse the order of images in a batch and concatenate the reversed images with the original batch.
+    
+    Inputs:
+    images              - Source Images
+            
+    Outputs:
+    rev_image           - Reversed Images
+    all_image           - Source + Reversed Images
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "images": ("IMAGE", {
+                    "default": None, 
+                }), 
+            },            
+        }
+        
+    RETURN_TYPES = ("IMAGE", "IMAGE", )
+    RETURN_NAMES = ("rev_image", "all_image", )
+    FUNCTION = "ReverseImageAndAllImagesEx"
+    CATEGORY = cat_image
+    
+    def ReverseImageAndAllImagesEx(self, images):
+        # Ensure images is a torch tensor
+        if not isinstance(images, torch.Tensor):
+            raise ValueError("Input 'images' must be a torch.Tensor")
+        
+        # The input 'images' is a batched tensor of shape (B, H, W, C), where B is the batch size (number of images).
+        effective_count = images.shape[0]
+        
+        # Extract the first 'effective_count' images to reverse
+        to_reverse = images[:effective_count]
+        
+        # Reverse the order along the batch dimension
+        rev_image = to_reverse.flip(0)  # Using flip(0) for batch dimension reversal
+        
+        # Append the reversed images to the original batch by concatenating along the batch dimension
+        all_image = torch.cat((images, rev_image), dim=0)
+        
+        return (rev_image, all_image,)
+    
+class StackImages:
+    '''
+    Stack Images and Extract Last Image
+    
+    Inputs:
+    images              - Source Images
+    last_images_in      - Optional input images to prepend
+    
+    Outputs:
+    all_images          - Concatenated images (last_images_in + images, or images if last_images_in is None)
+    last_image          - Last image from the input images
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "images": ("IMAGE", {
+                    "default": None,
+                }),
+            },
+            "optional": {
+                "last_images_in": ("IMAGE", {
+                    "default": None,
+                }),
+            },
+        }
+        
+    RETURN_TYPES = ("IMAGE", "IMAGE", )
+    RETURN_NAMES = ("all_images", "last_image", )
+    FUNCTION = "stack_images"
+    CATEGORY = cat_image
+    
+    def stack_images(self, images, last_images_in=None):
+        # Ensure images is a torch tensor
+        if not isinstance(images, torch.Tensor):
+            raise ValueError("Input 'images' must be a torch.Tensor")
+        
+        # Extract the last image from the input images
+        # images.shape is (B, H, W, C), where B is the batch size
+        last_image = images[-1:]  # Keep the batch dimension, shape becomes (1, H, W, C)
+        
+        # Create all_images based on whether last_images_in is provided
+        if last_images_in is not None:
+            if not isinstance(last_images_in, torch.Tensor):
+                raise ValueError("Input 'last_images_in' must be a torch.Tensor")
+            # Concatenate last_images_in and images along the batch dimension
+            all_images = torch.cat((last_images_in, images), dim=0)
+        else:
+            # If last_images_in is None, all_images is just the input images
+            all_images = images
+        
+        return (all_images, last_image,)

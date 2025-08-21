@@ -1,4 +1,9 @@
-## Change Logs
+## Change Logs      
+#### 2025.08.17 Ver 0.4.9.7     
+・Add `Reverse Images And All Images`      
+・Add `Stack Images`     
+Both nodes for `ti2v`       
+
 #### 2025.08.16 Ver 0.4.9.6
 ・Bugfix for `Gzipped Base64 To Image`       
 ・・RGBA to RGB for openpose     
