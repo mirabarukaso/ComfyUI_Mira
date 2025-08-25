@@ -1019,7 +1019,7 @@ class UpscaleImageByModelThenResize:
                     "min": 0.1, 
                     "max": 8
                 }),  
-                "resize_method" : (['nearest', 'nearest-exact', 'bilinear', 'bicubic', 'lanczos'], ),
+                "resize_method" : (['nearest', 'nearest-exact', 'bilinear', 'bicubic', 'lanczos', 'box', 'hamming'], ),
             },
         }
         
@@ -1028,38 +1028,57 @@ class UpscaleImageByModelThenResize:
     FUNCTION = "UpscaleImageWithModelEx"
     CATEGORY = cat_image
 
-    def UpscaleImageWithModelEx(self, upscale_model, image, resize_scale, resize_method):
-        new_img = (ImageUpscaleWithModel.upscale(self, upscale_model, image))[0]
-        
-        #print('resize_scale: ' + str(resize_scale))
-        #print('upscale_model.scale: ' + str(upscale_model.scale))        
-        if upscale_model.scale != resize_scale:
+    def UpscaleImageWithModelEx(self, upscale_model, image, resize_scale, resize_method):         
+        def resize_torch_image(img, size, interpolation_mode):
+            transform = T.Resize(size, interpolation=interpolation_mode, antialias=True)
+            resized_img = transform(DecodeImage(img))
+            result = EncodeImage(resized_img)  # [1, C, H, W]
+            return result
+                   
+        interpolation_mode = T.InterpolationMode.NEAREST
+        if resize_method == 'nearest-exact':
+            interpolation_mode = T.InterpolationMode.NEAREST_EXACT
+        elif resize_method == 'bilinear':
+            interpolation_mode = T.InterpolationMode.BILINEAR
+        elif resize_method == 'bicubic':
+            interpolation_mode = T.InterpolationMode.BICUBIC
+        elif resize_method == 'lanczos':
+            interpolation_mode = T.InterpolationMode.LANCZOS
+        elif resize_method == 'box':
+            interpolation_mode = T.InterpolationMode.BOX
+        elif resize_method == 'hamming':    
+            interpolation_mode = T.InterpolationMode.HAMMING
+    
+        if image.shape[3] == 3:  # [B, H, W, C]
             width = image.shape[2]
             height = image.shape[1]
+        else:   # [B, C, H, W]
+            width = image.shape[3]
+            height = image.shape[2]            
             
-            new_width = Fixeight(width*resize_scale)
-            new_height = Fixeight(height*resize_scale)        
-            #print('new_width: ' + str(new_width))
-            #print('new_height: ' + str(new_height))
-
-            interpolation_mode = T.InterpolationMode.NEAREST
-            if resize_method == 'nearest-exact':
-                interpolation_mode = T.InterpolationMode.NEAREST_EXACT
-            elif resize_method == 'bilinear':
-                interpolation_mode = T.InterpolationMode.BILINEAR
-            elif resize_method == 'bicubic':
-                interpolation_mode = T.InterpolationMode.BICUBIC
-            elif resize_method == 'lanczos':
-                interpolation_mode = T.InterpolationMode.LANCZOS
-                
-            size = (new_height, new_width)
-            transform = T.Resize(size, interpolation=interpolation_mode)
-            new_img = transform(DecodeImage(new_img))
-                        
-            return (EncodeImage(new_img),)
+        new_width = Fixeight(width*resize_scale)
+        new_height = Fixeight(height*resize_scale)        
+        size = (new_height, new_width)        
+            
+        new_img = (ImageUpscaleWithModel.upscale(self, upscale_model, image))[0]
+        batch_size = new_img.shape[0]
         
-        return (new_img,)
+        out_imgs = []
+        if batch_size == 1:
+            result = resize_torch_image(new_img, size, interpolation_mode)  # [1, C, H, W]
+            out_imgs.append(result)
+        else:
+            for i in range(batch_size):
+                img_i = new_img[i]  # [H, W, C]
+                result = resize_torch_image(img_i.unsqueeze(0), size, interpolation_mode)  # [1, C, H, W]
+                out_imgs.append(result)           
 
+        out_imgs_tensor = torch.cat(out_imgs, dim=0)  # [B, C, H, W]
+        if out_imgs_tensor.ndim == 3:
+            out_imgs_tensor = out_imgs_tensor.unsqueeze(0)
+                                            
+        return (out_imgs_tensor,)
+    
 class CheckpointLoaderSimple:
     @classmethod
     def INPUT_TYPES(s):
@@ -1193,6 +1212,8 @@ class ReverseImageAndAllImages:
 class StackImages:
     '''
     Stack Images and Extract Last Image
+    
+    Stacks the input images with optional previous images and extracts the last image from the input images.
     
     Inputs:
     images              - Source Images

@@ -358,30 +358,30 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_color_transfer.png" width=35% height=35%>   
 
 For Video     
-|  | Download Link  |
-| --- | --- |
-| Image input | <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/2025-08-24-234219_2151512547.png" width=35% height=35%>  |
-| Default | [Default](https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/default.mp4) |
-| Calibrated |  [Calibrated](https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/calibrated.mp4)  |
+|  Download Link  |
+| --- |
+| <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/2025-08-24-234219_2151512547.png" width=35% height=35%>  |
+|[Default](https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/default.mp4) |
+| [Calibrated](https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/calibrated.mp4)  |
 
 
 ------
 Upscale Image By Model Then Resize     
 
-This is an experimental feature for zooming in an image on a model and then zooming out to a specified size (a multiple of 8 in length and width).     
+Upscale images with a upscale model and then resize to a specified size (a multiple of 8 in length and width).     
 
 For example, if the input model zooms the image 4x by default and the node is set to zoom 2x, then the image will first be zoomed 4x using the model and then resized to 2x.    
     
 | Inputs | Description |
 | --- | --- |
 | `upscale_model` | Model for upscaling |
-| `image` | Source Image |
+| `image` | Source Images |
 | `resize_scale` | Real resize ratio, the result will be the nearest multiple of `8` |
 | `resize_method` | Resize method, `nearest`, `nearest-exact`, `bilinear`, `bicubic` |
             
 | Outputs | Description |
 | --- | --- |
-| `image` | Output Image |
+| `image` | Output Images |
 
 Use 2x model for fast scale and resize, 8x model for best result.   
 
@@ -398,6 +398,36 @@ For common usage, use alexopus's ComfyUI-Image-Saver.
 
 Comparison without and with    
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_image_saver.png" width=35% height=35%>   
+
+------
+Reverse Image And All Images      
+
+Reverse the order of images in a batch and concatenate the reversed images with the original batch.      
+
+| Inputs | Description |
+| --- | --- |
+| `images` | Source Images |
+            
+| Outputs | Description |
+| --- | --- |
+| `rev_image` | Reversed Images |
+| `all_image` | Source + Reversed Images |
+
+------
+Stack Images and Extract Last Image      
+
+Stacks the input images with optional previous images and extracts the last image from the input images.     
+
+| Inputs | Description |
+| --- | --- |
+| `images` | Source Images |
+| `last_images_in` | Optional input images to prepend |
+
+| Outputs | Description |
+| --- | --- |
+| `all_images` | Concatenated images (last_images_in + images, or images if last_images_in is None) |
+| `last_image` | Last image from the input images |
+
 
 ------
 ### Text
