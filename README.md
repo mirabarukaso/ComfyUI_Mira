@@ -358,11 +358,11 @@ Example
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_color_transfer.png" width=35% height=35%>   
 
 For Video     
-|  Download Link  |
+|  Sample  |
 | --- |
-| <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/2025-08-24-234219_2151512547.png" width=35% height=35%>  |
-|[Default](https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/default.mp4) |
-| [Calibrated](https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/calibrated.mp4)  |
+| <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/2025-08-24-234219_2151512547.png" width=15% height=15%>  |
+|[Default result](https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/default.mp4) |
+| [Image color transfer calibrated](https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/image_color_transfer/calibrated.mp4)  |
 
 
 ------
@@ -829,3 +829,4 @@ Reminder: Due to ComfyUI update this example may outdated.
 ## Latest Change Log   
 #### 2025.05.05 Ver 0.4.9.5    
 ・Add `character_weight` & `insert_before_character` for `Character Select` nodes        
+
