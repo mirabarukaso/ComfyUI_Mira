@@ -1,4 +1,7 @@
 ## Change Logs      
+#### 2025.08.26 Ver 0.4.9.8     
+・Change `Color Transfer` now supports more than one Images input      
+
 #### 2025.08.17 Ver 0.4.9.7     
 ・Add `Reverse Images And All Images`      
 ・Add `Stack Images`     

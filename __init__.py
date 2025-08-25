@@ -53,8 +53,8 @@ NODE_CLASS_MAPPINGS = {
     "CheckpointLoaderSimpleMira" : CheckpointLoaderSimple,
     "GzippedBase64ToImage"      : GzippedBase64ToImage,
     "ImageToGzippedBase64"      : ImageToGzippedBase64,
-    "ReverseImageAndAllImages"   : ReverseImageAndAllImages,
-    "StackImages"            : StackImages, 
+    "ReverseImageAndAllImages"  : ReverseImageAndAllImages,
+    "StackImages"               : StackImages, 
 
     "CreateTillingPNGMask"      : CreateTillingPNGMask,
     "CreateNestedPNGMask"       : CreateNestedPNGMask,
@@ -145,7 +145,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CheckpointLoaderSimpleMira" : "Checkpoint Loader with Name",
     "GzippedBase64ToImage"      : "Gzipped Base64 To Image",
     "ImageToGzippedBase64"      : "Image To Gzipped Base64",
-    "ReverseImageAndAllImages"   : "Reverse Images And All Images",
+    "ReverseImageAndAllImages"  : "Reverse Images And All Images",
     "StackImages"               : "Stack Images",
     
     "CreateTillingPNGMask"      : "Create Tilling PNG Mask",

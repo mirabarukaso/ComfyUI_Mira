@@ -828,29 +828,56 @@ class ImageColorTransfer:
     FUNCTION = "ImageColorTransferEx"
     CATEGORY = cat_image
     
-    def ImageColorTransferEx(self, src_image, ref_image, method):                               
-        PT = ColorTransfer()        
-        new_img = None
-        if "Mean" == method:
-            s = ConvertToNP(src_image)       
-            r = ConvertToNP(ref_image)       
-            new_img = PT.mean_std_transfer(img_arr_in=s, img_arr_ref=r)
-        elif "Lab" == method:
-            s = np.array(DecodeImage(src_image), dtype=np.uint8)
-            r = np.array(DecodeImage(ref_image), dtype=np.uint8)
-            new_img = PT.lab_transfer(img_arr_in=s, img_arr_ref=r)
-        elif "Pdf" == method:
-            s = ConvertToNP(src_image)       
-            r = ConvertToNP(ref_image)       
-            new_img = PT.pdf_transfer(img_arr_in=s, img_arr_ref=r, regrain=False)
+    def ImageColorTransferEx(self, src_image, ref_image, method):
+        if not isinstance(src_image, torch.Tensor):
+            raise ValueError("src_image must be a torch.Tensor")
+        if not isinstance(ref_image, torch.Tensor):
+            raise ValueError("ref_image must be a torch.Tensor")
+
+        if src_image.ndim == 3:
+            src_image = src_image.unsqueeze(0)
+        if ref_image.ndim == 3:
+            ref_image = ref_image.unsqueeze(0)
+
+        batch_size = src_image.shape[0]
+        ref_batch_size = ref_image.shape[0]
+
+        # Ensure ref_image batch size is either 1 or equal to src_image batch size
+        if ref_batch_size == 1:
+            ref_images = [ref_image[0]] * batch_size
+        elif ref_batch_size == batch_size:
+            ref_images = [ref_image[i] for i in range(batch_size)]
         else:
-            s = ConvertToNP(src_image)       
-            r = ConvertToNP(ref_image)       
-            new_img = PT.pdf_transfer(img_arr_in=s, img_arr_ref=r, regrain=True) 
-            
-        result = EncodeImage(new_img)
-        
-        return(result,)                                           
+            raise ValueError("ref_image batch size must be 1 or equal to src_image batch size")
+
+        PT = ColorTransfer()
+        out_imgs = []
+        for i in range(batch_size):
+            s = src_image[i].unsqueeze(0)
+            r = ref_images[i].unsqueeze(0)
+            if method == "Mean":
+                s_np = ConvertToNP(s)
+                r_np = ConvertToNP(r)
+                new_img = PT.mean_std_transfer(img_arr_in=s_np, img_arr_ref=r_np)
+            elif method == "Lab":
+                s_pil = np.array(DecodeImage(s), dtype=np.uint8)
+                r_pil = np.array(DecodeImage(r), dtype=np.uint8)
+                new_img = PT.lab_transfer(img_arr_in=s_pil, img_arr_ref=r_pil)
+            elif method == "Pdf":
+                s_np = ConvertToNP(s)
+                r_np = ConvertToNP(r)
+                new_img = PT.pdf_transfer(img_arr_in=s_np, img_arr_ref=r_np, regrain=False)
+            else:
+                s_np = ConvertToNP(s)
+                r_np = ConvertToNP(r)
+                new_img = PT.pdf_transfer(img_arr_in=s_np, img_arr_ref=r_np, regrain=True)
+            result = EncodeImage(new_img)
+            out_imgs.append(result)
+
+        out_imgs_tensor = torch.cat(out_imgs, dim=0)
+        if out_imgs_tensor.ndim == 3:
+            out_imgs_tensor = out_imgs_tensor.unsqueeze(0)
+        return (out_imgs_tensor,)                                       
 
 class ImageToneCurve:
     '''
@@ -1201,18 +1228,22 @@ class StackImages:
         if not isinstance(images, torch.Tensor):
             raise ValueError("Input 'images' must be a torch.Tensor")
         
-        # Extract the last image from the input images
-        # images.shape is (B, H, W, C), where B is the batch size
-        last_image = images[-1:]  # Keep the batch dimension, shape becomes (1, H, W, C)
+        if images.ndim == 3:
+            images = images.unsqueeze(0)
+        if last_images_in is not None and last_images_in.ndim == 3:
+            last_images_in = last_images_in.unsqueeze(0)
         
-        # Create all_images based on whether last_images_in is provided
+        last_image = images[-1:]  # (1, H, W, C)
+        
         if last_images_in is not None:
-            if not isinstance(last_images_in, torch.Tensor):
-                raise ValueError("Input 'last_images_in' must be a torch.Tensor")
-            # Concatenate last_images_in and images along the batch dimension
             all_images = torch.cat((last_images_in, images), dim=0)
         else:
-            # If last_images_in is None, all_images is just the input images
             all_images = images
         
+        if all_images.ndim == 3:
+            all_images = all_images.unsqueeze(0)
+        if last_image.ndim == 3:
+            last_image = last_image.unsqueeze(0)
+        
         return (all_images, last_image,)
+       
