@@ -428,6 +428,21 @@ Stacks the input images with optional previous images and extracts the last imag
 | `all_images` | Concatenated images (last_images_in + images, or images if last_images_in is None) |
 | `last_image` | Last image from the input images |
 
+------
+Flat Color Quantization     
+
+Refer to my [Flat Color Quantization](https://github.com/mirabarukaso/flat_color_quantization)      
+
+*Note: The ComfyUI result is NOT the same as Gradio/Console with same settings*       
+Because the `Load Image` node will convert input image once then convert to IMAGE format, that cause the input image is not the same as the original PNG. Use the following settings to get 0% result for Foxie sample image.            
+
+```
+n_colors        1024
+block_size      512
+temperature     3.0
+spatial_scale   60
+sharpen         0.0
+```
 
 ------
 ### Text

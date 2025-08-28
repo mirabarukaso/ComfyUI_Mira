@@ -1,4 +1,7 @@
 ## Change Logs      
+#### 2025.08.29 Ver 0.5.0.0     
+・Add `Flat Color Quantization`     
+
 #### 2025.08.26 Ver 0.4.9.9     
 ・Change `Color Transfer` and `Upscale Image By Model Then Resize` now supports multiple images input for video generate      
 

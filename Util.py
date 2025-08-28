@@ -4,6 +4,7 @@ import torch
 import numpy as np
 from PIL import Image
 import cv2
+from .color_flat import flat_color_multi_scale
 from .color_transfer import ColorTransfer
 from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel
 import torchvision.transforms as T
@@ -1268,3 +1269,69 @@ class StackImages:
         
         return (all_images, last_image,)
        
+class FlatColorQuantization:
+    '''
+    Flat Color Quantization
+    
+    https://github.com/mirabarukaso/flat_color_quantization
+    
+    Inputs:
+    image               - Source Image
+    
+    Outputs:
+    out_image           - Quantizated image
+    '''
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "image": ("IMAGE", {
+                    "default": None,
+                }),
+                "n_colors": ("INT", {
+                    "default": 2048, 
+                    "min": 2, 
+                    "max": 16384,
+                    "step": 1
+                }),
+                "block_size": ("INT", {
+                    "default": 512, 
+                    "min": 64, 
+                    "max": 2048,
+                    "step": 64
+                }),
+                "temperature": ("FLOAT", {
+                    "default": 2, 
+                    "min": 1, 
+                    "max": 10,
+                    "step": 0.05
+                }),
+                "spatial_scale": ("INT", {
+                    "default": 80, 
+                    "min": 1, 
+                    "max": 300,
+                    "step": 1
+                }),
+                "sharpen": ("FLOAT", {
+                    "default": 0, 
+                    "min": 0, 
+                    "max": 3,
+                    "step": 0.1
+                }),
+            },
+        }
+        
+    RETURN_TYPES = ("IMAGE", )
+    RETURN_NAMES = ("out_image",)
+    FUNCTION = "FlatColorQuantizationEx"
+    CATEGORY = cat_image
+    
+    def FlatColorQuantizationEx(self, image, n_colors, block_size, temperature, spatial_scale, sharpen):
+        img = ConvertToNP(image)
+        result = flat_color_multi_scale(image_input=img, n_colors=n_colors, block_size=block_size, 
+                                        spatial_scale=spatial_scale, temperature=temperature, sharpen_strength=sharpen)
+        
+        return(EncodeImage(result),)
+    
+    
