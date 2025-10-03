@@ -1,4 +1,9 @@
 ## Change Logs      
+#### 2025.10.03 Ver 0.5.1.0     
+・Temporary solution for `Upscale Image By Model Then Resize`      
+・・ #22      
+・・Wait until Oct.8th ComfyUI new release for more test and verify     
+
 #### 2025.08.29 Ver 0.5.0.0     
 ・Add `Flat Color Quantization`     
 

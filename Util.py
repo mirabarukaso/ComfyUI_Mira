@@ -6,7 +6,8 @@ from PIL import Image
 import cv2
 from .color_flat import flat_color_multi_scale
 from .color_transfer import ColorTransfer
-from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel
+#from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel
+from comfy import model_management
 import torchvision.transforms as T
 import torchvision.transforms.functional as con
 import folder_paths
@@ -1020,7 +1021,7 @@ class UpscaleImageByModelThenResize:
                     "min": 0.1, 
                     "max": 8
                 }),  
-                "resize_method" : (['nearest', 'nearest-exact', 'bilinear', 'bicubic', 'lanczos', 'box', 'hamming'], ),
+                "resize_method" : (['lanczos', 'nearest', 'nearest-exact', 'bilinear', 'bicubic', 'box', 'hamming'], ),
             },
         }
         
@@ -1035,6 +1036,34 @@ class UpscaleImageByModelThenResize:
             resized_img = transform(DecodeImage(img))
             result = EncodeImage(resized_img)  # [1, C, H, W]
             return result
+        
+        # refer: https://github.com/comfyanonymous/ComfyUI/blob/4ffea0e864275301329ddb5ecc3fbc7211d7a802/comfy_extras/nodes_upscale_model.py#L50
+        def upscale(upscale_model, image):
+            device = model_management.get_torch_device()
+
+            memory_required = model_management.module_size(upscale_model.model)
+            memory_required += (512 * 512 * 3) * image.element_size() * max(upscale_model.scale, 1.0) * 384.0 #The 384.0 is an estimate of how much some of these models take, TODO: make it more accurate
+            memory_required += image.nelement() * image.element_size()
+            model_management.free_memory(memory_required, device)
+            upscale_model.to(device)
+            in_img = image.movedim(-1,-3).to(device)
+            tile = 512
+            overlap = 32
+            oom = True
+            while oom:
+                try:
+                    steps = in_img.shape[0] * comfy.utils.get_tiled_scale_steps(in_img.shape[3], in_img.shape[2], tile_x=tile, tile_y=tile, overlap=overlap)
+                    pbar = comfy.utils.ProgressBar(steps)
+                    s = comfy.utils.tiled_scale(in_img, lambda a: upscale_model(a), tile_x=tile, tile_y=tile, overlap=overlap, upscale_amount=upscale_model.scale, pbar=pbar)
+                    oom = False
+                except model_management.OOM_EXCEPTION as e:
+                    tile //= 2
+                    if tile < 128:
+                        raise e
+
+            upscale_model.to("cpu")
+            s = torch.clamp(s.movedim(-3,-1), min=0, max=1.0)
+            return (s,)
                    
         interpolation_mode = T.InterpolationMode.NEAREST
         if resize_method == 'nearest-exact':
@@ -1061,7 +1090,7 @@ class UpscaleImageByModelThenResize:
         new_height = Fixeight(height*resize_scale)        
         size = (new_height, new_width)        
             
-        new_img = (ImageUpscaleWithModel.upscale(self, upscale_model, image))[0]
+        new_img = (upscale(upscale_model, image))[0]
         batch_size = new_img.shape[0]
         
         out_imgs = []
