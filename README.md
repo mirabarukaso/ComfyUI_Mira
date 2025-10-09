@@ -822,13 +822,13 @@ Author: [cella110n](https://huggingface.co/cella110n)
 
 Download CL Tagger Model and JSON file put in your `ComfyUI/model/onnx` foler.      
 Rename `model.onnx` and `tag_mapping.json` with following format:      
-'''
+```
 ComfyUI
 |---models
 |   |---onnx
 |       |---cl_tagger_1_02.onnx
 |       |---cl_tagger_1_02_tag_mapping.json
-'''
+```
 
 | Inputs | Description |
 | --- | --- |
@@ -873,4 +873,5 @@ Reminder: Due to ComfyUI update this example may outdated.
 ## Latest Change Log   
 #### 2025.05.05 Ver 0.4.9.5    
 ・Add `character_weight` & `insert_before_character` for `Character Select` nodes        
+
 
