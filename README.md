@@ -816,11 +816,40 @@ solo, masterpiece, best quality, amazing quality,
 | `plain_text`  | Text without LoRA info, connect to CLIP Text Encoder. |
 
 ------
+### Tagger
+CL Tagger      
+Author: [cella110n](https://huggingface.co/cella110n)        
+
+Download CL Tagger Model and JSON file put in your `ComfyUI/model/onnx` foler.      
+Rename `model.onnx` and `tag_mapping.json` with following format:      
+'''
+ComfyUI
+|---models
+|   |---onnx
+|       |---cl_tagger_1_02.onnx
+|       |---cl_tagger_1_02_tag_mapping.json
+'''
+
+| Inputs | Description |
+| --- | --- |
+| `image`  | Image for tagger. |
+| `model_name`  | Onnx model. |
+| `general`  | General threshold. |
+| `character`  | Character threshold. |
+| `replace_space`  | Replace '_' with ' ' (space). |
+| `exclude_tags`  | Exclude tags. |
+
+| Output | Description |
+| --- | --- |
+| `tags`  | Generated tags. |
+
+Example     
+<img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/tagger.png" width=35% height=35%>   
+
+------
 ### WAI illustrious Character Select    
 ComfyUI version of [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)    
-~A 129MB thumbnail will download on first run, may take a few seconds, please don't panic....~       
 
-**Due to useless for ComfyUI, thumbnail removed.**    
 You can manually delete `mira/json/wai_character_thumbs.json`, and you can also delete `wai_characters.csv` for new Character List download           
 If you really need those thumbnail    
 Try [character_select_stand_alone_app](https://github.com/mirabarukaso/character_select_stand_alone_app)     
@@ -828,7 +857,7 @@ And, Online Character Select Simple Advanced App [Hugging Face Space](https://hu
 
 To use Remote `AI Promor Generator`, you need add your private `API KEY` to `custom_nodes/ComfyUI_Mira/json/settings.json`    
 
-Example   
+Example     
 <img src="https://github.com/mirabarukaso/ComfyUI_Mira/blob/main/examples/example_wai_character_selecter.png" width=35% height=35%>   
 
 ------

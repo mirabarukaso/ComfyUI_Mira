@@ -1,4 +1,8 @@
 ## Change Logs      
+#### 2025.10.09 Ver 0.5.2.0     
+・Add `CL Tagger`        
+・・CL Tagger by cella110n https://huggingface.co/cella110n        
+
 #### 2025.10.03 Ver 0.5.1.0     
 ・Temporary solution for `Upscale Image By Model Then Resize`      
 ・・ #22      
