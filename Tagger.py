@@ -28,7 +28,7 @@ class cl_tagger:
     replace_space   - Replace '_' with ' ' (space)
     categories      - Selected categories in generate tags, and order by input order
     exclude_tags    - Exclude tags
-    seassion        - Tagger Model in CPU or GPU seassion. Release will release session after generate
+    session_method  - Tagger Model in CPU or GPU session. Release will release session after generate
         
     Outputs:
     tags            - Generated tags
@@ -49,12 +49,12 @@ class cl_tagger:
     # onnxruntime needs 2s+ to load RAM model and create GPU version, so I leave it in RAM with CPU mode
     # GPU performance: TITAN RTX        0.088 seconds       "CUDAExecutionProvider", "CPUExecutionProvider"
     # CPU performance: Intel i9-9980x   0.992 seconds       "CPUExecutionProvider"
-    def get_session(self, model_path, seassion):
-        if seassion.startswith('CPU'):
+    def get_session(self, model_path, session_method):
+        if session_method.startswith('CPU'):
             if not self._cpu_session:                
                 self._cpu_session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
             return self._cpu_session
-        elif seassion.startswith('GPU'):
+        elif session_method.startswith('GPU'):
             if not self._gpu_session:
                 self._gpu_session = ort.InferenceSession(model_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
             return self._gpu_session
@@ -211,10 +211,10 @@ class cl_tagger:
 
         return result            
     
-    def run_cl_tagger(self, image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude, seassion):
+    def run_cl_tagger(self, image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude, session_method):
         input_tensor = self.preprocess_image(image)
         g_labels_data = self.get_tag_mapping(full_tag_map_path)        
-        session = self.get_session(full_model_path, seassion)
+        session = self.get_session(full_model_path, session_method)
         
         input_name = session.get_inputs()[0].name
         output_name = session.get_outputs()[0].name
@@ -279,7 +279,8 @@ class cl_tagger:
         output_text = ", ".join(output_tags)
         print("[Mira:ClTagger] " + output_text)
         
-        if seassion.endswith('Release'):
+        if session_method.endswith('Release'):
+            session = None
             self._cpu_session = None
             self._gpu_session = None
             gc.collect()
@@ -323,7 +324,7 @@ class cl_tagger:
                     "display": "input", 
                     "multiline": False
                 }),
-                "seassion" : (['CPU', 'CPU Release', 'GPU', 'GPU Release'], ),
+                "session_method" : (['CPU', 'CPU Release', 'GPU', 'GPU Release'], ),
             },
         }
                 
@@ -332,7 +333,7 @@ class cl_tagger:
     FUNCTION = "cl_tagger_ex"
     CATEGORY = cat
     
-    def cl_tagger_ex(self, image, model_name, general, character, replace_space, categories, exclude_tags, seassion):
+    def cl_tagger_ex(self, image, model_name, general, character, replace_space, categories, exclude_tags, session_method):
         if model_name == 'None':
             return ("[Mira] Download CL Tagger Model and JSON file put in your \"ComfyUI/model/onnx\" foler.\nhttps://github.com/mirabarukaso/ComfyUI_Mira#tagger\nhttps://huggingface.co/cella110n", )
         
@@ -346,6 +347,6 @@ class cl_tagger:
             print(f"[Mira:ClTagger]Error: [{full_model_path}] not found!")
             return (f"[Mira:ClTagger]Error: [{full_model_path}] not found!", )
         
-        result = self.run_cl_tagger(image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, seassion)
+        result = self.run_cl_tagger(image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
         
         return (result,)
