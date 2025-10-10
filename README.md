@@ -837,6 +837,8 @@ ComfyUI
 | `general`  | General threshold. |
 | `character`  | Character threshold. |
 | `replace_space`  | Replace '_' with ' ' (space). |
+| `categories`  | Selected categories in generate tags, and order by input order. |
+| `seassion`  | Tagger Model in CPU or GPU seassion. Release will release session after generate. |
 | `exclude_tags`  | Exclude tags. |
 
 | Output | Description |

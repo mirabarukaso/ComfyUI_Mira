@@ -1,4 +1,8 @@
 ## Change Logs      
+#### 2025.10.09 Ver 0.5.2.1        
+・Add category select for `CL Tagger`        
+
+
 #### 2025.10.09 Ver 0.5.2.0     
 ・Add `CL Tagger`        
 ・・CL Tagger by cella110n https://huggingface.co/cella110n        
