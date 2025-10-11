@@ -1,5 +1,6 @@
 import numpy as np
 import onnxruntime as ort
+import torchvision.transforms as transforms
 from PIL import Image
 import json
 import time
@@ -213,7 +214,7 @@ class cl_tagger:
     
     def run_cl_tagger(self, image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude, session_method):
         input_tensor = self.preprocess_image(image)
-        g_labels_data = self.get_tag_mapping(full_tag_map_path)        
+        g_labels_data = self.get_tag_mapping(full_tag_map_path)
         session = self.get_session(full_model_path, session_method)
         
         input_name = session.get_inputs()[0].name
@@ -348,5 +349,272 @@ class cl_tagger:
             return (f"[Mira:ClTagger]Error: [{full_model_path}] not found!", )
         
         result = self.run_cl_tagger(image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
+        
+        return (result,)
+    
+class camie_tagger:
+    '''
+    Camie Tagger by Camais03 https://huggingface.co/Camais03
+    Few codes reference from https://huggingface.co/spaces/Camais03/camie-tagger-v2-app/tree/main/utils
+    
+    Inputs:
+    image           - Image for tagger
+    model_name      - Onnx model
+    general         - General threshold
+    min_confidence  - Minimum confidence to display
+    replace_space   - Replace '_' with ' ' (space)
+    categories      - Selected categories in generate tags, and order by input order
+    exclude_tags    - Exclude tags
+    session_method  - Tagger Model in CPU or GPU session. Release will release session after generate
+        
+    Outputs:
+    tags            - Generated tags
+    '''
+    
+    _tag_mapping_cache = {}
+    _cpu_session = None
+    _gpu_session = None
+    
+    def get_tag_mapping(self, full_tag_map_path):
+        if full_tag_map_path not in self._tag_mapping_cache:
+            print("[Mira:CamieTagger] Load tag mapping: " + full_tag_map_path)
+            with open(full_tag_map_path, "r") as f: metadata = json.load(f)
+            
+            try:
+                tag_mapping = metadata["dataset_info"]["tag_mapping"]
+                if not tag_mapping["idx_to_tag"] :
+                    raise ValueError("[Mira:CamieTagger]Error: Invalid tag mapping structure in metadata");
+            except Exception as e:
+                raise ValueError(f"[Mira:CamieTagger]Error:{e}")
+            
+            self._tag_mapping_cache[full_tag_map_path] = tag_mapping
+        return self._tag_mapping_cache[full_tag_map_path]
+        
+    def get_session(self, model_path, session_method):
+        if session_method.startswith('CPU'):
+            if not self._cpu_session:                
+                self._cpu_session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+            return self._cpu_session
+        elif session_method.startswith('GPU'):
+            if not self._gpu_session:
+                self._gpu_session = ort.InferenceSession(model_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
+            return self._gpu_session
+        
+    def preprocess_image(self, image, image_size=512):
+        """
+        Process an image for ImageTagger inference with proper ImageNet normalization
+        """                
+        # ImageNet normalization - CRITICAL for your model
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406], 
+                std=[0.229, 0.224, 0.225]
+            )
+        ])
+        
+        with decode_image(image) as img:
+            # Convert RGBA or Palette images to RGB
+            if img.mode in ('RGBA', 'P'):
+                img = img.convert('RGB')
+            
+            # Get original dimensions
+            width, height = img.size
+            aspect_ratio = width / height
+            
+            # Calculate new dimensions to maintain aspect ratio
+            if aspect_ratio > 1:
+                new_width = image_size
+                new_height = int(new_width / aspect_ratio)
+            else:
+                new_height = image_size
+                new_width = int(new_height * aspect_ratio)
+            
+            # Resize with LANCZOS filter
+            img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            
+            # Create new image with padding (use ImageNet mean for padding)
+            # Using RGB values close to ImageNet mean: (0.485*255, 0.456*255, 0.406*255)
+            pad_color = (124, 116, 104)
+            new_image = Image.new('RGB', (image_size, image_size), pad_color)
+            paste_x = (image_size - new_width) // 2
+            paste_y = (image_size - new_height) // 2
+            new_image.paste(img, (paste_x, paste_y))
+            
+            # Apply transforms (including ImageNet normalization)
+            img_tensor = transform(new_image)
+            img_array = img_tensor.numpy()
+            img_array = np.expand_dims(img_array, axis=0)  # Convert CHW → BCHW
+            return img_array
+    
+    def run_camie_tagger(self, image, full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude, session_method):
+        input_tensor = self.preprocess_image(image)        
+        g_labels_data = self.get_tag_mapping(full_tag_map_path)            
+        session = self.get_session(full_model_path, session_method)
+                
+        input_name = session.get_inputs()[0].name
+        output_name = session.get_outputs()[0].name
+        #start_time = time.time()
+        outputs = session.run([output_name], {input_name: input_tensor})[0]
+        #inference_time = time.time() - start_time
+        #print(f"[Mira:CamieTagger]Inference completed in {inference_time:.3f} seconds")
+        
+        # Process outputs - handle both single and multi-output models
+        if len(outputs) >= 2:
+            # Multi-output model (initial_predictions, refined_predictions, selected_candidates)
+            #initial_logits = outputs[0]
+            refined_logits = outputs[1]
+            # Use refined predictions as main output
+            main_logits = refined_logits
+        else:
+            # Single output model
+            main_logits = outputs[0]
+            
+        # Apply sigmoid to get probabilities
+        main_probs = 1.0 / (1.0 + np.exp(-main_logits))
+
+        # Ensure the output always has a batch dimension
+        if main_probs.ndim == 1:
+            main_probs = np.expand_dims(main_probs, axis=0)
+
+        for i in range(main_probs.shape[0]):
+            probs = main_probs[i]            
+            
+            # Extract and organize all probabilities
+            all_probs = {}
+            for idx in range(probs.shape[0]):
+                prob_value = float(probs[idx])
+                if prob_value >= min_confidence:
+                    idx_str = str(idx)
+                    tag_name = g_labels_data["idx_to_tag"].get(idx_str, f"unknown-{idx}")
+                    category = g_labels_data["tag_to_category"].get(tag_name, "general")
+                    
+                    if category not in all_probs:
+                        all_probs[category] = []
+                    
+                    all_probs[category].append((tag_name, prob_value))
+            
+            # Sort tags by probability within each category
+            for category in all_probs:
+                all_probs[category] = sorted(
+                    all_probs[category], 
+                    key=lambda x: x[1], 
+                    reverse=True
+                )
+            
+            # Get the filtered tags based on the selected threshold
+            tags = {}
+            category_thresholds = {}
+            for category, cat_tags in all_probs.items():
+                # Use category-specific threshold if available
+                if category_thresholds and category in category_thresholds:
+                    cat_threshold = category_thresholds[category]
+                else:
+                    cat_threshold = general
+                    
+                tags[category] = [(tag, prob) for tag, prob in cat_tags if prob >= cat_threshold]
+            
+            # Filter and sort tags by input categories
+            categories_select = [c.strip() for c in categories.split(',') if c.strip()]
+
+            # Create filtered tags based on input categories, preserving order
+            all_tags = []
+            for category in categories_select:
+                if category not in tags:
+                    continue
+                cat_tags = tags[category]
+                for tag, _ in cat_tags:
+                    if replace_space:
+                        all_tags.append(tag.replace('_', ' '))
+                    else:
+                        all_tags.append(tag)
+        
+        output_tags = all_tags
+        exclude_list = [e.strip().lower() for e in exclude.split(',') if e.strip()]
+        if exclude_list:
+            filtered_tags = []
+            for tag in output_tags:
+                tag_l = tag.lower()
+                hit = False
+                for ex in exclude_list:
+                    if ex in tag_l:
+                        hit = True
+                        break
+                if not hit:
+                    filtered_tags.append(tag)
+            output_tags = filtered_tags
+        
+        output_text = ", ".join(output_tags)
+        print("[Mira:CamieTagger] " + output_text)
+        
+        if session_method.endswith('Release'):
+            session = None
+            self._cpu_session = None
+            self._gpu_session = None
+            gc.collect()
+            
+        return output_text
+            
+    @classmethod
+    def INPUT_TYPES(s):
+        onnx_list = comfy_paths.get_filename_list("onnx")
+        if 0 == len(onnx_list):
+            onnx_list.insert(0, "None")
+            
+        return {
+            "required": {
+                "image":("IMAGE", {
+                    "display": "input", 
+                    "default": None,
+                }),
+                "model_name": (onnx_list, ),
+                "general": ("FLOAT", {
+                    "default": 0.49, 
+                    "min": 0.05, 
+                    "max": 1.0,
+                    "step": 0.01
+                }),
+                "min_confidence": ("FLOAT", {
+                    "default": 0.01, 
+                    "min": 0.01, 
+                    "max": 0.5,
+                    "step": 0.01
+                }),
+                "replace_space": ("BOOLEAN", {
+                    "default": True
+                }),
+                "categories" : ("STRING", {
+                    "default": 'rating,artist,general,character,copyright,meta,year', 
+                    "display": "input", 
+                    "multiline": False
+                }),
+                "exclude_tags":  ("STRING", {
+                    "display": "input", 
+                    "multiline": False
+                }),
+                "session_method" : (['CPU', 'CPU Release', 'GPU', 'GPU Release'], ),
+            },
+        }
+                
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("tags",)
+    FUNCTION = "camie_tagger_ex"
+    CATEGORY = cat
+    
+    def camie_tagger_ex(self, image, model_name, general, min_confidence, replace_space, categories, exclude_tags, session_method):
+        if model_name == 'None':
+            return ("[Mira] Download Camie Tagger Model and JSON file put in your \"ComfyUI/model/onnx\" foler.\nhttps://github.com/mirabarukaso/ComfyUI_Mira#tagger\nhttps://huggingface.co/Camais03", )
+        
+        full_model_path = comfy_paths.get_full_path('onnx', model_name)
+        full_tag_map_path = full_model_path.replace('.onnx', '-metadata.json')
+        if not os.path.exists(full_model_path):
+            print(f"[Mira:CamieTagger]Error: [{full_model_path}] not found!")
+            return (f"[Mira:CamieTagger]Error: [{full_model_path}] not found!",)
+        
+        if not os.path.exists(full_tag_map_path):
+            print(f"[Mira:CamieTagger]Error: [{full_model_path}] not found!")
+            return (f"[Mira:CamieTagger]Error: [{full_model_path}] not found!", )
+        
+        result = self.run_camie_tagger(image, full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
         
         return (result,)

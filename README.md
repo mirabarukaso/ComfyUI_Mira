@@ -816,26 +816,43 @@ solo, masterpiece, best quality, amazing quality,
 | `plain_text`  | Text without LoRA info, connect to CLIP Text Encoder. |
 
 ------
-### Tagger
-CL Tagger      
-Author: [cella110n](https://huggingface.co/cella110n)        
+### Tagger  
+Supports [CL Tagger@cella110n](https://huggingface.co/cella110n) and [Camie Tagger@Camais03](https://huggingface.co/Camais03)         
 
-Download CL Tagger Model and JSON file put in your `ComfyUI/model/onnx` foler.      
+Download CL/Camie Tagger Model and JSON file put in your `ComfyUI/model/onnx` foler.      
 Rename `model.onnx` and `tag_mapping.json` with following format:      
+
 ```
 ComfyUI
 |---models
 |   |---onnx
-|       |---cl_tagger_1_02.onnx
-|       |---cl_tagger_1_02_tag_mapping.json
+|       |---cl_tagger
+|       |   |---cl_tagger_1_02.onnx
+|       |   |---cl_tagger_1_02_tag_mapping.json
+|       |---camie_tagger
+|           |---camie-tagger-v2.onnx
+|           |---camie-tagger-v2-metadata.json
 ```
 
+CL Tagger       
 | Inputs | Description |
 | --- | --- |
 | `image`  | Image for tagger. |
 | `model_name`  | Onnx model. |
 | `general`  | General threshold. |
 | `character`  | Character threshold. |
+| `replace_space`  | Replace '_' with ' ' (space). |
+| `categories`  | Selected categories in generate tags, and order by input order. |
+| `session`  | Tagger Model in CPU or GPU session. Release will release session after generate. |
+| `exclude_tags`  | Exclude tags. |
+
+Camie Tagger     
+| Inputs | Description |
+| --- | --- |
+| `image`  | Image for tagger. |
+| `model_name`  | Onnx model. |
+| `general`  | General threshold. |
+| `min_confidence`  | Minimum confidence to display. |
 | `replace_space`  | Replace '_' with ' ' (space). |
 | `categories`  | Selected categories in generate tags, and order by input order. |
 | `session`  | Tagger Model in CPU or GPU session. Release will release session after generate. |

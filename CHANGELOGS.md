@@ -1,4 +1,9 @@
 ## Change Logs      
+#### 2025.10.11 Ver 0.5.3.0        
+・Add `Camie Tagger`        
+・・Camie Tagger by Camais03 https://huggingface.co/Camais03         
+
+
 #### 2025.10.09 Ver 0.5.2.1        
 ・Add category select for `CL Tagger`        
 

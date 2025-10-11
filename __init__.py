@@ -8,7 +8,7 @@ from .Text import TextBox, TextWithBooleanSwitchAndCommonTextInput, TextCombiner
 from .Logic import SingleBooleanTrigger, TwoBooleanTrigger, FourBooleanTrigger, SixBooleanTrigger, EightBooleanTrigger, LogicNot, EvenOrOdd, EvenOrOddList, BooleanListInterpreter1, BooleanListInterpreter4, BooleanListInterpreter8, FunctionSwap, FunctionSelectAuto, NoneToZero
 from .Logic import SN74LVC1G125, SN74HC1G86, SN74HC86
 from .Lora import LoRALoaderWithNameStacker, LoRAfromText
-from .Tagger import cl_tagger
+from .Tagger import cl_tagger, camie_tagger
 from .wai_illustrious_character_select import llm_prompt_gen_node, illustrious_character_select, illustrious_character_select_en, local_llm_prompt_gen
 from .image_saver.image_saver import ImageSaver
 
@@ -109,6 +109,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageSaverMira"                 : ImageSaver,
     
     "cl_tagger_mira"                 : cl_tagger,
+    "camie_tagger_mira"              : camie_tagger,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
@@ -204,6 +205,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageSaverMira"                 : "Image Saver",
     
     "cl_tagger_mira"                 : "CL Tagger",
+    "camie_tagger_mira"              : "Camie Tagger",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
