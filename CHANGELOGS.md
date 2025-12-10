@@ -1,4 +1,8 @@
 ## Change Logs      
+#### 2025.12.11 Ver 0.5.4.0        
+・Change ONNX models search method to fix #24         
+
+
 #### 2025.10.11 Ver 0.5.3.0        
 ・Add `Camie Tagger`        
 ・・Camie Tagger by Camais03 https://huggingface.co/Camais03         

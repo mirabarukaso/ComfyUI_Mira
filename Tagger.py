@@ -3,18 +3,77 @@ import onnxruntime as ort
 import torchvision.transforms as transforms
 from PIL import Image
 import json
-import time
-import folder_paths as comfy_paths
 import os.path
 import gc
 import cv2
 
 cat = "Mira/Tagger"
+onnx_path = ''
+
+def get_onnx_models_from_path(base_path):
+    if not os.path.exists(base_path):
+        print(f"[Mira:Tagger] Warning: Folder is not exist {base_path}")
+        return []
+    
+    if not os.path.isdir(base_path):
+        print(f"[Mira:Tagger] Warning: Path is not folder {base_path}")
+        return []
+    
+    onnx_models = []
+    
+    try:
+        for root, dirs, files in os.walk(base_path):
+            for file in files:
+                if file.lower().endswith('.onnx'):
+                    full_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(full_path, base_path)
+                    relative_path = relative_path.replace(os.sep, '/')
+                    onnx_models.append(relative_path)
+        
+        onnx_models.sort()
+        
+        if onnx_models:
+            print(f"[Mira:Tagger] Found {len(onnx_models)} ONNX Model(s).")
+            for model in onnx_models:
+                print(f"  - {model}")
+        else:
+            print(f"[Mira:Tagger] No {base_path} ONNX Model found.")
+            
+    except Exception as e:
+        print(f"[Mira:Tagger] Error: {e}")
+        return []
+    
+    return onnx_models
+
+
+def get_onnx_list_with_subdirs(custom_nodes_path):    
+    global onnx_path
+    normalized_path = custom_nodes_path.replace('\\', '/')
+    parts = normalized_path.split('/')
+    
+    try:
+        custom_nodes_index = parts.index('custom_nodes')
+        comfy_root = '/'.join(parts[:custom_nodes_index])
+    except ValueError:
+        print("[Mira:Tagger] Error: 'custom_nodes' not found in the provided path.")
+        return []
+    
+    onnx_path = os.path.join(comfy_root.replace('/', os.sep), 'models', 'onnx')
+    
+    print(f"[Mira:Tagger] ONNX model path: {onnx_path}")
+    
+    return get_onnx_models_from_path(onnx_path)
 
 def decode_image(src_image):
     i = 255. * src_image[0].cpu().numpy()
     img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))    
     return img
+
+print("[Mira:Tagger] Initializing ONNX model list...")
+current_path = os.path.dirname(os.path.realpath(__file__))
+onnx_list = get_onnx_list_with_subdirs(current_path)
+if 0 == len(onnx_list):
+    onnx_list.insert(0, "None")
 
 class cl_tagger:
     '''
@@ -219,10 +278,7 @@ class cl_tagger:
         
         input_name = session.get_inputs()[0].name
         output_name = session.get_outputs()[0].name
-        #start_time = time.time()
         outputs = session.run([output_name], {input_name: input_tensor})[0]
-        #inference_time = time.time() - start_time
-        #print(f"[Mira:ClTagger]Inference completed in {inference_time:.3f} seconds")
         
         # Check for NaN/Inf in outputs
         if np.isnan(outputs).any() or np.isinf(outputs).any():
@@ -289,11 +345,7 @@ class cl_tagger:
         return output_text
     
     @classmethod
-    def INPUT_TYPES(s):
-        onnx_list = comfy_paths.get_filename_list("onnx")
-        if 0 == len(onnx_list):
-            onnx_list.insert(0, "None")
-            
+    def INPUT_TYPES(s):            
         return {
             "required": {
                 "image":("IMAGE", {
@@ -338,7 +390,7 @@ class cl_tagger:
         if model_name == 'None':
             return ("[Mira] Download CL Tagger Model and JSON file put in your \"ComfyUI/model/onnx\" foler.\nhttps://github.com/mirabarukaso/ComfyUI_Mira#tagger\nhttps://huggingface.co/cella110n", )
         
-        full_model_path = comfy_paths.get_full_path('onnx', model_name)
+        full_model_path = os.path.join(onnx_path, model_name)
         full_tag_map_path = full_model_path.replace('.onnx', '_tag_mapping.json')
         if not os.path.exists(full_model_path):
             print(f"[Mira:ClTagger]Error: [{full_model_path}] not found!")
@@ -454,10 +506,7 @@ class camie_tagger:
                 
         input_name = session.get_inputs()[0].name
         output_name = session.get_outputs()[0].name
-        #start_time = time.time()
         outputs = session.run([output_name], {input_name: input_tensor})[0]
-        #inference_time = time.time() - start_time
-        #print(f"[Mira:CamieTagger]Inference completed in {inference_time:.3f} seconds")
         
         # Process outputs - handle both single and multi-output models
         if len(outputs) >= 2:
@@ -556,11 +605,7 @@ class camie_tagger:
         return output_text
             
     @classmethod
-    def INPUT_TYPES(s):
-        onnx_list = comfy_paths.get_filename_list("onnx")
-        if 0 == len(onnx_list):
-            onnx_list.insert(0, "None")
-            
+    def INPUT_TYPES(s):                   
         return {
             "required": {
                 "image":("IMAGE", {
@@ -605,7 +650,7 @@ class camie_tagger:
         if model_name == 'None':
             return ("[Mira] Download Camie Tagger Model and JSON file put in your \"ComfyUI/model/onnx\" foler.\nhttps://github.com/mirabarukaso/ComfyUI_Mira#tagger\nhttps://huggingface.co/Camais03", )
         
-        full_model_path = comfy_paths.get_full_path('onnx', model_name)
+        full_model_path = os.path.join(onnx_path, model_name)
         full_tag_map_path = full_model_path.replace('.onnx', '-metadata.json')
         if not os.path.exists(full_model_path):
             print(f"[Mira:CamieTagger]Error: [{full_model_path}] not found!")
