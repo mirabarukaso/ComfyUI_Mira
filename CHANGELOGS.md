@@ -1,4 +1,8 @@
 ## Change Logs      
+#### 2025.12.30 Ver 0.5.5.0        
+・Add multiple images tagging for `CL Tagger` and `Camie Tagger`        
+
+
 #### 2025.12.11 Ver 0.5.4.0        
 ・Change ONNX models search method to fix #24         
 

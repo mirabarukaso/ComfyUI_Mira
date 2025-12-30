@@ -6,6 +6,7 @@ import json
 import os.path
 import gc
 import cv2
+import torch
 
 cat = "Mira/Tagger"
 onnx_path = ''
@@ -387,6 +388,10 @@ class cl_tagger:
     CATEGORY = cat
     
     def cl_tagger_ex(self, image, model_name, general, character, replace_space, categories, exclude_tags, session_method):
+        # Ensure images is a torch tensor
+        if not isinstance(image, torch.Tensor):
+            raise ValueError("Input 'image' must be a torch.Tensor")
+        
         if model_name == 'None':
             return ("[Mira] Download CL Tagger Model and JSON file put in your \"ComfyUI/model/onnx\" foler.\nhttps://github.com/mirabarukaso/ComfyUI_Mira#tagger\nhttps://huggingface.co/cella110n", )
         
@@ -400,8 +405,21 @@ class cl_tagger:
             print(f"[Mira:ClTagger]Error: [{full_model_path}] not found!")
             return (f"[Mira:ClTagger]Error: [{full_model_path}] not found!", )
         
-        result = self.run_cl_tagger(image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
+        if image.ndim == 3:
+            image = image.unsqueeze(0)
         
+        if image.shape[0] > 1:
+            print(f"[Mira:ClTagger] Info: Batch processing {image.shape[0]} images...")
+            result = []
+            for i in range(image.shape[0]):
+                print(f"[Mira:ClTagger] Processing image {i+1}/{image.shape[0]}...")
+                img = image[i].unsqueeze(0)
+                tag = self.run_cl_tagger(img, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
+                result.append(tag)
+            
+            return ("\n".join(result),)
+        
+        result = self.run_cl_tagger(image[0].unsqueeze(0), full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
         return (result,)
     
 class camie_tagger:
@@ -647,6 +665,10 @@ class camie_tagger:
     CATEGORY = cat
     
     def camie_tagger_ex(self, image, model_name, general, min_confidence, replace_space, categories, exclude_tags, session_method):
+        # Ensure images is a torch tensor
+        if not isinstance(image, torch.Tensor):
+            raise ValueError("Input 'image' must be a torch.Tensor")
+        
         if model_name == 'None':
             return ("[Mira] Download Camie Tagger Model and JSON file put in your \"ComfyUI/model/onnx\" foler.\nhttps://github.com/mirabarukaso/ComfyUI_Mira#tagger\nhttps://huggingface.co/Camais03", )
         
@@ -658,8 +680,21 @@ class camie_tagger:
         
         if not os.path.exists(full_tag_map_path):
             print(f"[Mira:CamieTagger]Error: [{full_model_path}] not found!")
-            return (f"[Mira:CamieTagger]Error: [{full_model_path}] not found!", )
+            return (f"[Mira:CamieTagger]Error: [{full_model_path}] not found!", )    
+
+        if image.ndim == 3:
+            image = image.unsqueeze(0)
         
-        result = self.run_camie_tagger(image, full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
+        if image.shape[0] > 1:
+            print(f"[Mira:CamieTagger] Info: Batch processing {image.shape[0]} images...")
+            result = []
+            for i in range(image.shape[0]):
+                print(f"[Mira:CamieTagger] Processing image {i+1}/{image.shape[0]}...")
+                img = image[i].unsqueeze(0)
+                tag = self.run_camie_tagger(img, full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
+                result.append(tag)
+            
+            return ("\n".join(result),)
         
+        result = self.run_camie_tagger(image[0].unsqueeze(0), full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
         return (result,)

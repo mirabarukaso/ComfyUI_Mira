@@ -6,7 +6,6 @@ from PIL import Image
 import cv2
 from .color_flat import flat_color_multi_scale
 from .color_transfer import ColorTransfer
-#from comfy_extras.nodes_upscale_model import ImageUpscaleWithModel
 from comfy import model_management
 import torchvision.transforms as T
 import torchvision.transforms.functional as con
