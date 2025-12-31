@@ -1,4 +1,11 @@
 ## Change Logs      
+#### 2025.12.30 Ver 0.5.6.0        
+・Add `WD Tagger`        
+・・WD Tagger by SmilingWolf https://huggingface.co/SmilingWolf       
+・Add multiple images tagging for `WD Tagger`       
+・ Update `retuirements.txt`     
+
+
 #### 2025.12.30 Ver 0.5.5.0        
 ・Add multiple images tagging for `CL Tagger` and `Camie Tagger`        
 

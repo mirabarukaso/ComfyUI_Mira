@@ -7,6 +7,7 @@ import os.path
 import gc
 import cv2
 import torch
+import csv
 
 cat = "Mira/Tagger"
 onnx_path = ''
@@ -697,4 +698,373 @@ class camie_tagger:
             return ("\n".join(result),)
         
         result = self.run_camie_tagger(image[0].unsqueeze(0), full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
+        return (result,)
+    
+class wd_tagger:
+    '''
+    WD14 Tagger - Waifu Diffusion 14 Tagger
+    
+    Inputs:
+    image               - Image for tagger
+    model_name          - Onnx model (WD14 format)
+    general_threshold   - General tags threshold
+    character_threshold - Character tags threshold
+    general_mcut        - Enable MCut thresholding for general tags
+    character_mcut      - Enable MCut thresholding for character tags
+    replace_space       - Replace '_' with ' ' (space)
+    exclude_tags        - Exclude tags (comma-separated)
+    session_method      - CPU or GPU session. Release will release session after generate
+        
+    Outputs:
+    tags                - Generated tags (comma-separated string)
+    '''
+    
+    _tag_mapping_cache = {}
+    _cpu_session = None
+    _gpu_session = None
+    
+    # Kaomoji tags that should preserve underscores
+    KAOMOJIS = {
+        "0_0", "(o)_(o)", "+_+", "+_-", "._.", "<o>_<o>", "<|>_<|>",
+        "=_=", ">_<", "3_3", "6_9", ">_o", "@_@", "^_^", "o_o",
+        "u_u", "x_x", "|_|", "||_||"
+    }
+    
+    def get_tag_mapping(self, csv_path):
+        """Load tag mapping from CSV file (WD14 format)"""
+        if csv_path not in self._tag_mapping_cache:
+            print(f"[Mira:WDTagger] Load tag mapping: {csv_path}")
+            self._tag_mapping_cache[csv_path] = self.load_tag_mapping_from_csv(csv_path)
+        return self._tag_mapping_cache[csv_path]
+    
+    def load_tag_mapping_from_csv(self, csv_path):
+        """
+        Load WD14 tag mapping from CSV
+        CSV format: tag_id,name,category,count
+        Categories: 0=general, 4=character, 9=rating
+        """
+        tags = []
+        
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            next(reader)  # Skip header
+            
+            for row in reader:
+                if len(row) >= 4:
+                    tag_id = int(row[0])
+                    name = row[1]
+                    category = row[2]
+                    count = row[3]
+                    
+                    # Process name: replace _ with space unless it's a kaomoji
+                    processed_name = name if name in self.KAOMOJIS else name.replace("_", " ")
+                    
+                    tags.append({
+                        'tag_id': tag_id,
+                        'name': processed_name,
+                        'category': category,
+                        'count': count
+                    })
+        
+        print(f"[Mira:WDTagger] Loaded {len(tags)} tags from CSV")
+        return tags
+    
+    def get_session(self, model_path, session_method):
+        """Get or create ONNX runtime session"""
+        if session_method.startswith('CPU'):
+            if not self._cpu_session:
+                self._cpu_session = ort.InferenceSession(
+                    model_path, 
+                    providers=["CPUExecutionProvider"]
+                )
+            return self._cpu_session
+        elif session_method.startswith('GPU'):
+            if not self._gpu_session:
+                self._gpu_session = ort.InferenceSession(
+                    model_path, 
+                    providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+                )
+            return self._gpu_session
+    
+    def pad_square_np(self, img_array):
+        """Pad image to square with white background"""
+        h, w, c = img_array.shape
+        if h == w:
+            return img_array
+        
+        new_size = max(h, w)
+        pad_top = (new_size - h) // 2
+        pad_bottom = new_size - h - pad_top
+        pad_left = (new_size - w) // 2
+        pad_right = new_size - w - pad_left
+        
+        return np.pad(
+            img_array,
+            ((pad_top, pad_bottom), (pad_left, pad_right), (0, 0)),
+            mode='constant',
+            constant_values=255
+        )
+    
+    def preprocess_image(self, image, target_size=448):
+        """
+        Preprocess image for WD14 tagger
+        1. Pad to square
+        2. Resize to target size (448x448)
+        3. Convert RGB to BGR
+        4. Convert to float32 [0-255] range
+        5. Reshape to NHWC format
+        """
+        img = np.array(decode_image(image))
+        
+        # Pad to square
+        img = self.pad_square_np(img)
+        
+        # Resize
+        img = cv2.resize(img, (target_size, target_size), interpolation=cv2.INTER_CUBIC)
+        
+        # Convert RGB to BGR
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        
+        # Convert to float32 (WD14 expects 0-255 range, not normalized)
+        img = img.astype(np.float32)
+        
+        # Add batch dimension (NHWC format)
+        img = np.expand_dims(img, axis=0)
+        
+        return img
+    
+    def mcut_threshold(self, probs):
+        """
+        Maximum Cut Thresholding (MCut)
+        Finds the threshold that maximizes the gap between kept and discarded tags
+        """
+        sorted_probs = sorted(probs, reverse=True)
+        
+        if len(sorted_probs) < 2:
+            return 0.0
+        
+        difs = [sorted_probs[i] - sorted_probs[i + 1] for i in range(len(sorted_probs) - 1)]
+        
+        if not difs:
+            return 0.0
+        
+        t = difs.index(max(difs))
+        threshold = (sorted_probs[t] + sorted_probs[t + 1]) / 2
+        
+        return threshold
+    
+    def run_wd_tagger(self, image, full_model_path, csv_path, gen_threshold, char_threshold, 
+                      general_mcut, character_mcut, replace_space, categories, exclude, session_method):
+        """Run WD14 tagger inference"""
+        
+        # Preprocess image
+        input_tensor = self.preprocess_image(image)
+        
+        # Load tag mapping
+        tag_mapping = self.get_tag_mapping(csv_path)
+        
+        # Get session
+        session = self.get_session(full_model_path, session_method)
+        
+        # Run inference
+        input_name = session.get_inputs()[0].name
+        output_name = session.get_outputs()[0].name
+        
+        outputs = session.run([output_name], {input_name: input_tensor})
+        probs = outputs[0][0]  # Remove batch dimension
+        
+        # Separate tags by category
+        rating_tags = []
+        general_tags = []
+        character_tags = []
+        
+        general_probs = []
+        character_probs = []
+        
+        for idx, tag in enumerate(tag_mapping):
+            if idx >= len(probs):
+                break
+            
+            prob = float(probs[idx])
+            
+            if tag['category'] == '9':  # Rating
+                rating_tags.append({'name': tag['name'], 'prob': prob})
+            elif tag['category'] == '0':  # General
+                general_probs.append(prob)
+                general_tags.append({'name': tag['name'], 'prob': prob})
+            elif tag['category'] == '4':  # Character
+                character_probs.append(prob)
+                character_tags.append({'name': tag['name'], 'prob': prob})
+        
+        # Apply thresholds
+        effective_gen_thresh = gen_threshold
+        if general_mcut and general_probs:
+            effective_gen_thresh = self.mcut_threshold(general_probs)
+            print(f"[Mira:WDTagger] General MCut threshold: {effective_gen_thresh:.4f}")
+        
+        effective_char_thresh = char_threshold
+        if character_mcut and character_probs:
+            effective_char_thresh = max(0.15, self.mcut_threshold(character_probs))
+            print(f"[Mira:WDTagger] Character MCut threshold: {effective_char_thresh:.4f}")
+        
+        # Filter tags
+        filtered_general = [t for t in general_tags if t['prob'] > effective_gen_thresh]
+        filtered_character = [t for t in character_tags if t['prob'] > effective_char_thresh]
+        
+        # Sort general tags by probability
+        filtered_general.sort(key=lambda x: x['prob'], reverse=True)
+        
+        # Build output
+        output_tags = []
+        
+        # Add rating (highest probability)
+        if rating_tags and 'rating' in categories.lower():
+            top_rating = max(rating_tags, key=lambda x: x['prob'])
+            print(f"[Mira:WDTagger] Rating: {top_rating['name']} ({top_rating['prob']*100:.2f}%)")
+            output_tags.append(top_rating['name'])
+        
+        # Add character tags (preserve order)
+        if 'character' in categories.lower():
+            output_tags.extend([t['name'] for t in filtered_character])
+        
+        # Add general tags (sorted by probability)
+        if 'general' in categories.lower():
+            output_tags.extend([t['name'] for t in filtered_general])
+        
+        print(f"[Mira:WDTagger] Generated {len(output_tags)} tags " +
+              f"({len(filtered_character)} characters, {len(filtered_general)} general)")
+        
+        # Apply exclusions
+        if exclude:
+            exclude_list = [e.strip().lower() for e in exclude.split(',') if e.strip()]
+            if exclude_list:
+                filtered_tags = []
+                for tag in output_tags:
+                    if not any(ex in tag.lower() for ex in exclude_list):
+                        filtered_tags.append(tag)
+                output_tags = filtered_tags
+        
+        # Replace spaces if needed
+        if not replace_space:
+            output_tags = [tag.replace(' ', '_') for tag in output_tags]
+        
+        output_text = ", ".join(output_tags)
+        print(f"[Mira:WDTagger] {output_text}")
+        
+        # Release session if requested
+        if session_method.endswith('Release'):
+            self._cpu_session = None
+            self._gpu_session = None
+            gc.collect()
+        
+        return output_text
+    
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE", {
+                    "display": "input",
+                    "default": None,
+                }),
+                "model_name": (onnx_list,),
+                "general_threshold": ("FLOAT", {
+                    "default": 0.35,
+                    "min": 0.05,
+                    "max": 1.0,
+                    "step": 0.01,
+                }),
+                "character_threshold": ("FLOAT", {
+                    "default": 0.85,
+                    "min": 0.05,
+                    "max": 1.0,
+                    "step": 0.01,
+                }),
+                "general_mcut": ("BOOLEAN", {
+                    "default": False,
+                    "label_on": "enabled",
+                    "label_off": "disabled"
+                }),
+                "character_mcut": ("BOOLEAN", {
+                    "default": False,
+                    "label_on": "enabled",
+                    "label_off": "disabled"
+                }),
+                "replace_space": ("BOOLEAN", {
+                    "default": True,
+                    "label_on": "space",
+                    "label_off": "underscore"
+                }),
+                "categories" : ("STRING", {
+                    "default": 'rating,general,character', 
+                    "display": "input", 
+                    "multiline": False
+                }),
+                "exclude_tags": ("STRING", {
+                    "default": "",
+                    "display": "input",
+                    "multiline": False
+                }),
+                "session_method": (['CPU', 'CPU Release', 'GPU', 'GPU Release'],),
+            },
+        }
+    
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("tags",)
+    FUNCTION = "wd_tagger_ex"
+    CATEGORY = cat
+    
+    def wd_tagger_ex(self, image, model_name, general_threshold, character_threshold,
+                     general_mcut, character_mcut, replace_space, categories, exclude_tags, session_method):        
+        # Validate input
+        if not isinstance(image, torch.Tensor):
+            raise ValueError("Input 'image' must be a torch.Tensor")
+        
+        if model_name == 'None':
+            return (
+                "[Mira] Download WD14 Tagger Model and CSV file, put in your \"ComfyUI/models/onnx\" folder.\n"
+                "https://github.com/mirabarukaso/ComfyUI_Mira#tagger\n"
+                "WD14 models: https://huggingface.co/SmilingWolf/wd-v1-4-tags",
+            )
+        
+        # Build paths
+        full_model_path = os.path.join(onnx_path, model_name)
+        csv_path = full_model_path.replace('.onnx', '_selected_tags.csv')
+        
+        # Check files exist
+        if not os.path.exists(full_model_path):
+            print(f"[Mira:WDTagger] Error: Model not found: {full_model_path}")
+            return (f"[Mira:WDTagger] Error: Model not found: {full_model_path}",)
+        
+        if not os.path.exists(csv_path):
+            print(f"[Mira:WDTagger] Error: CSV not found: {csv_path}")
+            return (f"[Mira:WDTagger] Error: CSV not found: {csv_path}",)
+        
+        # Handle batch dimension
+        if image.ndim == 3:
+            image = image.unsqueeze(0)
+        
+        # Batch processing
+        if image.shape[0] > 1:
+            print(f"[Mira:WDTagger] Batch processing {image.shape[0]} images...")
+            results = []
+            for i in range(image.shape[0]):
+                print(f"[Mira:WDTagger] Processing image {i+1}/{image.shape[0]}...")
+                img = image[i].unsqueeze(0)
+                tag = self.run_wd_tagger(
+                    img, full_model_path, csv_path,
+                    general_threshold, character_threshold,
+                    general_mcut, character_mcut,
+                    replace_space, categories, exclude_tags, session_method
+                )
+                results.append(tag)
+            return ("\n".join(results),)
+        
+        # Single image processing
+        result = self.run_wd_tagger(
+            image[0].unsqueeze(0), full_model_path, csv_path,
+            general_threshold, character_threshold,
+            general_mcut, character_mcut,
+            replace_space, categories, exclude_tags, session_method
+        )
         return (result,)

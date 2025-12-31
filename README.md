@@ -819,6 +819,8 @@ solo, masterpiece, best quality, amazing quality,
 ### Tagger  
 Supports [CL Tagger@cella110n](https://huggingface.co/cella110n) and [Camie Tagger@Camais03](https://huggingface.co/Camais03)         
 
+All taggers support single or multiple image input. In the case of multiple image input, tags will be separated by a new line for each image.                
+
 Download CL/Camie Tagger Model and JSON file put in your `ComfyUI/model/onnx` foler.      
 Rename `model.onnx` and `tag_mapping.json` with following format:      
 
@@ -832,6 +834,11 @@ ComfyUI
 |       |---camie_tagger
 |           |---camie-tagger-v2.onnx
 |           |---camie-tagger-v2-metadata.json
+|       |---wd_tagger
+|           |---wd-eva02-large-tagger-v3.onnx
+|           |---wd-eva02-large-tagger-v3_selected_tags.csv
+|           |---wd-vit-large-tagger-v3.onnx
+|           |---wd-vit-large-tagger-v3_selected_tags.csv
 ```
 
 CL Tagger       
@@ -855,6 +862,20 @@ Camie Tagger
 | `min_confidence`  | Minimum confidence to display. |
 | `replace_space`  | Replace '_' with ' ' (space). |
 | `categories`  | Selected categories in generate tags, and order by input order. |
+| `session`  | Tagger Model in CPU or GPU session. Release will release session after generate. |
+| `exclude_tags`  | Exclude tags. |
+
+WD Tagger     
+| Inputs | Description |
+| --- | --- |
+| `image`  | Image for tagger. |
+| `model_name`  | Onnx model. |
+| `general_threshold`  | General threshold. |
+| `character_threshold`  | Character threshold. |
+| `general_mcut`  | Use mCut for General tags. |
+| `character_mcut`  | Use mCut for Character tags. |
+| `replace_space`  | Replace '_' with ' ' (space). |
+| `categories`  | Selected categories in generate tags. |
 | `session`  | Tagger Model in CPU or GPU session. Release will release session after generate. |
 | `exclude_tags`  | Exclude tags. |
 
