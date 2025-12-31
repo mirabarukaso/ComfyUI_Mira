@@ -7,4 +7,3 @@ torchvision
 piexif
 onnxruntime
 onnxruntime-gpu
-csv
