@@ -817,7 +817,7 @@ solo, masterpiece, best quality, amazing quality,
 
 ------
 ### Tagger  
-Supports [CL Tagger@cella110n](https://huggingface.co/cella110n) and [Camie Tagger@Camais03](https://huggingface.co/Camais03)         
+Supports [WD@SmilingWolf](https://huggingface.co/SmilingWolf), [CL@cella110n](https://huggingface.co/cella110n/cl_tagger) and [Camie@Camais03](https://huggingface.co/spaces/Camais03/camie-tagger-v2-app) models in ONNX format.             
 
 All taggers support single or multiple image input. In the case of multiple image input, tags will be separated by a new line for each image.                
 
@@ -913,5 +913,6 @@ Reminder: Due to ComfyUI update this example may outdated.
 ## Latest Change Log   
 #### 2025.05.05 Ver 0.4.9.5    
 ・Add `character_weight` & `insert_before_character` for `Character Select` nodes        
+
 
 
