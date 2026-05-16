@@ -72,7 +72,7 @@ def decode_image(src_image):
     return img
 
 print("[Mira:Tagger] Initializing ONNX model list...")
-current_path = os.path.dirname(os.path.realpath(__file__))
+current_path = os.path.dirname(os.path.abspath(__file__))
 onnx_list = get_onnx_list_with_subdirs(current_path)
 if 0 == len(onnx_list):
     onnx_list.insert(0, "None")
