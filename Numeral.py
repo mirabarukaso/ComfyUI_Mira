@@ -260,7 +260,7 @@ class StepsAndCfg:
         return {
             "required": {
                 "steps": ("INT", {"default": 30, "step": 1, "min": 1}),
-                "cfg": ("FLOAT", {"default": 7.0, "step": 0.01, "min": 1.0}),
+                "cfg": ("FLOAT", {"default": 7.0, "step": 0.01, "min": 0.0}),
             },
         }
                 
