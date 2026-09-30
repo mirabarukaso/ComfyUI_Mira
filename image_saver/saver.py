@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger("comfy")
 from PIL.PngImagePlugin import PngInfo
 
 import json
@@ -45,15 +47,15 @@ def save_image(image, filepath, extension, quality_jpeg_or_webp, lossless_webp, 
         if extension == "jpg" or extension == "jpeg":
             MAX_EXIF_SIZE = 65535
             if len(exif_bytes) > MAX_EXIF_SIZE and embed_workflow:
-                print("ComfyUI-Image-Saver: Error: Workflow is too large, removing client request prompt.")
+                logger.error("ComfyUI-Image-Saver: Error: Workflow is too large, removing client request prompt.")
                 prompt_json = {}
                 exif_bytes = get_exif_bytes()
                 if len(exif_bytes) > MAX_EXIF_SIZE:
-                    print("ComfyUI-Image-Saver: Error: Workflow is still too large, cannot embed workflow!")
+                    logger.error("ComfyUI-Image-Saver: Error: Workflow is still too large, cannot embed workflow!")
                     pnginfo_json = {}
                     exif_bytes = get_exif_bytes()
             if len(exif_bytes) > MAX_EXIF_SIZE:
-                print("ComfyUI-Image-Saver: Error: Metadata exceeds maximum size for JPEG. Cannot save metadata.")
+                logger.error("ComfyUI-Image-Saver: Error: Metadata exceeds maximum size for JPEG. Cannot save metadata.")
                 return
 
         piexif.insert(exif_bytes, filepath)

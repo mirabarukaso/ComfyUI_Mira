@@ -1,11 +1,24 @@
+from comfy_api.latest import IO
+from .v3schema import node
+
 cat = "Mira/Text"
 
-class TextBox:
+class TextBox(IO.ComfyNode):
     '''
     A simple TextBox.
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "TextBoxMira",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("text",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "text": ("STRING", {
@@ -14,15 +27,12 @@ class TextBox:
             },
         }
                 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text",)
-    FUNCTION = "TextBoxEx"
-    CATEGORY = cat
     
-    def TextBoxEx(self, text):
+    @classmethod
+    def execute(cls, text):
         return (text,)
 
-class TextWithBooleanSwitchAndCommonTextInput:
+class TextWithBooleanSwitchAndCommonTextInput(IO.ComfyNode):
     '''
     Selects Text 1 or Text 2 depending on the switch and automatically adds Common Text for output.
     
@@ -38,7 +48,17 @@ class TextWithBooleanSwitchAndCommonTextInput:
     text_alt                - Alternative combined text output    
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "TextWithBooleanSwitchAndCommonTextInput",
+            cat,
+            cls._v1_inputs(),
+            ("STRING", "STRING",),
+            ("text","alt_text",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "use_text2": ("BOOLEAN", {
@@ -62,12 +82,9 @@ class TextWithBooleanSwitchAndCommonTextInput:
             },
         }
                 
-    RETURN_TYPES = ("STRING", "STRING",)
-    RETURN_NAMES = ("text","alt_text",)
-    FUNCTION = "TextWithBooleanSwitchAndCommonTextInputEx"
-    CATEGORY = cat
     
-    def TextWithBooleanSwitchAndCommonTextInputEx(self, use_text2, common_text_at_front, text1, text2, common_text):
+    @classmethod
+    def execute(cls, use_text2, common_text_at_front, text1, text2, common_text):
         if True == common_text_at_front:
             if True == use_text2:
                 return (common_text + text2, common_text + text1,)
@@ -79,7 +96,7 @@ class TextWithBooleanSwitchAndCommonTextInput:
             else:
                 return (text1 + common_text, text2 + common_text,)
 
-class TextCombinerSix:
+class TextCombinerSix(IO.ComfyNode):
     '''
     Simply combine six input texts for regional text
     
@@ -90,7 +107,17 @@ class TextCombinerSix:
     text        - A combined text output    
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "TextCombinerSix",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("text",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "text1": ("STRING", {"display": "input"}),
@@ -102,15 +129,12 @@ class TextCombinerSix:
             },
         }
                 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text",)
-    FUNCTION = "TextCombinerSixEx"
-    CATEGORY = cat
     
-    def TextCombinerSixEx(self, text1, text2, text3, text4, text5, text6):
+    @classmethod
+    def execute(cls, text1, text2, text3, text4, text5, text6):
         return (text1 + text2 + text3 + text4 + text5 + text6,)
     
-class TextCombinerTwo:
+class TextCombinerTwo(IO.ComfyNode):
     '''
     Simply combine two input texts for regional text
     
@@ -121,7 +145,17 @@ class TextCombinerTwo:
     text        - A combined text output    
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "TextCombinerTwo",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("text",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "text1": ("STRING", {"display": "input"}),
@@ -129,15 +163,12 @@ class TextCombinerTwo:
             },
         }
                 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text",)
-    FUNCTION = "TextCombinerTwoEx"
-    CATEGORY = cat
     
-    def TextCombinerTwoEx(self, text1, text2):
+    @classmethod
+    def execute(cls, text1, text2):
         return (text1 + text2,)
 
-class TextSwitcherTwoWays:
+class TextSwitcherTwoWays(IO.ComfyNode):
     '''
     Text Switcher Two Ways
     In face that's for my Mask Layouts
@@ -156,7 +187,17 @@ class TextSwitcherTwoWays:
     | True   | text2 text1 |
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "TextSwitcherTwoWays",
+            cat,
+            cls._v1_inputs(),
+            ("STRING","STRING",),
+            ("text1","text2",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "text1": ("STRING", {"display": "input"}),
@@ -165,18 +206,15 @@ class TextSwitcherTwoWays:
             },
         }
                 
-    RETURN_TYPES = ("STRING","STRING",)
-    RETURN_NAMES = ("text1","text2",)
-    FUNCTION = "TextSwitcherTwoWaysEx"
-    CATEGORY = cat
     
-    def TextSwitcherTwoWaysEx(self, text1, text2, switch):
+    @classmethod
+    def execute(cls, text1, text2, switch):
         if True is switch:
             return (text2, text1,)
     
         return (text1, text2,)
         
-class TextSwitcherThreeWays:
+class TextSwitcherThreeWays(IO.ComfyNode):
     '''
     Text Switcher Three Ways
     Found a satisfied random number and didn't want to mess up your regional nodes too much?
@@ -201,7 +239,17 @@ class TextSwitcherThreeWays:
     | 6 | 321 |
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "TextSwitcherThreeWays",
+            cat,
+            cls._v1_inputs(),
+            ("STRING","STRING","STRING",),
+            ("text1","text2","text3",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "text1": ("STRING", {"display": "input"}),
@@ -217,12 +265,9 @@ class TextSwitcherThreeWays:
             },
         }
                 
-    RETURN_TYPES = ("STRING","STRING","STRING",)
-    RETURN_NAMES = ("text1","text2","text3",)
-    FUNCTION = "TextSwitcherThreeWaysEx"
-    CATEGORY = cat
     
-    def TextSwitcherThreeWaysEx(self, text1, text2, text3, switch):
+    @classmethod
+    def execute(cls, text1, text2, text3, switch):
         match switch:
             case 1: #123
                 return (text1, text2, text3,)
@@ -239,7 +284,7 @@ class TextSwitcherThreeWays:
     
         return (text1, text2, text3,)
 
-class TextLoopCombiner:
+class TextLoopCombiner(IO.ComfyNode):
     '''
     Text Loop Combiner
     
@@ -255,9 +300,19 @@ class TextLoopCombiner:
     Outputs:
     text_out     - Combined text
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "TextLoopCombiner",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("text_out",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "optional": {
                 "text_in": ("STRING", {"display": "input", "multiline": True}),
@@ -268,12 +323,9 @@ class TextLoopCombiner:
             },
         }
                 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text_out",)
-    FUNCTION = "TextLoopCombinerEx"
-    CATEGORY = cat
     
-    def TextLoopCombinerEx(self, text, seprator, text_in = None):
+    @classmethod
+    def execute(cls, text, seprator, text_in = None):
         if None is not text_in:
             text_out = text_in + seprator + text
         else:
@@ -282,7 +334,7 @@ class TextLoopCombiner:
         return (text_out,)   
     
     
-class TextWildcardSeprator:
+class TextWildcardSeprator(IO.ComfyNode):
     '''
     Text Wildcard Seprator
     
@@ -297,9 +349,19 @@ class TextWildcardSeprator:
     Outputs:
     text_out     - Selected text 
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "TextWildcardSeprator",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("text_out",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "text": ("STRING", {"display": "input", "multiline": True}),
@@ -313,12 +375,9 @@ class TextWildcardSeprator:
             },
         }
                 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text_out",)
-    FUNCTION = "TextWildcardSepratorEx"
-    CATEGORY = cat
     
-    def TextWildcardSepratorEx(self, text, seprator, switch):
+    @classmethod
+    def execute(cls, text, seprator, switch):
         segments = str(text).split(seprator)
 
         if switch >= len(segments):

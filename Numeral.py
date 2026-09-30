@@ -1,3 +1,6 @@
+from comfy_api.latest import IO
+from .v3schema import node
+
 cat = "Mira/Numeral"
 
 def FloatListInterpreter(float_list, Start_At_Index, times = 1):
@@ -25,7 +28,7 @@ class AlwaysEqualProxy(str):
     def __ne__(self, _):
         return False
     
-class NumeralToString:
+class NumeralToString(IO.ComfyNode):
     '''
     Convert Integer or Float to String.   
     
@@ -36,7 +39,17 @@ class NumeralToString:
     text        - String output
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "NumeralToString",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("Result (STRING)",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "numeral": (AlwaysEqualProxy('*'), {
@@ -46,12 +59,9 @@ class NumeralToString:
             },
         }
 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("Result (STRING)",)
-    FUNCTION = "execute"
-    CATEGORY = cat
 
-    def execute(self, numeral):
+    @classmethod
+    def execute(cls, numeral):
         if type(numeral) is int or type(numeral) is float:
             return (str(numeral),)
         else:
@@ -59,32 +69,49 @@ class NumeralToString:
             result += str(type(numeral))
             return (result,)
         
-class OneFloat:
+class OneFloat(IO.ComfyNode):
     '''
     1 Float
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "OneFloat",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT",),
+            ("float_1",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "float_1": ("FLOAT", {"default": 1.0, "step": 0.01}),
             },
         }
                 
-    RETURN_TYPES = ("FLOAT",)
-    RETURN_NAMES = ("float_1",)
-    FUNCTION = "OneFloatEx"
-    CATEGORY = cat
     
-    def OneFloatEx(self, float_1, ):
+    @classmethod
+    def execute(cls, float_1, ):
         return (float_1, )
 
-class TwoFloats:
+class TwoFloats(IO.ComfyNode):
     '''
     2 Floats
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "TwoFloats",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT","FLOAT",),
+            ("float_1","float_2",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "float_1": ("FLOAT", {"default": 1.0, "step": 0.0001}),
@@ -92,20 +119,27 @@ class TwoFloats:
             },
         }
                 
-    RETURN_TYPES = ("FLOAT","FLOAT",)
-    RETURN_NAMES = ("float_1","float_2",)
-    FUNCTION = "TwoFloatsEx"
-    CATEGORY = cat
     
-    def TwoFloatsEx(self, float_1, float_2,):
+    @classmethod
+    def execute(cls, float_1, float_2,):
         return (float_1, float_2,)
     
-class FourFloats:
+class FourFloats(IO.ComfyNode):
     '''
     4 Floats
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "FourFloats",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT_LIST",),
+            ("float_list",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
@@ -115,21 +149,28 @@ class FourFloats:
             },
         }
                 
-    RETURN_TYPES = ("FLOAT_LIST",)
-    RETURN_NAMES = ("float_list",)
-    FUNCTION = "FourFloatsEx"
-    CATEGORY = cat
     
-    def FourFloatsEx(self, float_1, float_2, float_3, float_4):
+    @classmethod
+    def execute(cls, float_1, float_2, float_3, float_4):
         float_list = [float_1, float_2, float_3, float_4,]
         return (float_list,)
 
-class EightFloats:
+class EightFloats(IO.ComfyNode):
     '''
     8 Floats
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "EightFloats",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT_LIST",),
+            ("float_list",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "float_1": ("FLOAT", {"default": 1.0, "step": 0.01, "min": -10.0, "max":10.0}),
@@ -143,16 +184,13 @@ class EightFloats:
             },
         }
                 
-    RETURN_TYPES = ("FLOAT_LIST",)
-    RETURN_NAMES = ("float_list",)
-    FUNCTION = "EightFloatsEx"
-    CATEGORY = cat
     
-    def EightFloatsEx(self, float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8):
+    @classmethod
+    def execute(cls, float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8):
         float_list = [float_1, float_2, float_3, float_4, float_5, float_6, float_7, float_8]
         return (float_list,)
 
-class FloatListInterpreter1:  
+class FloatListInterpreter1(IO.ComfyNode):  
     '''   
     Decode `Float` value(s) from `Float list`.
     
@@ -163,9 +201,19 @@ class FloatListInterpreter1:
     Outputs:
     float(0~N)      - Float list    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "FloatListInterpreter1",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT", ),
+            ("float", ),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "float_list": ("FLOAT_LIST", {
@@ -180,22 +228,29 @@ class FloatListInterpreter1:
             },            
         }
         
-    RETURN_TYPES = ("FLOAT", )
-    RETURN_NAMES = ("float", )
-    FUNCTION = "FloatListInterpreter1Ex"
-    CATEGORY = cat
     
-    def FloatListInterpreter1Ex(self, float_list, Start_At_Index):
+    @classmethod
+    def execute(cls, float_list, Start_At_Index):
         new_list = FloatListInterpreter(float_list, Start_At_Index)
             
         return (new_list[0],)
-class FloatListInterpreter4:  
+class FloatListInterpreter4(IO.ComfyNode):  
     '''   
     Same as FloatListInterpreter1
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "FloatListInterpreter4",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT", "FLOAT", "FLOAT", "FLOAT",),
+            ("float_1", "float_2", "float_3", "float_4", ),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "float_list": ("FLOAT_LIST", {
@@ -210,23 +265,30 @@ class FloatListInterpreter4:
             },            
         }
         
-    RETURN_TYPES = ("FLOAT", "FLOAT", "FLOAT", "FLOAT",)
-    RETURN_NAMES = ("float_1", "float_2", "float_3", "float_4", )
-    FUNCTION = "FloatListInterpreter4Ex"
-    CATEGORY = cat
     
-    def FloatListInterpreter4Ex(self, float_list, Start_At_Index):
+    @classmethod
+    def execute(cls, float_list, Start_At_Index):
         new_list = FloatListInterpreter(float_list, Start_At_Index, 4)
             
         return (new_list[0],new_list[1],new_list[2],new_list[3],)
     
-class FloatListInterpreter8:  
+class FloatListInterpreter8(IO.ComfyNode):  
     '''   
     Same as FloatListInterpreter1
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "FloatListInterpreter8",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT", "FLOAT", "FLOAT", "FLOAT","FLOAT", "FLOAT", "FLOAT", "FLOAT",),
+            ("float_1", "float_2", "float_3", "float_4", "float_5", "float_6", "float_7", "float_8",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "float_list": ("FLOAT_LIST", {
@@ -241,22 +303,29 @@ class FloatListInterpreter8:
             },            
         }
         
-    RETURN_TYPES = ("FLOAT", "FLOAT", "FLOAT", "FLOAT","FLOAT", "FLOAT", "FLOAT", "FLOAT",)
-    RETURN_NAMES = ("float_1", "float_2", "float_3", "float_4", "float_5", "float_6", "float_7", "float_8",)
-    FUNCTION = "FloatListInterpreter8Ex"
-    CATEGORY = cat
     
-    def FloatListInterpreter8Ex(self, float_list, Start_At_Index):
+    @classmethod
+    def execute(cls, float_list, Start_At_Index):
         new_list = FloatListInterpreter(float_list, Start_At_Index, 8)
             
         return (new_list[0],new_list[1],new_list[2],new_list[3],new_list[4],new_list[5],new_list[6],new_list[7],)
     
-class StepsAndCfg:
+class StepsAndCfg(IO.ComfyNode):
     '''
     Steps and CFG
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "StepsAndCfg",
+            cat,
+            cls._v1_inputs(),
+            ("INT", "FLOAT",),
+            ("STEPS", "CFG",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "steps": ("INT", {"default": 30, "step": 1, "min": 1}),
@@ -264,12 +333,9 @@ class StepsAndCfg:
             },
         }
                 
-    RETURN_TYPES = ("INT", "FLOAT",)
-    RETURN_NAMES = ("STEPS", "CFG",)
-    FUNCTION = "StepsAndCFGEx"
-    CATEGORY = cat
     
-    def StepsAndCFGEx(self, steps, cfg):
+    @classmethod
+    def execute(cls, steps, cfg):
         return (steps, cfg,)
     
 

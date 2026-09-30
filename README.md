@@ -1,4 +1,7 @@
 # ComfyUI_Mira
+
+Nodes have been upgraded to ComfyUI V3. If you run into any problems, please let me know.
+
 A custom node for [ComfyUI](https://github.com/comfyanonymous/ComfyUI/) to improve all those custom nodes I feel not comfortable in my workflow.
 
 ------

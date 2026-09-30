@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger("comfy")
 import os
 from pathlib import Path
 import hashlib
@@ -17,14 +19,14 @@ def get_sha256(file_path: str):
             with open(hash_file, "r") as f:
                 return f.read().strip()
         except OSError as e:
-            print(f"ComfyUI-Image-Saver: Error reading existing hash file: {e}")
+            logger.error(f"ComfyUI-Image-Saver: Error reading existing hash file: {e}")
 
     sha256_hash = hashlib.sha256()
     with open(file_path, "rb") as f:
         file_size = os.fstat(f.fileno()).st_size
         block_size = 1048576 # 1 MB
 
-        print(f"ComfyUI-Image-Saver: Calculating sha256 for '{Path(file_path).stem}'")
+        logger.info(f"ComfyUI-Image-Saver: Calculating sha256 for '{Path(file_path).stem}'")
         with tqdm(None, None, file_size, unit="B", unit_scale=True, unit_divisor=1024) as progress_bar:
             for byte_block in iter(lambda: f.read(block_size), b""):
                 progress_bar.update(len(byte_block))
@@ -34,7 +36,7 @@ def get_sha256(file_path: str):
         with open(hash_file, "w") as f:
             f.write(sha256_hash.hexdigest())
     except OSError as e:
-        print(f"ComfyUI-Image-Saver: Error writing hash to {hash_file}: {e}")
+        logger.error(f"ComfyUI-Image-Saver: Error writing hash to {hash_file}: {e}")
 
     return sha256_hash.hexdigest()
 
@@ -75,7 +77,7 @@ def full_lora_path_for(lora: str):
     # Find the matching lora path
     matching_lora = next((x for x in __list_loras() if x.endswith(lora)), None)
     if matching_lora is None:
-        print(f'ComfyUI-Image-Saver: could not find full path to lora "{lora}"')
+        logger.warning(f'ComfyUI-Image-Saver: could not find full path to lora "{lora}"')
         return None
     return folder_paths.get_full_path("loras", matching_lora)
 

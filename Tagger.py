@@ -1,3 +1,8 @@
+import logging
+logger = logging.getLogger("comfy")
+from comfy_api.latest import IO
+from .v3schema import node
+
 import numpy as np
 import onnxruntime as ort
 import torchvision.transforms as transforms
@@ -14,11 +19,11 @@ onnx_path = ''
 
 def get_onnx_models_from_path(base_path):
     if not os.path.exists(base_path):
-        print(f"[Mira:Tagger] Warning: Folder is not exist {base_path}")
+        logger.warning(f"[Mira:Tagger] Warning: Folder is not exist {base_path}")
         return []
     
     if not os.path.isdir(base_path):
-        print(f"[Mira:Tagger] Warning: Path is not folder {base_path}")
+        logger.warning(f"[Mira:Tagger] Warning: Path is not folder {base_path}")
         return []
     
     onnx_models = []
@@ -35,14 +40,14 @@ def get_onnx_models_from_path(base_path):
         onnx_models.sort()
         
         if onnx_models:
-            print(f"[Mira:Tagger] Found {len(onnx_models)} ONNX Model(s).")
+            logger.info(f"[Mira:Tagger] Found {len(onnx_models)} ONNX Model(s).")
             for model in onnx_models:
-                print(f"  - {model}")
+                logger.info(f"  - {model}")
         else:
-            print(f"[Mira:Tagger] No {base_path} ONNX Model found.")
+            logger.info(f"[Mira:Tagger] No {base_path} ONNX Model found.")
             
     except Exception as e:
-        print(f"[Mira:Tagger] Error: {e}")
+        logger.error(f"[Mira:Tagger] Error: {e}")
         return []
     
     return onnx_models
@@ -57,12 +62,12 @@ def get_onnx_list_with_subdirs(custom_nodes_path):
         custom_nodes_index = parts.index('custom_nodes')
         comfy_root = '/'.join(parts[:custom_nodes_index])
     except ValueError:
-        print("[Mira:Tagger] Error: 'custom_nodes' not found in the provided path.")
+        logger.error("[Mira:Tagger] Error: 'custom_nodes' not found in the provided path.")
         return []
     
     onnx_path = os.path.join(comfy_root.replace('/', os.sep), 'models', 'onnx')
     
-    print(f"[Mira:Tagger] ONNX model path: {onnx_path}")
+    logger.info(f"[Mira:Tagger] ONNX model path: {onnx_path}")
     
     return get_onnx_models_from_path(onnx_path)
 
@@ -71,13 +76,13 @@ def decode_image(src_image):
     img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))    
     return img
 
-print("[Mira:Tagger] Initializing ONNX model list...")
+logger.info("[Mira:Tagger] Initializing ONNX model list...")
 current_path = os.path.dirname(os.path.abspath(__file__))
 onnx_list = get_onnx_list_with_subdirs(current_path)
 if 0 == len(onnx_list):
     onnx_list.insert(0, "None")
 
-class cl_tagger:
+class cl_tagger(IO.ComfyNode):
     '''
     CL Tagger by cella110n https://huggingface.co/cella110n
     Few codes reference from https://huggingface.co/spaces/DraconicDragon/cl_tagger
@@ -95,34 +100,46 @@ class cl_tagger:
     Outputs:
     tags            - Generated tags
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "cl_tagger_mira",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("tags",),
+        )
+
     
     _mean = np.array([0.5, 0.5, 0.5], dtype=np.float32).reshape(3, 1, 1)
     _std = np.array([0.5, 0.5, 0.5], dtype=np.float32).reshape(3, 1, 1)
     _tag_mapping_cache = {}
-    _cpu_session = None
-    _gpu_session = None
+    _sessions = {"cpu": None, "gpu": None}
     
-    def get_tag_mapping(self, full_tag_map_path):
-        if full_tag_map_path not in self._tag_mapping_cache:
-            print("[Mira:ClTagger] Load tag mapping: " + full_tag_map_path)
-            self._tag_mapping_cache[full_tag_map_path] = self.load_tag_mapping(full_tag_map_path)        
-        return self._tag_mapping_cache[full_tag_map_path]
+    @classmethod
+    def get_tag_mapping(cls, full_tag_map_path):
+        if full_tag_map_path not in cls._tag_mapping_cache:
+            logger.info("[Mira:ClTagger] Load tag mapping: " + full_tag_map_path)
+            cls._tag_mapping_cache[full_tag_map_path] = cls.load_tag_mapping(full_tag_map_path)        
+        return cls._tag_mapping_cache[full_tag_map_path]
 
     # onnxruntime needs 2s+ to load RAM model and create GPU version, so I leave it in RAM with CPU mode
     # GPU performance: TITAN RTX        0.088 seconds       "CUDAExecutionProvider", "CPUExecutionProvider"
     # CPU performance: Intel i9-9980x   0.992 seconds       "CPUExecutionProvider"
-    def get_session(self, model_path, session_method):
+    @classmethod
+    def get_session(cls, model_path, session_method):
         if session_method.startswith('CPU'):
-            if not self._cpu_session:                
-                self._cpu_session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
-            return self._cpu_session
+            if not cls._sessions["cpu"]:                
+                cls._sessions["cpu"] = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+            return cls._sessions["cpu"]
         elif session_method.startswith('GPU'):
-            if not self._gpu_session:
-                self._gpu_session = ort.InferenceSession(model_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
-            return self._gpu_session
+            if not cls._sessions["gpu"]:
+                cls._sessions["gpu"] = ort.InferenceSession(model_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
+            return cls._sessions["gpu"]
         
             
-    def pad_square_np(self, img_array: np.ndarray) -> np.ndarray:
+    @classmethod
+    def pad_square_np(cls, img_array: np.ndarray) -> np.ndarray:
         h, w, _ = img_array.shape
         if h == w:
             return img_array
@@ -134,9 +151,10 @@ class cl_tagger:
         return np.pad(img_array, ((pad_top, pad_bottom), (pad_left, pad_right), (0, 0)),
                     mode='constant', constant_values=255)
 
-    def preprocess_image(self, image, target_size=(448, 448)):
+    @classmethod
+    def preprocess_image(cls, image, target_size=(448, 448)):
         img = np.array(decode_image(image))
-        img = self.pad_square_np(img)
+        img = cls.pad_square_np(img)
         img = cv2.resize(img, target_size, interpolation=cv2.INTER_CUBIC)
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         img = img.astype(np.float32) / 255.0
@@ -144,7 +162,8 @@ class cl_tagger:
         img = np.expand_dims(np.transpose(img, (2, 0, 1)), axis=0)
         return img
 
-    def load_tag_mapping(self, mapping_path):
+    @classmethod
+    def load_tag_mapping(cls, mapping_path):
         # Use the implementation from the original app.py as it was confirmed working
         with open(mapping_path, 'r', encoding='utf-8') as f: tag_mapping_data = json.load(f)
         # Check format compatibility (can be dict of dicts or dict with idx_to_tag/tag_to_category)
@@ -191,7 +210,8 @@ class cl_tagger:
         }    
         return label_data
     
-    def get_tags(self, probs, labels, gen_threshold, char_threshold):
+    @classmethod
+    def get_tags(cls, probs, labels, gen_threshold, char_threshold):
         result = {
             "rating": [],
             "general": [],
@@ -216,11 +236,11 @@ class cl_tagger:
                         rating_conf = float(rating_probs[rating_idx_local])
                         result["rating"].append((rating_name, rating_conf))
                     else:
-                        print(f"[Mira:ClTagger]Warning: Invalid global index {rating_idx_global} for rating tag.")
+                        logger.warning(f"[Mira:ClTagger]Warning: Invalid global index {rating_idx_global} for rating tag.")
                 else:
-                    print("[Mira:ClTagger]Warning: rating_probs became empty after filtering.")
+                    logger.warning("[Mira:ClTagger]Warning: rating_probs became empty after filtering.")
             else:
-                print("[Mira:ClTagger]Warning: No valid indices found for rating tags within probs length.")
+                logger.warning("[Mira:ClTagger]Warning: No valid indices found for rating tags within probs length.")
 
         # --- Quality (select max) ---
         if len(labels["quality"]) > 0:
@@ -235,11 +255,11 @@ class cl_tagger:
                         quality_conf = float(quality_probs[quality_idx_local])
                         result["quality"].append((quality_name, quality_conf))
                     else:
-                        print(f"[Mira:ClTagger]Warning: Invalid global index {quality_idx_global} for quality tag.")
+                        logger.warning(f"[Mira:ClTagger]Warning: Invalid global index {quality_idx_global} for quality tag.")
                 else:
-                    print("[Mira:ClTagger]Warning: quality_probs became empty after filtering.")
+                    logger.warning("[Mira:ClTagger]Warning: quality_probs became empty after filtering.")
             else:
-                print("[Mira:ClTagger]Warning: No valid indices found for quality tags within probs length.")
+                logger.warning("[Mira:ClTagger]Warning: No valid indices found for quality tags within probs length.")
 
         # --- Threshold-based categories ---
         category_map = {
@@ -265,7 +285,7 @@ class cl_tagger:
                             if idx_global < len(labels["names"]) and labels["names"][idx_global] is not None:
                                 result[category].append((labels["names"][idx_global], float(prob_val)))
                             else:
-                                print(f"[Mira:ClTagger]Warning: Invalid global index {idx_global} for {category} tag.")
+                                logger.warning(f"[Mira:ClTagger]Warning: Invalid global index {idx_global} for {category} tag.")
 
         # --- Sort results by probability ---
         for k in result:
@@ -273,10 +293,11 @@ class cl_tagger:
 
         return result            
     
-    def run_cl_tagger(self, image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude, session_method):
-        input_tensor = self.preprocess_image(image)
-        g_labels_data = self.get_tag_mapping(full_tag_map_path)
-        session = self.get_session(full_model_path, session_method)
+    @classmethod
+    def run_cl_tagger(cls, image, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude, session_method):
+        input_tensor = cls.preprocess_image(image)
+        g_labels_data = cls.get_tag_mapping(full_tag_map_path)
+        session = cls.get_session(full_model_path, session_method)
         
         input_name = session.get_inputs()[0].name
         output_name = session.get_outputs()[0].name
@@ -284,13 +305,13 @@ class cl_tagger:
         
         # Check for NaN/Inf in outputs
         if np.isnan(outputs).any() or np.isinf(outputs).any():
-            print("[Mira:ClTagger]Warning: NaN or Inf detected in model output. Clamping...")
+            logger.warning("[Mira:ClTagger]Warning: NaN or Inf detected in model output. Clamping...")
             outputs = np.nan_to_num(outputs, nan=0.0, posinf=1.0, neginf=0.0) # Clamp to 0-1 range
 
         probs = 1 / (1 + np.exp(-np.clip(outputs[0], -30, 30)))
                 
         # Use the correct global variable for labels
-        predictions = self.get_tags(probs, g_labels_data, general, character)
+        predictions = cls.get_tags(probs, g_labels_data, general, character)
 
         # Get required categories
         categories_select = [c.strip() for c in categories.split(',') if c.strip()]
@@ -336,18 +357,18 @@ class cl_tagger:
             output_tags = filtered_tags
         
         output_text = ", ".join(output_tags)
-        print("[Mira:ClTagger] " + output_text)
+        logger.info("[Mira:ClTagger] " + output_text)
         
         if session_method.endswith('Release'):
             session = None
-            self._cpu_session = None
-            self._gpu_session = None
+            cls._sessions["cpu"] = None
+            cls._sessions["gpu"] = None
             gc.collect()
             
         return output_text
     
     @classmethod
-    def INPUT_TYPES(s):            
+    def _v1_inputs(s):            
         return {
             "required": {
                 "image":("IMAGE", {
@@ -383,12 +404,9 @@ class cl_tagger:
             },
         }
                 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("tags",)
-    FUNCTION = "cl_tagger_ex"
-    CATEGORY = cat
     
-    def cl_tagger_ex(self, image, model_name, general, character, replace_space, categories, exclude_tags, session_method):
+    @classmethod
+    def execute(cls, image, model_name, general, character, replace_space, categories, exclude_tags, session_method):
         # Ensure images is a torch tensor
         if not isinstance(image, torch.Tensor):
             raise ValueError("Input 'image' must be a torch.Tensor")
@@ -399,31 +417,31 @@ class cl_tagger:
         full_model_path = os.path.join(onnx_path, model_name)
         full_tag_map_path = full_model_path.replace('.onnx', '_tag_mapping.json')
         if not os.path.exists(full_model_path):
-            print(f"[Mira:ClTagger]Error: [{full_model_path}] not found!")
+            logger.error(f"[Mira:ClTagger]Error: [{full_model_path}] not found!")
             return (f"[Mira:ClTagger]Error: [{full_model_path}] not found!",)
         
         if not os.path.exists(full_tag_map_path):
-            print(f"[Mira:ClTagger]Error: [{full_model_path}] not found!")
+            logger.error(f"[Mira:ClTagger]Error: [{full_model_path}] not found!")
             return (f"[Mira:ClTagger]Error: [{full_model_path}] not found!", )
         
         if image.ndim == 3:
             image = image.unsqueeze(0)
         
         if image.shape[0] > 1:
-            print(f"[Mira:ClTagger] Info: Batch processing {image.shape[0]} images...")
+            logger.info(f"[Mira:ClTagger] Info: Batch processing {image.shape[0]} images...")
             result = []
             for i in range(image.shape[0]):
-                print(f"[Mira:ClTagger] Processing image {i+1}/{image.shape[0]}...")
+                logger.info(f"[Mira:ClTagger] Processing image {i+1}/{image.shape[0]}...")
                 img = image[i].unsqueeze(0)
-                tag = self.run_cl_tagger(img, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
+                tag = cls.run_cl_tagger(img, full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
                 result.append(tag)
             
             return ("\n".join(result),)
         
-        result = self.run_cl_tagger(image[0].unsqueeze(0), full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
+        result = cls.run_cl_tagger(image[0].unsqueeze(0), full_model_path, full_tag_map_path, general, character, replace_space, categories, exclude_tags, session_method)
         return (result,)
     
-class camie_tagger:
+class camie_tagger(IO.ComfyNode):
     '''
     Camie Tagger by Camais03 https://huggingface.co/Camais03
     Few codes reference from https://huggingface.co/spaces/Camais03/camie-tagger-v2-app/tree/main/utils
@@ -441,14 +459,24 @@ class camie_tagger:
     Outputs:
     tags            - Generated tags
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "camie_tagger_mira",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("tags",),
+        )
+
     
     _tag_mapping_cache = {}
-    _cpu_session = None
-    _gpu_session = None
+    _sessions = {"cpu": None, "gpu": None}
     
-    def get_tag_mapping(self, full_tag_map_path):
-        if full_tag_map_path not in self._tag_mapping_cache:
-            print("[Mira:CamieTagger] Load tag mapping: " + full_tag_map_path)
+    @classmethod
+    def get_tag_mapping(cls, full_tag_map_path):
+        if full_tag_map_path not in cls._tag_mapping_cache:
+            logger.info("[Mira:CamieTagger] Load tag mapping: " + full_tag_map_path)
             with open(full_tag_map_path, "r") as f: metadata = json.load(f)
             
             try:
@@ -458,20 +486,22 @@ class camie_tagger:
             except Exception as e:
                 raise ValueError(f"[Mira:CamieTagger]Error:{e}")
             
-            self._tag_mapping_cache[full_tag_map_path] = tag_mapping
-        return self._tag_mapping_cache[full_tag_map_path]
+            cls._tag_mapping_cache[full_tag_map_path] = tag_mapping
+        return cls._tag_mapping_cache[full_tag_map_path]
         
-    def get_session(self, model_path, session_method):
+    @classmethod
+    def get_session(cls, model_path, session_method):
         if session_method.startswith('CPU'):
-            if not self._cpu_session:                
-                self._cpu_session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
-            return self._cpu_session
+            if not cls._sessions["cpu"]:                
+                cls._sessions["cpu"] = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+            return cls._sessions["cpu"]
         elif session_method.startswith('GPU'):
-            if not self._gpu_session:
-                self._gpu_session = ort.InferenceSession(model_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
-            return self._gpu_session
+            if not cls._sessions["gpu"]:
+                cls._sessions["gpu"] = ort.InferenceSession(model_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
+            return cls._sessions["gpu"]
         
-    def preprocess_image(self, image, image_size=512):
+    @classmethod
+    def preprocess_image(cls, image, image_size=512):
         """
         Process an image for ImageTagger inference with proper ImageNet normalization
         """                
@@ -518,10 +548,11 @@ class camie_tagger:
             img_array = np.expand_dims(img_array, axis=0)  # Convert CHW → BCHW
             return img_array
     
-    def run_camie_tagger(self, image, full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude, session_method):
-        input_tensor = self.preprocess_image(image)        
-        g_labels_data = self.get_tag_mapping(full_tag_map_path)            
-        session = self.get_session(full_model_path, session_method)
+    @classmethod
+    def run_camie_tagger(cls, image, full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude, session_method):
+        input_tensor = cls.preprocess_image(image)        
+        g_labels_data = cls.get_tag_mapping(full_tag_map_path)            
+        session = cls.get_session(full_model_path, session_method)
                 
         input_name = session.get_inputs()[0].name
         output_name = session.get_outputs()[0].name
@@ -613,18 +644,18 @@ class camie_tagger:
             output_tags = filtered_tags
         
         output_text = ", ".join(output_tags)
-        print("[Mira:CamieTagger] " + output_text)
+        logger.info("[Mira:CamieTagger] " + output_text)
         
         if session_method.endswith('Release'):
             session = None
-            self._cpu_session = None
-            self._gpu_session = None
+            cls._sessions["cpu"] = None
+            cls._sessions["gpu"] = None
             gc.collect()
             
         return output_text
             
     @classmethod
-    def INPUT_TYPES(s):                   
+    def _v1_inputs(s):                   
         return {
             "required": {
                 "image":("IMAGE", {
@@ -660,12 +691,9 @@ class camie_tagger:
             },
         }
                 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("tags",)
-    FUNCTION = "camie_tagger_ex"
-    CATEGORY = cat
     
-    def camie_tagger_ex(self, image, model_name, general, min_confidence, replace_space, categories, exclude_tags, session_method):
+    @classmethod
+    def execute(cls, image, model_name, general, min_confidence, replace_space, categories, exclude_tags, session_method):
         # Ensure images is a torch tensor
         if not isinstance(image, torch.Tensor):
             raise ValueError("Input 'image' must be a torch.Tensor")
@@ -676,31 +704,31 @@ class camie_tagger:
         full_model_path = os.path.join(onnx_path, model_name)
         full_tag_map_path = full_model_path.replace('.onnx', '-metadata.json')
         if not os.path.exists(full_model_path):
-            print(f"[Mira:CamieTagger]Error: [{full_model_path}] not found!")
+            logger.error(f"[Mira:CamieTagger]Error: [{full_model_path}] not found!")
             return (f"[Mira:CamieTagger]Error: [{full_model_path}] not found!",)
         
         if not os.path.exists(full_tag_map_path):
-            print(f"[Mira:CamieTagger]Error: [{full_model_path}] not found!")
+            logger.error(f"[Mira:CamieTagger]Error: [{full_model_path}] not found!")
             return (f"[Mira:CamieTagger]Error: [{full_model_path}] not found!", )    
 
         if image.ndim == 3:
             image = image.unsqueeze(0)
         
         if image.shape[0] > 1:
-            print(f"[Mira:CamieTagger] Info: Batch processing {image.shape[0]} images...")
+            logger.info(f"[Mira:CamieTagger] Info: Batch processing {image.shape[0]} images...")
             result = []
             for i in range(image.shape[0]):
-                print(f"[Mira:CamieTagger] Processing image {i+1}/{image.shape[0]}...")
+                logger.info(f"[Mira:CamieTagger] Processing image {i+1}/{image.shape[0]}...")
                 img = image[i].unsqueeze(0)
-                tag = self.run_camie_tagger(img, full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
+                tag = cls.run_camie_tagger(img, full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
                 result.append(tag)
             
             return ("\n".join(result),)
         
-        result = self.run_camie_tagger(image[0].unsqueeze(0), full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
+        result = cls.run_camie_tagger(image[0].unsqueeze(0), full_model_path, full_tag_map_path, general, min_confidence, replace_space, categories, exclude_tags, session_method)
         return (result,)
     
-class wd_tagger:
+class wd_tagger(IO.ComfyNode):
     '''
     WD14 Tagger - Waifu Diffusion 14 Tagger
     
@@ -718,10 +746,19 @@ class wd_tagger:
     Outputs:
     tags                - Generated tags (comma-separated string)
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "wd_tagger_mira",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("tags",),
+        )
+
     
     _tag_mapping_cache = {}
-    _cpu_session = None
-    _gpu_session = None
+    _sessions = {"cpu": None, "gpu": None}
     
     # Kaomoji tags that should preserve underscores
     KAOMOJIS = {
@@ -730,14 +767,16 @@ class wd_tagger:
         "u_u", "x_x", "|_|", "||_||"
     }
     
-    def get_tag_mapping(self, csv_path):
+    @classmethod
+    def get_tag_mapping(cls, csv_path):
         """Load tag mapping from CSV file (WD14 format)"""
-        if csv_path not in self._tag_mapping_cache:
-            print(f"[Mira:WDTagger] Load tag mapping: {csv_path}")
-            self._tag_mapping_cache[csv_path] = self.load_tag_mapping_from_csv(csv_path)
-        return self._tag_mapping_cache[csv_path]
+        if csv_path not in cls._tag_mapping_cache:
+            logger.info(f"[Mira:WDTagger] Load tag mapping: {csv_path}")
+            cls._tag_mapping_cache[csv_path] = cls.load_tag_mapping_from_csv(csv_path)
+        return cls._tag_mapping_cache[csv_path]
     
-    def load_tag_mapping_from_csv(self, csv_path):
+    @classmethod
+    def load_tag_mapping_from_csv(cls, csv_path):
         """
         Load WD14 tag mapping from CSV
         CSV format: tag_id,name,category,count
@@ -757,7 +796,7 @@ class wd_tagger:
                     count = row[3]
                     
                     # Process name: replace _ with space unless it's a kaomoji
-                    processed_name = name if name in self.KAOMOJIS else name.replace("_", " ")
+                    processed_name = name if name in cls.KAOMOJIS else name.replace("_", " ")
                     
                     tags.append({
                         'tag_id': tag_id,
@@ -766,27 +805,29 @@ class wd_tagger:
                         'count': count
                     })
         
-        print(f"[Mira:WDTagger] Loaded {len(tags)} tags from CSV")
+        logger.info(f"[Mira:WDTagger] Loaded {len(tags)} tags from CSV")
         return tags
     
-    def get_session(self, model_path, session_method):
+    @classmethod
+    def get_session(cls, model_path, session_method):
         """Get or create ONNX runtime session"""
         if session_method.startswith('CPU'):
-            if not self._cpu_session:
-                self._cpu_session = ort.InferenceSession(
+            if not cls._sessions["cpu"]:
+                cls._sessions["cpu"] = ort.InferenceSession(
                     model_path, 
                     providers=["CPUExecutionProvider"]
                 )
-            return self._cpu_session
+            return cls._sessions["cpu"]
         elif session_method.startswith('GPU'):
-            if not self._gpu_session:
-                self._gpu_session = ort.InferenceSession(
+            if not cls._sessions["gpu"]:
+                cls._sessions["gpu"] = ort.InferenceSession(
                     model_path, 
                     providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
                 )
-            return self._gpu_session
+            return cls._sessions["gpu"]
     
-    def pad_square_np(self, img_array):
+    @classmethod
+    def pad_square_np(cls, img_array):
         """Pad image to square with white background"""
         h, w, c = img_array.shape
         if h == w:
@@ -805,7 +846,8 @@ class wd_tagger:
             constant_values=255
         )
     
-    def preprocess_image(self, image, target_size=448):
+    @classmethod
+    def preprocess_image(cls, image, target_size=448):
         """
         Preprocess image for WD14 tagger
         1. Pad to square
@@ -817,7 +859,7 @@ class wd_tagger:
         img = np.array(decode_image(image))
         
         # Pad to square
-        img = self.pad_square_np(img)
+        img = cls.pad_square_np(img)
         
         # Resize
         img = cv2.resize(img, (target_size, target_size), interpolation=cv2.INTER_CUBIC)
@@ -833,7 +875,8 @@ class wd_tagger:
         
         return img
     
-    def mcut_threshold(self, probs):
+    @classmethod
+    def mcut_threshold(cls, probs):
         """
         Maximum Cut Thresholding (MCut)
         Finds the threshold that maximizes the gap between kept and discarded tags
@@ -853,18 +896,19 @@ class wd_tagger:
         
         return threshold
     
-    def run_wd_tagger(self, image, full_model_path, csv_path, gen_threshold, char_threshold, 
+    @classmethod
+    def run_wd_tagger(cls, image, full_model_path, csv_path, gen_threshold, char_threshold, 
                       general_mcut, character_mcut, replace_space, categories, exclude, session_method):
         """Run WD14 tagger inference"""
         
         # Preprocess image
-        input_tensor = self.preprocess_image(image)
+        input_tensor = cls.preprocess_image(image)
         
         # Load tag mapping
-        tag_mapping = self.get_tag_mapping(csv_path)
+        tag_mapping = cls.get_tag_mapping(csv_path)
         
         # Get session
-        session = self.get_session(full_model_path, session_method)
+        session = cls.get_session(full_model_path, session_method)
         
         # Run inference
         input_name = session.get_inputs()[0].name
@@ -899,13 +943,13 @@ class wd_tagger:
         # Apply thresholds
         effective_gen_thresh = gen_threshold
         if general_mcut and general_probs:
-            effective_gen_thresh = self.mcut_threshold(general_probs)
-            print(f"[Mira:WDTagger] General MCut threshold: {effective_gen_thresh:.4f}")
+            effective_gen_thresh = cls.mcut_threshold(general_probs)
+            logger.info(f"[Mira:WDTagger] General MCut threshold: {effective_gen_thresh:.4f}")
         
         effective_char_thresh = char_threshold
         if character_mcut and character_probs:
-            effective_char_thresh = max(0.15, self.mcut_threshold(character_probs))
-            print(f"[Mira:WDTagger] Character MCut threshold: {effective_char_thresh:.4f}")
+            effective_char_thresh = max(0.15, cls.mcut_threshold(character_probs))
+            logger.info(f"[Mira:WDTagger] Character MCut threshold: {effective_char_thresh:.4f}")
         
         # Filter tags
         filtered_general = [t for t in general_tags if t['prob'] > effective_gen_thresh]
@@ -920,7 +964,7 @@ class wd_tagger:
         # Add rating (highest probability)
         if rating_tags and 'rating' in categories.lower():
             top_rating = max(rating_tags, key=lambda x: x['prob'])
-            print(f"[Mira:WDTagger] Rating: {top_rating['name']} ({top_rating['prob']*100:.2f}%)")
+            logger.info(f"[Mira:WDTagger] Rating: {top_rating['name']} ({top_rating['prob']*100:.2f}%)")
             output_tags.append(top_rating['name'])
         
         # Add character tags (preserve order)
@@ -931,7 +975,7 @@ class wd_tagger:
         if 'general' in categories.lower():
             output_tags.extend([t['name'] for t in filtered_general])
         
-        print(f"[Mira:WDTagger] Generated {len(output_tags)} tags " +
+        logger.info(f"[Mira:WDTagger] Generated {len(output_tags)} tags " +
               f"({len(filtered_character)} characters, {len(filtered_general)} general)")
         
         # Apply exclusions
@@ -949,18 +993,18 @@ class wd_tagger:
             output_tags = [tag.replace(' ', '_') for tag in output_tags]
         
         output_text = ", ".join(output_tags)
-        print(f"[Mira:WDTagger] {output_text}")
+        logger.info(f"[Mira:WDTagger] {output_text}")
         
         # Release session if requested
         if session_method.endswith('Release'):
-            self._cpu_session = None
-            self._gpu_session = None
+            cls._sessions["cpu"] = None
+            cls._sessions["gpu"] = None
             gc.collect()
         
         return output_text
     
     @classmethod
-    def INPUT_TYPES(cls):
+    def _v1_inputs(cls):
         return {
             "required": {
                 "image": ("IMAGE", {
@@ -1009,12 +1053,9 @@ class wd_tagger:
             },
         }
     
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("tags",)
-    FUNCTION = "wd_tagger_ex"
-    CATEGORY = cat
     
-    def wd_tagger_ex(self, image, model_name, general_threshold, character_threshold,
+    @classmethod
+    def execute(cls, image, model_name, general_threshold, character_threshold,
                      general_mcut, character_mcut, replace_space, categories, exclude_tags, session_method):        
         # Validate input
         if not isinstance(image, torch.Tensor):
@@ -1033,11 +1074,11 @@ class wd_tagger:
         
         # Check files exist
         if not os.path.exists(full_model_path):
-            print(f"[Mira:WDTagger] Error: Model not found: {full_model_path}")
+            logger.error(f"[Mira:WDTagger] Error: Model not found: {full_model_path}")
             return (f"[Mira:WDTagger] Error: Model not found: {full_model_path}",)
         
         if not os.path.exists(csv_path):
-            print(f"[Mira:WDTagger] Error: CSV not found: {csv_path}")
+            logger.error(f"[Mira:WDTagger] Error: CSV not found: {csv_path}")
             return (f"[Mira:WDTagger] Error: CSV not found: {csv_path}",)
         
         # Handle batch dimension
@@ -1046,12 +1087,12 @@ class wd_tagger:
         
         # Batch processing
         if image.shape[0] > 1:
-            print(f"[Mira:WDTagger] Batch processing {image.shape[0]} images...")
+            logger.info(f"[Mira:WDTagger] Batch processing {image.shape[0]} images...")
             results = []
             for i in range(image.shape[0]):
-                print(f"[Mira:WDTagger] Processing image {i+1}/{image.shape[0]}...")
+                logger.info(f"[Mira:WDTagger] Processing image {i+1}/{image.shape[0]}...")
                 img = image[i].unsqueeze(0)
-                tag = self.run_wd_tagger(
+                tag = cls.run_wd_tagger(
                     img, full_model_path, csv_path,
                     general_threshold, character_threshold,
                     general_mcut, character_mcut,
@@ -1061,7 +1102,7 @@ class wd_tagger:
             return ("\n".join(results),)
         
         # Single image processing
-        result = self.run_wd_tagger(
+        result = cls.run_wd_tagger(
             image[0].unsqueeze(0), full_model_path, csv_path,
             general_threshold, character_threshold,
             general_mcut, character_mcut,

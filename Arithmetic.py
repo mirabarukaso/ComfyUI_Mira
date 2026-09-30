@@ -1,6 +1,9 @@
+from comfy_api.latest import IO
+from .v3schema import node
+
 cat = "Mira/Arithmetic"
 
-class IntMultiplication:
+class IntMultiplication(IO.ComfyNode):
     '''   
     Inputs:
     input_value     - Integer number as A
@@ -11,7 +14,17 @@ class IntMultiplication:
     Result (STRING) - The result of A x B, and convert to string
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "IntMultiplication",
+            cat,
+            cls._v1_inputs(),
+            ("INT","STRING",),
+            ("Result (INT)", "Result (STRING)",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "int_value": ("INT", {
@@ -27,16 +40,13 @@ class IntMultiplication:
             },
         }
 
-    RETURN_TYPES = ("INT","STRING",)
-    RETURN_NAMES = ("Result (INT)", "Result (STRING)",)
-    FUNCTION = "IntMultiplicationEx"
-    CATEGORY = cat
 
-    def IntMultiplicationEx(self, int_value, multiply_value):
+    @classmethod
+    def execute(cls, int_value, multiply_value):
         result = int_value * multiply_value
         return (result, str(result),)
     
-class IntToFloatMultiplication:
+class IntToFloatMultiplication(IO.ComfyNode):
     '''   
     Inputs:
     int_value       - Integer number as A
@@ -47,7 +57,17 @@ class IntToFloatMultiplication:
     Result (STRING) - The result of A x B, and convert to string
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "IntToFloatMultiplication",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT","INT", "STRING",),
+            ("Result (FLOAT)", "Result (INT)","Result (STRING)",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "int_value": ("INT", {
@@ -64,16 +84,13 @@ class IntToFloatMultiplication:
             },
         }
 
-    RETURN_TYPES = ("FLOAT","INT", "STRING",)
-    RETURN_NAMES = ("Result (FLOAT)", "Result (INT)","Result (STRING)",)
-    FUNCTION = "IntToFloatMultiplicationEx"
-    CATEGORY = cat
 
-    def IntToFloatMultiplicationEx(self, int_value, multiply_value):
+    @classmethod
+    def execute(cls, int_value, multiply_value):
         result = float(int_value) * multiply_value
         return (result, int(result), str(result),)
     
-class FloatMultiplication:
+class FloatMultiplication(IO.ComfyNode):
     '''   
     Inputs:
     float_value     - Float number as A
@@ -85,7 +102,17 @@ class FloatMultiplication:
     Result (STRING) - The result of A x B, and convert to string
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "FloatMultiplication",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT","INT", "STRING",),
+            ("Result (FLOAT)", "Result (INT)","Result (STRING)",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "float_value": ("FLOAT", {
@@ -103,16 +130,13 @@ class FloatMultiplication:
             },
         }
 
-    RETURN_TYPES = ("FLOAT","INT", "STRING",)
-    RETURN_NAMES = ("Result (FLOAT)", "Result (INT)","Result (STRING)",)
-    FUNCTION = "ExFloatMultiplication"
-    CATEGORY = cat
 
-    def ExFloatMultiplication(self, float_value, multiply_value):
+    @classmethod
+    def execute(cls, float_value, multiply_value):
         result = float_value * multiply_value
         return (result, int(result), str(result),)
     
-class IntSubtraction:
+class IntSubtraction(IO.ComfyNode):
     '''   
     Inputs:
     int_value           - Integer number as A
@@ -123,9 +147,19 @@ class IntSubtraction:
     Result (STRING)     - The result of A - B, and convert to string
     subtracted_value    - B as is
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "IntSubtraction",
+            cat,
+            cls._v1_inputs(),
+            ("INT", "STRING", "INT",),
+            ("Result (INT)", "Result (STRING)","subtracted_value",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "int_value": ("INT", {
@@ -141,12 +175,9 @@ class IntSubtraction:
             },
         }
         
-    RETURN_TYPES = ("INT", "STRING", "INT",)
-    RETURN_NAMES = ("Result (INT)", "Result (STRING)","subtracted_value",)
-    FUNCTION = "ExIntSubtraction"
-    CATEGORY = cat
 
-    def ExIntSubtraction(self, int_value, subtracted_value):
+    @classmethod
+    def execute(cls, int_value, subtracted_value):
         result = int_value - subtracted_value
         return (result, str(result), subtracted_value,)
     

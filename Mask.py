@@ -1,3 +1,8 @@
+import logging
+logger = logging.getLogger("comfy")
+from comfy_api.latest import IO
+from .v3schema import node
+
 import random
 from PIL import Image, ImageDraw, ImageOps, ImageSequence
 import numpy as np
@@ -402,7 +407,7 @@ def LoadImagePNG(PngImage):
         
     return output_image
 
-class CreateTillingPNGMask:
+class CreateTillingPNGMask(IO.ComfyNode):
     '''
     Create a tilling PNG image with Color Mask stack for regional conditioning mask.
     
@@ -421,7 +426,17 @@ class CreateTillingPNGMask:
     Debug           - Debug output
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "CreateTillingPNGMask",
+            cat,
+            cls._v1_inputs(),
+            ("IMAGE", "MIRA_COLOR_LIST", "MIRA_MASKS_LIST", "STRING",),
+            ("PngImage", "PngColorMasks", "PngRectangles", "Debug",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "Width": ("INT", {
@@ -458,12 +473,9 @@ class CreateTillingPNGMask:
             },            
         }
                 
-    RETURN_TYPES = ("IMAGE", "MIRA_COLOR_LIST", "MIRA_MASKS_LIST", "STRING",)
-    RETURN_NAMES = ("PngImage", "PngColorMasks", "PngRectangles", "Debug",)
-    FUNCTION = "CreateTillingPNGMaskEx"
-    CATEGORY = cat
     
-    def CreateTillingPNGMaskEx(self, Width, Height, Rows, Colums, Colum_first, Layout = '#'):
+    @classmethod
+    def execute(cls, Width, Height, Rows, Colums, Colum_first, Layout = '#'):
         DebugMessage = ''
         
         PngImage, PngRectangles, PngColorMasks, DebugMessage = CreateTillingPNG(Width, Height, Rows, Colums, Colum_first, Layout, DebugMessage)        
@@ -471,7 +483,7 @@ class CreateTillingPNGMask:
             
         return (output_image, PngColorMasks, PngRectangles, DebugMessage,)
 
-class CreateNestedPNGMask:
+class CreateNestedPNGMask(IO.ComfyNode):
     '''
     Create a `Nested Rectangles` PNG image with Color Mask stack for regional conditioning mask.   
     
@@ -495,9 +507,19 @@ class CreateNestedPNGMask:
     PngRectangles   - A List contains all PNG Blocks' rectangle informationm, last one is the whole Image's Width and Height
     Debug           - Debug output
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "CreateNestedPNGMask",
+            cat,
+            cls._v1_inputs(),
+            ("IMAGE", "MIRA_COLOR_LIST", "MIRA_MASKS_LIST", "STRING",),
+            ("PngImage", "PngColorMasks", "PngRectangles", "Debug",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "Width": ("INT", {
@@ -543,12 +565,9 @@ class CreateNestedPNGMask:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE", "MIRA_COLOR_LIST", "MIRA_MASKS_LIST", "STRING",)
-    RETURN_NAMES = ("PngImage", "PngColorMasks", "PngRectangles", "Debug",)
-    FUNCTION = "CreateNestedRectanglePNGMaskEx"
-    CATEGORY = cat
     
-    def CreateNestedRectanglePNGMaskEx(self, Width, Height, X, Y, unlimit_top, unlimit_bottom, unlimit_left, unlimit_right, Layout = '#'):
+    @classmethod
+    def execute(cls, Width, Height, X, Y, unlimit_top, unlimit_bottom, unlimit_left, unlimit_right, Layout = '#'):
         DebugMessage = ''
         
         PngImage, PngRectangles, PngColorMasks, DebugMessage = CreateNestedPNG(Width, Height, X, Y, unlimit_top, unlimit_bottom, unlimit_left, unlimit_right, Layout, DebugMessage)
@@ -556,7 +575,7 @@ class CreateNestedPNGMask:
         
         return (output_image, PngColorMasks, PngRectangles, DebugMessage,)
         
-class PngColorMasksToString:
+class PngColorMasksToString(IO.ComfyNode):
     '''
     Convert specified Index of PngColorMasks to HEX value. 
     
@@ -568,7 +587,17 @@ class PngColorMasksToString:
     mask_color      - String. e.g. RGB(255,0,255) to #FF00FF
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "PngColorMasksToString",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("mask_color",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "PngColorMasks": ("MIRA_COLOR_LIST", {
@@ -583,12 +612,9 @@ class PngColorMasksToString:
             },
         }
         
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("mask_color",)
-    FUNCTION = "ColorMasksToStringEx"
-    CATEGORY = cat
     
-    def ColorMasksToStringEx(self, PngColorMasks, Index):        
+    @classmethod
+    def execute(cls, PngColorMasks, Index):        
         if len(PngColorMasks) <= Index:
             #print('Mira: ERROR Index is greater than Mask count! Will use 0')
             Index = 0
@@ -596,7 +622,7 @@ class PngColorMasksToString:
         ret = ('#{:02X}{:02X}{:02X}'.format(PngColorMasks[Index][0], PngColorMasks[Index][1], PngColorMasks[Index][2]))
         return (ret,)
     
-class PngColorMasksToRGB:
+class PngColorMasksToRGB(IO.ComfyNode):
     '''
     Convert specified Index of PngColorMasks to RGB value. 
     
@@ -610,7 +636,17 @@ class PngColorMasksToRGB:
     B               - Integer. Blue
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "PngColorMasksToRGB",
+            cat,
+            cls._v1_inputs(),
+            ("INT","INT","INT",),
+            ("R", "G", "B", ),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "PngColorMasks": ("MIRA_MASKS_LIST", {
@@ -625,12 +661,9 @@ class PngColorMasksToRGB:
             },
         }
         
-    RETURN_TYPES = ("INT","INT","INT",)
-    RETURN_NAMES = ("R", "G", "B", )
-    FUNCTION = "ColorMasksToRGBEx"
-    CATEGORY = cat
     
-    def ColorMasksToRGBEx(self, PngColorMasks, Index):        
+    @classmethod
+    def execute(cls, PngColorMasks, Index):        
         if len(PngColorMasks) <= Index:
             #print('Mira: ERROR Index is greater than Mask count! Will use 0')
             Index = 0
@@ -640,7 +673,7 @@ class PngColorMasksToRGB:
         B = PngColorMasks[Index][2]
         return (R, G, B,)
     
-class PngColorMasksToStringList:
+class PngColorMasksToStringList(IO.ComfyNode):
     '''
     Convert ranged PngColorMasks to HEX value.
     
@@ -652,7 +685,17 @@ class PngColorMasksToStringList:
     mask_color[0-9] - String. e.g. RGB(255,0,255) to #FF00FF
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "PngColorMasksToStringList",
+            cat,
+            cls._v1_inputs(),
+            cls.r_t,
+            cls.r_n,
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         inputs = {
             "required": {
                 "PngColorMasks": ("MIRA_COLOR_LIST", {
@@ -677,24 +720,21 @@ class PngColorMasksToStringList:
         r_t += ('STRING',)
         r_n += (f'mask_color_{i}',)
     
-    RETURN_TYPES = r_t
-    RETURN_NAMES = r_n
-    FUNCTION = "ColorMasksToStringListEx"
-    CATEGORY = cat    
     
-    def ColorMasksToStringListEx(self, PngColorMasks, Start_At_Index):       
-        print('PngColorMasks = ' + str(PngColorMasks)) 
+    @classmethod
+    def execute(cls, PngColorMasks, Start_At_Index):       
+        logger.info('PngColorMasks = ' + str(PngColorMasks)) 
         ret = []
         for Index in range(Start_At_Index, Start_At_Index + 10, 1):            
             if len(PngColorMasks) <= Index:
                 ret.append('#000000')
             else:
                 ret.append('#{:02X}{:02X}{:02X}'.format(PngColorMasks[Index][0], PngColorMasks[Index][1], PngColorMasks[Index][2]))
-            print('ret = ' + str(ret))
+            logger.info('ret = ' + str(ret))
                 
         return (ret[0],ret[1],ret[2],ret[3],ret[4],ret[5],ret[6],ret[7],ret[8],ret[9],)
     
-class PngColorMasksToMaskList:
+class PngColorMasksToMaskList(IO.ComfyNode):
     '''
     Convert ranged PngColorMasks to Mask with Mask Blur function.
     This is a color based function, so it could NOT set Intenisity to Mask.
@@ -709,7 +749,17 @@ class PngColorMasksToMaskList:
     mask_[0-9]      - Mask for anyone who want a Mask
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "PngColorMasksToMaskList",
+            cat,
+            cls._v1_inputs(),
+            cls.r_t,
+            cls.r_n,
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "PngImage": ("IMAGE", {
@@ -740,13 +790,10 @@ class PngColorMasksToMaskList:
         r_t += ('MASK',)
         r_n += (f'mask_{i}',)
             
-    RETURN_TYPES = r_t
-    RETURN_NAMES = r_n
-    FUNCTION = "ColorMasksToMaskListEx"
-    CATEGORY = cat
     
     
-    def ColorMasksToMaskListEx(self, PngImage, PngColorMasks, Blur, Start_At_Index):
+    @classmethod
+    def execute(cls, PngImage, PngColorMasks, Blur, Start_At_Index):
         # refer: https://github.com/cubiq/ComfyUI_essentials
         # MaskFromColor
         masks = []
@@ -865,7 +912,7 @@ def CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index,
             masks.append(mask)
     return masks
         
-class PngRectanglesToMask:
+class PngRectanglesToMask(IO.ComfyNode):
     '''
     Convert PngRectangles to selected Mask with Mask Intenisity and Blur function.
     This function creates Mask directly from Rectangles data.
@@ -882,7 +929,17 @@ class PngRectanglesToMask:
     mask            - Mask for anyone who want a Mask
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "PngRectanglesToMask",
+            cat,
+            cls._v1_inputs(),
+            ('MASK',),
+            ('mask',),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "PngRectangles": ("MIRA_MASKS_LIST", {
@@ -917,12 +974,9 @@ class PngRectanglesToMask:
             },
         }
                     
-    RETURN_TYPES = ('MASK',)
-    RETURN_NAMES = ('mask',)
-    FUNCTION = "PngRectanglesToMaskEx"
-    CATEGORY = cat
     
-    def PngRectanglesToMaskEx(self, PngRectangles, Intenisity, Blur, Start_At_Index, Overlap, Overlap_Count):
+    @classmethod
+    def execute(cls, PngRectangles, Intenisity, Blur, Start_At_Index, Overlap, Overlap_Count):
         if "Previous" == Overlap:
             if 0 == Start_At_Index:
                 masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, Start_At_Index + 1)
@@ -946,7 +1000,7 @@ class PngRectanglesToMask:
                     
         return (final_mask,)    
     
-class PngRectanglesToMaskList:
+class PngRectanglesToMaskList(IO.ComfyNode):
     '''
     Convert ranged PngRectangles to Mask with Mask Intenisity and Blur function.
     This function creates Mask directly from Rectangles data.
@@ -961,7 +1015,17 @@ class PngRectanglesToMaskList:
     mask_[0-9]      - Mask for anyone who want a Mask
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "PngRectanglesToMaskList",
+            cat,
+            cls._v1_inputs(),
+            cls.r_t,
+            cls.r_n,
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "PngRectangles": ("MIRA_MASKS_LIST", {
@@ -996,18 +1060,15 @@ class PngRectanglesToMaskList:
         r_t += ('MASK',)
         r_n += (f'mask_{i}',)
             
-    RETURN_TYPES = r_t
-    RETURN_NAMES = r_n
-    FUNCTION = "PngRectanglesToMaskListEx"
-    CATEGORY = cat
 
-    def PngRectanglesToMaskListEx(self, PngRectangles, Intenisity, Blur, Start_At_Index):
+    @classmethod
+    def execute(cls, PngRectangles, Intenisity, Blur, Start_At_Index):
         masks = CreateMaskFromPngRectangles(PngRectangles, Intenisity, Blur, Start_At_Index, Start_At_Index + 10)
 
         return (masks[0], masks[1], masks[2], masks[3], masks[4], masks[5], masks[6], masks[7], masks[8], masks[9],)
     
     
-class CreateMaskWithCanvas:    
+class CreateMaskWithCanvas(IO.ComfyNode):    
     '''
     Create a new mask on defined cavans
     
@@ -1024,9 +1085,19 @@ class CreateMaskWithCanvas:
     Outputs:
     mask            - New mask with defined cavans
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "CreateMaskWithCanvas",
+            cat,
+            cls._v1_inputs(),
+            ('MASK',),
+            ('mask',),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "C_Width": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
@@ -1040,17 +1111,14 @@ class CreateMaskWithCanvas:
             },
         }
         
-    RETURN_TYPES = ('MASK',)
-    RETURN_NAMES = ('mask',)
-    FUNCTION = "CreateMaskWithCanvasEx"
-    CATEGORY = cat
     
     
-    def CreateMaskWithCanvasEx(self, C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur):       
+    @classmethod
+    def execute(cls, C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur):       
         mask = create_mask_with_canvas(C_Width, C_Height, X, Y, Width, Height, Intenisity, Blur)        
         return (mask,)
     
-class CreateWatermarkRemovalMask:
+class CreateWatermarkRemovalMask(IO.ComfyNode):
     '''
     Creates multiple masks at the corners of the image for subsequent watermark detection and removal.
     
@@ -1074,9 +1142,19 @@ class CreateWatermarkRemovalMask:
     Output:
     Mask            - New mask with defined cavans.
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "CreateWatermarkRemovalMask",
+            cat,
+            cls._v1_inputs(),
+            ('MASK',),
+            ('Mask',),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "C_Width": ("INT", { "default": 512, "min": 8, "max": 4096, "step": 1, "display": "number" }),
@@ -1096,12 +1174,9 @@ class CreateWatermarkRemovalMask:
             },
         }
         
-    RETURN_TYPES = ('MASK',)
-    RETURN_NAMES = ('Mask',)
-    FUNCTION = "CreateWatermarkRemovalMaskEx"
-    CATEGORY = cat
     
-    def CreateWatermarkRemovalMaskEx(self, C_Width, C_Height, Mask_W, Mask_H, Top_L, Top_R, Bottom_L, Bottom_R, EdgeToEdge, Intenisity, Blur):      
+    @classmethod
+    def execute(cls, C_Width, C_Height, Mask_W, Mask_H, Top_L, Top_R, Bottom_L, Bottom_R, EdgeToEdge, Intenisity, Blur):      
         if (Mask_W*2) > C_Width:
             Mask_W = C_Width / 2
         
@@ -1136,7 +1211,7 @@ class CreateWatermarkRemovalMask:
                                                        
         return (final_mask,)
     
-class CreateSimpleMask:
+class CreateSimpleMask(IO.ComfyNode):
     '''
     Create Simple Mask
     
@@ -1148,9 +1223,19 @@ class CreateSimpleMask:
     Outputs:
     mask            - New mask with defined cavans    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "CreateSimpleMask",
+            cat,
+            cls._v1_inputs(),
+            ("MASK",),
+            ("mask",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "Width": ("INT", {
@@ -1169,12 +1254,9 @@ class CreateSimpleMask:
             },            
         }
                 
-    RETURN_TYPES = ("MASK",)
-    RETURN_NAMES = ("mask",)
-    FUNCTION = "CreateSimpleMaskEx"
-    CATEGORY = cat
     
-    def CreateSimpleMaskEx(self, Width, Height, Intenisity):
+    @classmethod
+    def execute(cls, Width, Height, Intenisity):
         return create_mask_with_canvas(Width, Height, 0, 0, Width, Height, Intenisity, 0)
     
     

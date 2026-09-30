@@ -1,3 +1,8 @@
+import logging
+logger = logging.getLogger("comfy")
+from comfy_api.latest import IO
+from .v3schema import node
+
 import math
 import random
 import torch
@@ -74,10 +79,10 @@ def decompress_base64_gzip(base64_string):
         return bytearray(decompressed_data)
         
     except Exception as error:
-        print(f'[decompress_base64_gzip]: Error on decompressing: {error}')
+        logger.error(f'[decompress_base64_gzip]: Error on decompressing: {error}')
         return None
     
-class CanvasCreatorBasic:
+class CanvasCreatorBasic(IO.ComfyNode):
     '''
     Create Canvas information Width and Height for Latent.
     
@@ -90,7 +95,17 @@ class CanvasCreatorBasic:
     Height      - Image Height
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "CanvasCreatorBasic",
+            cat,
+            cls._v1_inputs(),
+            ("INT","INT",),
+            ("Width","Height",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "Width": ("INT", {
@@ -110,17 +125,14 @@ class CanvasCreatorBasic:
             },
         }
                 
-    RETURN_TYPES = ("INT","INT",)
-    RETURN_NAMES = ("Width","Height",)
-    FUNCTION = "CanvasCreatorBasicEx"
-    CATEGORY = cat
     
-    def CanvasCreatorBasicEx(self, Width, Height):                         
+    @classmethod
+    def execute(cls, Width, Height):                         
         Width, Height, Batch, HiResMultiplier = SafeCheck(Width, Height)
         
         return(Width, Height,)
 
-class CanvasCreatorSimple:
+class CanvasCreatorSimple(IO.ComfyNode):
     '''
     Create Canvas information Width and Height for Latent with Landscape switch.
     
@@ -134,7 +146,17 @@ class CanvasCreatorSimple:
     Height      - Image Height
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "CanvasCreatorSimple",
+            cat,
+            cls._v1_inputs(),
+            ("INT","INT",),
+            ("Width","Height",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "Width": ("INT", {
@@ -157,12 +179,9 @@ class CanvasCreatorSimple:
             },
         }
                 
-    RETURN_TYPES = ("INT","INT",)
-    RETURN_NAMES = ("Width","Height",)
-    FUNCTION = "CanvasCreatorSimpleEx"
-    CATEGORY = cat
     
-    def CanvasCreatorSimpleEx(self, Width, Height, Landscape):                         
+    @classmethod
+    def execute(cls, Width, Height, Landscape):                         
         Width, Height, Batch, HiResMultiplier = SafeCheck(Width, Height)
         
         if(False == Landscape):
@@ -171,7 +190,7 @@ class CanvasCreatorSimple:
             return(Height, Width,)
 
         
-class CanvasCreatorAdvanced:
+class CanvasCreatorAdvanced(IO.ComfyNode):
     '''
     Create Canvas information Width and Height for Latent with Landscape switch, Batch and HiResMultiplier.
     
@@ -191,7 +210,17 @@ class CanvasCreatorAdvanced:
     HiResMultiplier - Same as Input
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "CanvasCreatorAdvanced",
+            cat,
+            cls._v1_inputs(),
+            ("INT","INT","INT","INT","INT","FLOAT"),
+            ("Width","Height","Batch","HiRes Width","HiRes Height","HiResMultiplier",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "Width": ("INT", {
@@ -228,12 +257,9 @@ class CanvasCreatorAdvanced:
             },
         }
 
-    RETURN_TYPES = ("INT","INT","INT","INT","INT","FLOAT")
-    RETURN_NAMES = ("Width","Height","Batch","HiRes Width","HiRes Height","HiResMultiplier",)
-    FUNCTION = "CanvasCreatorEx"
-    CATEGORY = cat
     
-    def CanvasCreatorEx(self, Width, Height, Batch, Landscape, HiResMultiplier):              
+    @classmethod
+    def execute(cls, Width, Height, Batch, Landscape, HiResMultiplier):              
         Width, Height, Batch, HiResMultiplier = SafeCheck(Width, Height, Batch, HiResMultiplier)
             
         HiResWidth = Fixeight(Width * HiResMultiplier)
@@ -249,7 +275,7 @@ class CanvasCreatorAdvanced:
             return(Height, Width, Batch, intHiResHeight, intHiResWidth, HiResMultiplier, )
         
         
-class RandomTillingLayouts:
+class RandomTillingLayouts(IO.ComfyNode):
     '''
     [#1](https://github.com/mirabarukaso/ComfyUI_Mira/issues/1)   
     
@@ -299,7 +325,17 @@ class RandomTillingLayouts:
     
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "RandomTillingLayouts",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("layout",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "min_rows": ("INT", {
@@ -353,12 +389,9 @@ class RandomTillingLayouts:
             },            
         }
         
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("layout",)
-    FUNCTION = "RandomTillingLayoutsEx"
-    CATEGORY = cat
     
-    def RandomTillingLayoutsEx(self, min_rows, max_rows, min_colums, max_colums, max_weights_gcuts, max_weights_ncuts, rnd_seed):
+    @classmethod
+    def execute(cls, min_rows, max_rows, min_colums, max_colums, max_weights_gcuts, max_weights_ncuts, rnd_seed):
         if min_colums > max_colums:
             min_colums = max_colums
         
@@ -413,7 +446,7 @@ class RandomTillingLayouts:
                     
         return (row_and_colum_info + layouts,)
 
-class RandomNestedLayouts:
+class RandomNestedLayouts(IO.ComfyNode):
     '''   
     Random Nested Mask Layout Generator   
     All known issues same as upper one.
@@ -427,9 +460,19 @@ class RandomNestedLayouts:
     Layout                      - Layouts string, you need connect it to `Create Nested PNG Mask -> layout`
     top, bottom, left, right    - Random Boolean
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "RandomNestedLayouts",
+            cat,
+            cls._v1_inputs(),
+            ("STRING", "BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN"),
+            ("layout", "top", "bottom", "left", "right"),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "min_nested": ("INT", {
@@ -469,12 +512,9 @@ class RandomNestedLayouts:
             },            
         }
         
-    RETURN_TYPES = ("STRING", "BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN")
-    RETURN_NAMES = ("layout", "top", "bottom", "left", "right")
-    FUNCTION = "RandomNestedLayoutsEx"
-    CATEGORY = cat
     
-    def RandomNestedLayoutsEx(self, min_nested, max_nested, min_weights, max_weights, rnd_seed):
+    @classmethod
+    def execute(cls, min_nested, max_nested, min_weights, max_weights, rnd_seed):
         if min_nested > max_nested:
             min_nested = max_nested        
         
@@ -500,12 +540,22 @@ class RandomNestedLayouts:
                 
         return (generator_info + layouts, bool1, bool2, bool3, bool4,)
         
-class SeedGenerator:
+class SeedGenerator(IO.ComfyNode):
     '''
     SeedGenerator
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "SeedGeneratorMira",
+            cat,
+            cls._v1_inputs(),
+            ("INT",),
+            ("seed",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "seed": ("INT", {
@@ -516,15 +566,12 @@ class SeedGenerator:
             },            
         }
         
-    RETURN_TYPES = ("INT",)
-    RETURN_NAMES = ("seed",)
-    FUNCTION = "SeedGeneratorEx"
-    CATEGORY = cat
     
-    def SeedGeneratorEx(self, seed):
+    @classmethod
+    def execute(cls, seed):
         return(seed,)
 
-class ImageGrayscale:
+class ImageGrayscale(IO.ComfyNode):
     '''
     Convert Image to Grayscale
     
@@ -534,9 +581,19 @@ class ImageGrayscale:
     Outputs:
     image               - Torched Image                    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageGrayscale",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -545,18 +602,15 @@ class ImageGrayscale:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageGrayscaleEx"
-    CATEGORY = cat_image
     
-    def ImageGrayscaleEx(self, src_image):         
+    @classmethod
+    def execute(cls, src_image):         
         img = DecodeImage(src_image)            
         img_adj = con.to_grayscale(img)                     
         result = EncodeImage(img_adj)
         
         return(result,)    
-class ImageContrast:
+class ImageContrast(IO.ComfyNode):
     '''
     Adjust Image Contrast
     
@@ -567,9 +621,19 @@ class ImageContrast:
     Outputs:
     image               - Torched Image                    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageContrast",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -584,19 +648,16 @@ class ImageContrast:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageContrastEx"
-    CATEGORY = cat_image
     
-    def ImageContrastEx(self, src_image, level):         
+    @classmethod
+    def execute(cls, src_image, level):         
         img = DecodeImage(src_image)            
         img_adj = con.adjust_contrast(img, level)                     
         result = EncodeImage(img_adj)
         
         return(result,)
     
-class ImageSharpness:
+class ImageSharpness(IO.ComfyNode):
     '''
     Adjust Image Sharpness
     
@@ -607,9 +668,19 @@ class ImageSharpness:
     Outputs:
     image               - Torched Image                    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageSharpness",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -624,19 +695,16 @@ class ImageSharpness:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageSharpnessEx"
-    CATEGORY = cat_image
     
-    def ImageSharpnessEx(self, src_image, level):         
+    @classmethod
+    def execute(cls, src_image, level):         
         img = DecodeImage(src_image)            
         img_adj = con.adjust_sharpness(img, level)                     
         result = EncodeImage(img_adj)
         
         return(result,)
     
-class ImageBrightness:
+class ImageBrightness(IO.ComfyNode):
     '''
     Adjust Image Brightness
     
@@ -647,9 +715,19 @@ class ImageBrightness:
     Outputs:
     image               - Torched Image                    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageBrightness",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -664,19 +742,16 @@ class ImageBrightness:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageBrightnessEx"
-    CATEGORY = cat_image
     
-    def ImageBrightnessEx(self, src_image, level):         
+    @classmethod
+    def execute(cls, src_image, level):         
         img = DecodeImage(src_image)            
         img_adj = con.adjust_brightness(img, level)                     
         result = EncodeImage(img_adj)
         
         return(result,)
     
-class ImageSaturation:
+class ImageSaturation(IO.ComfyNode):
     '''
     Adjust Image Saturation
     
@@ -687,9 +762,19 @@ class ImageSaturation:
     Outputs:
     image               - Torched Image                    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageSaturation",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -704,19 +789,16 @@ class ImageSaturation:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageSaturationEx"
-    CATEGORY = cat_image
     
-    def ImageSaturationEx(self, src_image, level):         
+    @classmethod
+    def execute(cls, src_image, level):         
         img = DecodeImage(src_image)            
         img_adj = con.adjust_saturation(img, level)                     
         result = EncodeImage(img_adj)
         
         return(result,)
 
-class ImageHUE:
+class ImageHUE(IO.ComfyNode):
     '''
     Adjust Image HUE
     
@@ -727,9 +809,19 @@ class ImageHUE:
     Outputs:
     image               - Torched Image                    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageHUE",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -744,19 +836,16 @@ class ImageHUE:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageHUEEx"
-    CATEGORY = cat_image
     
-    def ImageHUEEx(self, src_image, level):         
+    @classmethod
+    def execute(cls, src_image, level):         
         img = DecodeImage(src_image)            
         img_adj = con.adjust_hue(img, level)                     
         result = EncodeImage(img_adj)
         
         return(result,)
 
-class ImageGamma:
+class ImageGamma(IO.ComfyNode):
     '''
     Adjust Image Gamma
     
@@ -767,9 +856,19 @@ class ImageGamma:
     Outputs:
     image               - Torched Image                    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageGamma",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -784,19 +883,16 @@ class ImageGamma:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageGammaEx"
-    CATEGORY = cat_image
     
-    def ImageGammaEx(self, src_image, level):         
+    @classmethod
+    def execute(cls, src_image, level):         
         img = DecodeImage(src_image)            
         img_adj = con.adjust_gamma(img, level)                     
         result = EncodeImage(img_adj)
         
         return(result,)
                                                                 
-class ImageColorTransfer:
+class ImageColorTransfer(IO.ComfyNode):
     '''
     Refer to: https://en.wikipedia.org/wiki/Image_color_transfer
     
@@ -809,9 +905,19 @@ class ImageColorTransfer:
     Outputs:
     image               - Output Image                    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageColorTransferMira",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -824,12 +930,9 @@ class ImageColorTransfer:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageColorTransferEx"
-    CATEGORY = cat_image
     
-    def ImageColorTransferEx(self, src_image, ref_image, method):
+    @classmethod
+    def execute(cls, src_image, ref_image, method):
         if not isinstance(src_image, torch.Tensor):
             raise ValueError("src_image must be a torch.Tensor")
         if not isinstance(ref_image, torch.Tensor):
@@ -880,7 +983,7 @@ class ImageColorTransfer:
             out_imgs_tensor = out_imgs_tensor.unsqueeze(0)
         return (out_imgs_tensor,)                                       
 
-class ImageToneCurve:
+class ImageToneCurve(IO.ComfyNode):
     '''
     Image Tone Curve
     
@@ -894,9 +997,19 @@ class ImageToneCurve:
     Outputs:
     image               - Output Image  
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageToneCurve",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -917,12 +1030,9 @@ class ImageToneCurve:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageToneCurveEx"
-    CATEGORY = cat_image
         
-    def ImageToneCurveEx(self, src_image, low, high):       
+    @classmethod
+    def execute(cls, src_image, low, high):       
         y = np.arctan(np.linspace(low, high, 256))
         y = 255 / (y.max() - y.min()) * (y - y.max()) + 255
         
@@ -932,7 +1042,7 @@ class ImageToneCurve:
         result = EncodeImage(new_img)        
         return(result,)  
 
-class ImageRGBChannel:
+class ImageRGBChannel(IO.ComfyNode):
     '''
     Image RGB Channel
     
@@ -943,9 +1053,19 @@ class ImageRGBChannel:
     Outputs:
     image               - Output Image  
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageRGBChannel",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "src_image": ("IMAGE", {
@@ -972,12 +1092,9 @@ class ImageRGBChannel:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "ImageRGBChannelEx"
-    CATEGORY = cat_image
     
-    def ImageRGBChannelEx(self, src_image, Red, Green, Blue):                       
+    @classmethod
+    def execute(cls, src_image, Red, Green, Blue):                       
         s = DecodeImage(src_image)     
         r, g, b = s.split()        
         
@@ -989,7 +1106,7 @@ class ImageRGBChannel:
         result = EncodeImage(new_img)        
         return(result,)  
     
-class UpscaleImageByModelThenResize:
+class UpscaleImageByModelThenResize(IO.ComfyNode):
     '''
     Upscale Image By Model Then Resize
     
@@ -1005,9 +1122,19 @@ class UpscaleImageByModelThenResize:
     Outputs:
     image               - Output Image  
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "UpscaleImageByModelThenResize",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": { 
                 "upscale_model": ("UPSCALE_MODEL",),
@@ -1024,12 +1151,9 @@ class UpscaleImageByModelThenResize:
             },
         }
         
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    FUNCTION = "UpscaleImageWithModelEx"
-    CATEGORY = cat_image
 
-    def UpscaleImageWithModelEx(self, upscale_model, image, resize_scale, resize_method):         
+    @classmethod
+    def execute(cls, upscale_model, image, resize_scale, resize_method):         
         def resize_torch_image(img, size, interpolation_mode):
             transform = T.Resize(size, interpolation=interpolation_mode, antialias=True)
             resized_img = transform(DecodeImage(img))
@@ -1108,49 +1232,63 @@ class UpscaleImageByModelThenResize:
                                             
         return (out_imgs_tensor,)
     
-class CheckpointLoaderSimple:
+class CheckpointLoaderSimple(IO.ComfyNode):
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "CheckpointLoaderSimpleMira",
+            cat,
+            cls._v1_inputs(),
+            ("MODEL", "CLIP", "VAE", "STRING"),
+            ("MODEL", "CLIP", "VAE", "model_name"),
+            description="Loads a diffusion model checkpoint, diffusion models are used to denoise latents.",
+            output_tooltips=("The model used for denoising latents.",
+                       "The CLIP model used for encoding text prompts.",
+                       "The VAE model used for encoding and decoding images to and from latent space.",
+                       "The model_name used for Image Save node to save model name."),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "ckpt_name": (folder_paths.get_filename_list("checkpoints"), {"tooltip": "The name of the checkpoint (model) to load."}),
             }
         }
-    RETURN_TYPES = ("MODEL", "CLIP", "VAE", "STRING")
-    RETURN_NAMES = ("MODEL", "CLIP", "VAE", "model_name")
-    OUTPUT_TOOLTIPS = ("The model used for denoising latents.",
-                       "The CLIP model used for encoding text prompts.",
-                       "The VAE model used for encoding and decoding images to and from latent space.",
-                       "The model_name used for Image Save node to save model name.")
-    FUNCTION = "load_checkpoint_ex"
 
-    CATEGORY = cat
-    DESCRIPTION = "Loads a diffusion model checkpoint, diffusion models are used to denoise latents."
 
-    def load_checkpoint_ex(self, ckpt_name):
+    @classmethod
+    def execute(cls, ckpt_name):
         ckpt_path = folder_paths.get_full_path_or_raise("checkpoints", ckpt_name)
         out = comfy.sd.load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
         final_out = (*out[:3], ckpt_name)
         return final_out
 
-class GzippedBase64ToImage:    
+class GzippedBase64ToImage(IO.ComfyNode):    
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "GzippedBase64ToImage",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE",),
+            ("image",),
+            description="Load Gzipped Base64 Image string from SAA. Convert back to Image for other nodes.",
+            output_tooltips=("Load Gzipped Base64 Image string from SAA.",
+                       "Convert back to Image for other nodes."),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {                
                 "base64text":  ("STRING", {"display": "input", "multiline": True}),
             }
         }
-    RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
-    OUTPUT_TOOLTIPS = ("Load Gzipped Base64 Image string from SAA.",
-                       "Convert back to Image for other nodes.")
-    FUNCTION = "GzippedBase64ToImageEx"
 
-    CATEGORY = cat_image
-    DESCRIPTION = "Load Gzipped Base64 Image string from SAA. Convert back to Image for other nodes."
 
-    def GzippedBase64ToImageEx(self, base64text):
+    @classmethod
+    def execute(cls, base64text):
         result = decompress_base64_gzip(base64text)        
         img = Image.open(BytesIO(result))
         img.load()
@@ -1163,9 +1301,21 @@ class GzippedBase64ToImage:
         
         return (image,)
 
-class ImageToGzippedBase64:
+class ImageToGzippedBase64(IO.ComfyNode):
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "ImageToGzippedBase64",
+            cat_image,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("base64text",),
+            description="Load Image and Gzipped then convert to Base64 string for SAA.",
+            output_tooltips=("Load Image and Gzipped then convert to Base64 string for SAA.",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "image": ("IMAGE", {
@@ -1173,15 +1323,10 @@ class ImageToGzippedBase64:
                 }), 
             }
         }
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("base64text",)
-    OUTPUT_TOOLTIPS = ("Load Image and Gzipped then convert to Base64 string for SAA.")
-    FUNCTION = "ImageToGzippedBase64Ex"
 
-    CATEGORY = cat_image
-    DESCRIPTION = "Load Image and Gzipped then convert to Base64 string for SAA."
 
-    def ImageToGzippedBase64Ex(self, image):
+    @classmethod
+    def execute(cls, image):
         image_pil = DecodeImage(image)
         temp = BytesIO()
         image_pil.save(temp, format="png")
@@ -1192,7 +1337,7 @@ class ImageToGzippedBase64:
     
 import torch
 
-class ReverseImageAndAllImages:
+class ReverseImageAndAllImages(IO.ComfyNode):
     '''
     Reverse the order of images in a batch and concatenate the reversed images with the original batch.
     
@@ -1203,9 +1348,19 @@ class ReverseImageAndAllImages:
     rev_image           - Reversed Images
     all_image           - Source + Reversed Images
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ReverseImageAndAllImages",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE", "IMAGE", ),
+            ("rev_image", "all_image", ),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "images": ("IMAGE", {
@@ -1214,12 +1369,9 @@ class ReverseImageAndAllImages:
             },            
         }
         
-    RETURN_TYPES = ("IMAGE", "IMAGE", )
-    RETURN_NAMES = ("rev_image", "all_image", )
-    FUNCTION = "ReverseImageAndAllImagesEx"
-    CATEGORY = cat_image
     
-    def ReverseImageAndAllImagesEx(self, images):
+    @classmethod
+    def execute(cls, images):
         # Ensure images is a torch tensor
         if not isinstance(images, torch.Tensor):
             raise ValueError("Input 'images' must be a torch.Tensor")
@@ -1238,7 +1390,7 @@ class ReverseImageAndAllImages:
         
         return (rev_image, all_image,)
     
-class StackImages:
+class StackImages(IO.ComfyNode):
     '''
     Stack Images and Extract Last Image
     
@@ -1252,9 +1404,19 @@ class StackImages:
     all_images          - Concatenated images (last_images_in + images, or images if last_images_in is None)
     last_image          - Last image from the input images
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "StackImages",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE", "IMAGE", ),
+            ("all_images", "last_image", ),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "images": ("IMAGE", {
@@ -1268,12 +1430,9 @@ class StackImages:
             },
         }
         
-    RETURN_TYPES = ("IMAGE", "IMAGE", )
-    RETURN_NAMES = ("all_images", "last_image", )
-    FUNCTION = "stack_images"
-    CATEGORY = cat_image
     
-    def stack_images(self, images, last_images_in=None):
+    @classmethod
+    def execute(cls, images, last_images_in=None):
         # Ensure images is a torch tensor
         if not isinstance(images, torch.Tensor):
             raise ValueError("Input 'images' must be a torch.Tensor")
@@ -1297,7 +1456,7 @@ class StackImages:
         
         return (all_images, last_image,)
        
-class FlatColorQuantization:
+class FlatColorQuantization(IO.ComfyNode):
     '''
     Flat Color Quantization
     
@@ -1309,9 +1468,19 @@ class FlatColorQuantization:
     Outputs:
     out_image           - Quantizated image
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "FlatColorQuantization",
+            cat_image,
+            cls._v1_inputs(),
+            ("IMAGE", ),
+            ("out_image",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "image": ("IMAGE", {
@@ -1350,12 +1519,9 @@ class FlatColorQuantization:
             },
         }
         
-    RETURN_TYPES = ("IMAGE", )
-    RETURN_NAMES = ("out_image",)
-    FUNCTION = "FlatColorQuantizationEx"
-    CATEGORY = cat_image
     
-    def FlatColorQuantizationEx(self, image, n_colors, block_size, temperature, spatial_scale, sharpen):
+    @classmethod
+    def execute(cls, image, n_colors, block_size, temperature, spatial_scale, sharpen):
         img = ConvertToNP(image)
         result = flat_color_multi_scale(image_input=img, n_colors=n_colors, block_size=block_size, 
                                         spatial_scale=spatial_scale, temperature=temperature, sharpen_strength=sharpen)

@@ -1,4 +1,8 @@
 ## Change Logs      
+#### 2026.10.01 Ver 0.6.0.0
+・Update to V3 node     
+
+
 #### 2025.12.30 Ver 0.5.6.0        
 ・Add `WD Tagger`        
 ・・WD Tagger by SmilingWolf https://huggingface.co/SmilingWolf       

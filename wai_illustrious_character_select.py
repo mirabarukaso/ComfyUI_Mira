@@ -1,3 +1,8 @@
+import logging
+logger = logging.getLogger("comfy")
+from comfy_api.latest import IO
+from .v3schema import node
+
 import gzip
 import hashlib
 import os
@@ -56,11 +61,11 @@ prime_directive = textwrap.dedent("""\
 def decode_response(response):
     if response.status_code == 200:
         ret = response.json().get('choices', [{}])[0].get('message', {}).get('content', '')
-        print(f'[{cat}]:Response:{ret}')
+        logger.info(f'[{cat}]:Response:{ret}')
         # Renmove <think> for DeepSeek
         if str(ret).__contains__('</think>'):
             ret = str(ret).split('</think>')[-1].strip()
-            print(f'\n[{cat}]:Trimed response:{ret}')    
+            logger.info(f'\n[{cat}]:Trimed response:{ret}')    
             
         ai_text = ret.strip()
         if ai_text.endswith('.'):
@@ -69,7 +74,7 @@ def decode_response(response):
             ai_text = f'{ai_text},'            
         return ai_text    
     else:
-        print(f"[{cat}] Error: Request failed with status code {response.status_code}")
+        logger.error(f"[{cat}] Error: Request failed with status code {response.status_code}")
         return ""
 
 def llm_send_request(input_prompt, url, model, api_key, system_prompt=prime_directive,timeout:int = 30):
@@ -83,11 +88,11 @@ def llm_send_request(input_prompt, url, model, api_key, system_prompt=prime_dire
     try:
         response = requests.post(url, headers={"Content-Type": "application/json", "Authorization": "Bearer " + api_key}, json=data, timeout=timeout)
     except requests.exceptions.RequestException as e:
-        print(f"[{cat}] Error: Request failed with exception {e}")
+        logger.error(f"[{cat}] Error: Request failed with exception {e}")
         return ""
     return decode_response(response)
 
-class llm_prompt_gen_node:
+class llm_prompt_gen_node(IO.ComfyNode):
     '''
     llm_prompt_gen_node
     
@@ -105,9 +110,19 @@ class llm_prompt_gen_node:
     Output:
     ai_prompt          - Prompts generate by AI
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "llm_prompt_gen_node",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("ai_prompt",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "optional": {
                 "optional_system_prompt": ("STRING", {
@@ -143,12 +158,9 @@ class llm_prompt_gen_node:
             }
         }
         
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("ai_prompt",)
-    FUNCTION = "llm_prompt_node_ex"
-    CATEGORY = cat
     
-    def llm_prompt_node_ex(self, url, model, prompt, random_action_seed, optional_system_prompt='',timeout: int = 30):
+    @classmethod
+    def execute(cls, url, model, prompt, random_action_seed, optional_system_prompt='',timeout: int = 30):
         _ = random_action_seed
         if '' == optional_system_prompt:
             optional_system_prompt = prime_directive
@@ -168,12 +180,12 @@ def llm_send_local_request(input_prompt, server, temperature=0.5, n_predict=512,
     try:
         response = requests.post(server, headers={"Content-Type": "application/json"}, json=data,timeout=timeout)
     except requests.exceptions.RequestException as e:
-        print(f"[{cat}] Error: Request failed with exception {e}")
+        logger.error(f"[{cat}] Error: Request failed with exception {e}")
         return ""
 
     return decode_response(response)
 
-class local_llm_prompt_gen:
+class local_llm_prompt_gen(IO.ComfyNode):
     '''
     local_llm_prompt_gen
 
@@ -197,9 +209,19 @@ class local_llm_prompt_gen:
     Output:
     ai_prompt          - Prompts generate by AI
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "local_llm_prompt_gen",
+            cat,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("ai_prompt",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "optional": {
                 "optional_system_prompt": ("STRING", {
@@ -244,18 +266,15 @@ class local_llm_prompt_gen:
             }
         }
         
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("ai_prompt",)
-    FUNCTION = "local_llm_prompt_gen_ex"
-    CATEGORY = cat
     
-    def local_llm_prompt_gen_ex(self, server, temperature, n_predict, prompt, random_action_seed, optional_system_prompt='',timeout: int=30):
+    @classmethod
+    def execute(cls, server, temperature, n_predict, prompt, random_action_seed, optional_system_prompt='',timeout: int=30):
         _ = random_action_seed
         if '' == optional_system_prompt:
             optional_system_prompt = prime_directive
         return (llm_send_local_request(prompt, server, temperature=temperature, n_predict=n_predict, system_prompt=optional_system_prompt,timeout=timeout),)     
     
-class illustrious_character_select:
+class illustrious_character_select(IO.ComfyNode):
     '''
     illustrious_character_select
     
@@ -270,9 +289,19 @@ class illustrious_character_select:
     prompt                - Final prompt
     info                  - Debug info
     '''                       
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "illustrious_character_select",
+            cat,
+            cls._v1_inputs(),
+            ("STRING","STRING",),
+            ("prompt", "info",),
+        )
+
         
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         
         return {
             "optional": {
@@ -294,12 +323,9 @@ class illustrious_character_select:
             },
         }
                         
-    RETURN_TYPES = ("STRING","STRING",)
-    RETURN_NAMES = ("prompt", "info",)
-    FUNCTION = "illustrious_character_select_ex"
-    CATEGORY = cat
     
-    def illustrious_character_select_ex(self, character, random_action_seed, character_weight, insert_before_character, custom_prompt = ''):
+    @classmethod
+    def execute(cls, character, random_action_seed, character_weight, insert_before_character, custom_prompt = ''):
         chara = ''
         rnd_character = ''
         
@@ -332,14 +358,24 @@ class illustrious_character_select:
                 
         return (prompt, info, )
     
-class illustrious_character_select_en:
+class illustrious_character_select_en(IO.ComfyNode):
     '''
     Same as illustrious_character_select
     But list in English tags
     '''                       
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "illustrious_character_select_en",
+            cat,
+            cls._v1_inputs(),
+            ("STRING","STRING",),
+            ("prompt", "info",),
+        )
+
 
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         
         return {
             "optional": {
@@ -361,12 +397,9 @@ class illustrious_character_select_en:
             },
         }
                         
-    RETURN_TYPES = ("STRING","STRING",)
-    RETURN_NAMES = ("prompt", "info",)
-    FUNCTION = "illustrious_character_select_en_ex"
-    CATEGORY = cat
     
-    def illustrious_character_select_en_ex(self, character, random_action_seed, character_weight, insert_before_character, custom_prompt = ''):
+    @classmethod
+    def execute(cls, character, random_action_seed, character_weight, insert_before_character, custom_prompt = ''):
         chara = ''
         rnd_character = ''
         
@@ -402,7 +435,7 @@ class illustrious_character_select_en:
 def download_file(url, file_path):   
     response = requests.get(url)
     response.raise_for_status() 
-    print('[{}]:Downloading... {}'.format(cat, url))
+    logger.info('[{}]:Downloading... {}'.format(cat, url))
     with open(file_path, 'wb') as file:
         file.write(response.content)        
 

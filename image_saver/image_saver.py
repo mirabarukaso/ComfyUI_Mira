@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger("comfy")
 # Forked from https://github.com/alexopus/ComfyUI-Image-Saver
 # Remove download from civitai.com and easy remix
 
@@ -9,6 +11,8 @@ from PIL import Image
 import numpy as np
 import re
 import folder_paths
+from comfy_api.latest import IO
+from ..v3schema import node
 from .saver import save_image
 from .utils import get_sha256
 from .prompt_metadata_extractor import PromptMetadataExtractor
@@ -35,12 +39,12 @@ def save_json(image_info, filename):
     try:
         workflow = (image_info or {}).get('workflow')
         if workflow is None:
-            print('No image info found, skipping saving of JSON')
+            logger.info('No image info found, skipping saving of JSON')
         with open(f'{filename}.json', 'w') as workflow_file:
             json.dump(workflow, workflow_file)
-            print(f'Saved workflow to {filename}.json')
+            logger.info(f'Saved workflow to {filename}.json')
     except Exception as e:
-        print(f'Failed to save workflow as json due to: {e}, proceeding with the remainder of saving execution')
+        logger.error(f'Failed to save workflow as json due to: {e}, proceeding with the remainder of saving execution')
 
 def make_pathname(filename, width, height, seed, modelname, counter, time_format, sampler_name, steps, cfg, scheduler, denoise, clip_skip):
     filename = filename.replace("%date", get_timestamp("%Y-%m-%d"))
@@ -63,45 +67,61 @@ def make_filename(filename, width, height, seed, modelname, counter, time_format
     filename = make_pathname(filename, width, height, seed, modelname, counter, time_format, sampler_name, steps, cfg, scheduler, denoise, clip_skip)
     return get_timestamp(time_format) if filename == "" else filename
 
-class ImageSaver:
-    def __init__(self):
-        self.output_dir = folder_paths.output_directory
-        self.civitai_sampler_map = {
-            'euler_ancestral': 'Euler a',
-            'euler': 'Euler',
-            'lms': 'LMS',
-            'heun': 'Heun',
-            'dpm_2': 'DPM2',
-            'dpm_2_ancestral': 'DPM2 a',
-            'dpmpp_2s_ancestral': 'DPM++ 2S a',
-            'dpmpp_2m': 'DPM++ 2M',
-            'dpmpp_sde': 'DPM++ SDE',
-            'dpmpp_2m_sde': 'DPM++ 2M SDE',
-            'dpmpp_3m_sde': 'DPM++ 3M SDE',
-            'dpm_fast': 'DPM fast',
-            'dpm_adaptive': 'DPM adaptive',
-            'ddim': 'DDIM',
-            'plms': 'PLMS',
-            'uni_pc_bh2': 'UniPC',
-            'uni_pc': 'UniPC',
-            'lcm': 'LCM',            
-        }
-        
-        self.a1111_schedule_map = {
-            "karras": "Karras", 
-            "exponential": "Exponential", 
-            "sgm_uniform": "SGM Uniform", 
-            "kl_optimal": "KL Optimal", 
-            "simple": "Simple", 
-            "normal": "Normal", 
-            "ddim_uniform": "DDIM", 
-            "beta": "Beta",
-        }
+class ImageSaver(IO.ComfyNode):
+    civitai_sampler_map = {
+        'euler_ancestral': 'Euler a',
+        'euler': 'Euler',
+        'lms': 'LMS',
+        'heun': 'Heun',
+        'dpm_2': 'DPM2',
+        'dpm_2_ancestral': 'DPM2 a',
+        'dpmpp_2s_ancestral': 'DPM++ 2S a',
+        'dpmpp_2m': 'DPM++ 2M',
+        'dpmpp_sde': 'DPM++ SDE',
+        'dpmpp_2m_sde': 'DPM++ 2M SDE',
+        'dpmpp_3m_sde': 'DPM++ 3M SDE',
+        'dpm_fast': 'DPM fast',
+        'dpm_adaptive': 'DPM adaptive',
+        'ddim': 'DDIM',
+        'plms': 'PLMS',
+        'uni_pc_bh2': 'UniPC',
+        'uni_pc': 'UniPC',
+        'lcm': 'LCM',
+    }
 
-    def get_civitai_sampler_name(self, sampler_name, scheduler):
+    a1111_schedule_map = {
+        "karras": "Karras",
+        "exponential": "Exponential",
+        "sgm_uniform": "SGM Uniform",
+        "kl_optimal": "KL Optimal",
+        "simple": "Simple",
+        "normal": "Normal",
+        "ddim_uniform": "DDIM",
+        "beta": "Beta",
+    }
+
+    # Match 'anything' or 'anything:anything' with trimmed white space
+    re_manual_hash = re.compile(r'^\s*([^:]+?)(?:\s*:\s*([^\s:][^:]*?))?\s*$')
+    MAX_HASH_LENGTH = 16 # skip larger unshortened hashes, such as full sha256 or blake3
+
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "ImageSaverMira",
+            cat_image,
+            cls._v1_inputs(),
+            ("STRING",),
+            ("hashes",),
+            description="Save images with generation metadata",
+            output_tooltips=("Comma-separated list of the hashes to chain with other Image Saver additional_hashes",),
+            is_output_node=True,
+        )
+
+    @classmethod
+    def get_civitai_sampler_name(cls, sampler_name, scheduler):
         # based on: https://github.com/civitai/civitai/blob/main/src/server/common/constants.ts#L122
-        if sampler_name in self.civitai_sampler_map:
-            civitai_name = self.civitai_sampler_map[sampler_name]
+        if sampler_name in cls.civitai_sampler_map:
+            civitai_name = cls.civitai_sampler_map[sampler_name]
 
             if scheduler == "karras":
                 civitai_name += " Karras"
@@ -112,16 +132,17 @@ class ImageSaver:
         else:
             return sampler_name
             
-    def get_a1111_schedule_name(self, scheduler_name):
+    @classmethod
+    def get_a1111_schedule_name(cls, scheduler_name):
         # based on: https://github.com/civitai/civitai/blob/main/src/server/common/constants.ts#L122
-        if scheduler_name in self.a1111_schedule_map:
-            a1111_name = self.a1111_schedule_map[scheduler_name]
+        if scheduler_name in cls.a1111_schedule_map:
+            a1111_name = cls.a1111_schedule_map[scheduler_name]
             return a1111_name
         else:
             return scheduler_name
 
     @classmethod
-    def INPUT_TYPES(cls):
+    def _v1_inputs(cls):
         return {
             "required": {
                 "images":                ("IMAGE",   {                                                             "tooltip": "image(s) to save"}),
@@ -151,55 +172,39 @@ class ImageSaver:
                 "embed_workflow":        ("BOOLEAN", {"default": True,                                             "tooltip": "if True, embeds the workflow in the saved image files.\nStable for PNG, experimental for WEBP.\nJPEG experimental and only if metadata size is below 65535 bytes"}),
                 "additional_hashes":     ("STRING",  {"default": "", "multiline": False,                           "tooltip": "hashes separated by commas, optionally with names. 'Name:HASH' (e.g., 'MyLoRA:FF735FF83F98')"}),
             },
-            "hidden": {
-                "prompt": "PROMPT",
-                "extra_pnginfo": "EXTRA_PNGINFO",
-            },
         }
 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("hashes",)
-    OUTPUT_TOOLTIPS = ("Comma-separated list of the hashes to chain with other Image Saver additional_hashes",)
-    FUNCTION = "save_files"
-
-    OUTPUT_NODE = True
-
-    CATEGORY = cat_image
-    DESCRIPTION = "Save images with generation metadata"
-
-    # Match 'anything' or 'anything:anything' with trimmed white space
-    re_manual_hash = re.compile(r'^\s*([^:]+?)(?:\s*:\s*([^\s:][^:]*?))?\s*$')
-    MAX_HASH_LENGTH = 16 # skip larger unshortened hashes, such as full sha256 or blake3
-
-    def save_files(
-        self,
+    @classmethod
+    def execute(
+        cls,
         images,
-        seed_value,
-        steps,
-        cfg,
-        sampler_name,
-        scheduler,
-        positive,
-        negative,
-        modelname,
-        quality_jpeg_or_webp,
-        lossless_webp,
-        optimize_png,
-        width,
-        height,
-        counter,
         filename,
         path,
         extension,
-        time_format,
-        denoise,
-        clip_skip,
+        steps=20,
+        cfg=7.0,
+        modelname="",
+        sampler_name="",
+        scheduler="normal",
+        positive="unknown",
+        negative="unknown",
+        seed_value=0,
+        width=512,
+        height=512,
+        lossless_webp=True,
+        quality_jpeg_or_webp=100,
+        optimize_png=False,
+        counter=0,
+        denoise=1.0,
+        clip_skip=0,
+        time_format="%Y-%m-%d-%H%M%S",
         additional_hashes="",
         save_workflow_as_json=False,
         embed_workflow=True,
-        prompt=None,
-        extra_pnginfo=None,
     ):
+        hidden = cls.hidden
+        prompt = None if hidden is None else hidden.prompt
+        extra_pnginfo = None if hidden is None else hidden.extra_pnginfo
         filename = make_filename(filename, width, height, seed_value, modelname, counter, time_format, sampler_name, steps, cfg, scheduler, denoise, clip_skip)
         path = make_pathname(path, width, height, seed_value, modelname, counter, time_format, sampler_name, steps, cfg, scheduler, denoise, clip_skip)
         ckpt_path = folder_paths.get_full_path("checkpoints", modelname)
@@ -215,7 +220,7 @@ class ImageSaver:
         metadata_extractor = PromptMetadataExtractor([positive, negative])
         embeddings = metadata_extractor.get_embeddings()
         loras = metadata_extractor.get_loras()
-        civitai_sampler_name = self.get_civitai_sampler_name(sampler_name.replace('_gpu', ''), scheduler)
+        civitai_sampler_name = cls.get_civitai_sampler_name(sampler_name.replace('_gpu', ''), scheduler)
 
         # Process additional_hashes input (a string) by normalizing, removing extra spaces/newlines, and splitting by comma
         manual_entries = {}
@@ -223,9 +228,9 @@ class ImageSaver:
         existing_hashes = {modelhash.lower()} | {t[2].lower() for t in loras.values()} | {t[2].lower() for t in embeddings.values()}  # Get set of parsed hashes
         additional_hash_split = additional_hashes.replace("\n", ",").split(",") if additional_hashes else []
         for entry in additional_hash_split:
-            match = self.re_manual_hash.search(entry)
+            match = cls.re_manual_hash.search(entry)
             if match is None:
-                print(f"ComfyUI-Image-Saver: Invalid additional hash string: '{entry}'")
+                logger.warning(f"ComfyUI-Image-Saver: Invalid additional hash string: '{entry}'")
                 continue
 
             groups = tuple(group for group in match.groups() if group)
@@ -236,28 +241,28 @@ class ImageSaver:
             # Read hash, optionally preceded by name
             name, hash = groups if len(groups) > 1 else (None, groups[0])
 
-            if len(hash) > self.MAX_HASH_LENGTH:
-                print(f"ComfyUI-Image-Saver: Skipping hash. Length exceeds maximum of {self.MAX_HASH_LENGTH} characters: {hash}")
+            if len(hash) > cls.MAX_HASH_LENGTH:
+                logger.info(f"ComfyUI-Image-Saver: Skipping hash. Length exceeds maximum of {cls.MAX_HASH_LENGTH} characters: {hash}")
                 continue
 
             if any(hash.lower() == existing_hash.lower() for _, _, existing_hash in manual_entries.values()):
-                print(f"ComfyUI-Image-Saver: Skipping duplicate hash: {hash}")
+                logger.info(f"ComfyUI-Image-Saver: Skipping duplicate hash: {hash}")
                 continue  # Skip duplicates
 
             if hash.lower() in existing_hashes:
-                print(f"ComfyUI-Image-Saver: Skipping manual hash already present in resources: {hash}")
+                logger.info(f"ComfyUI-Image-Saver: Skipping manual hash already present in resources: {hash}")
                 continue
 
             if name is None:
                 unnamed_count += 1
                 name = f"manual{unnamed_count}"
             elif name in manual_entries:
-                print(f"ComfyUI-Image-Saver: Duplicate manual hash name '{name}' is being overwritten.")
+                logger.info(f"ComfyUI-Image-Saver: Duplicate manual hash name '{name}' is being overwritten.")
 
             manual_entries[name] = (None, weight, hash)
 
             if len(manual_entries) > 29:
-                print("ComfyUI-Image-Saver: Reached maximum limit of 30 manual hashes. Skipping the rest.")
+                logger.info("ComfyUI-Image-Saver: Reached maximum limit of 30 manual hashes. Skipping the rest.")
                 break
 
         hashes = {}
@@ -274,32 +279,33 @@ class ImageSaver:
 
         a111_params = (
             f"{positive_a111_params}{negative_a111_params}\n"
-            f"Steps: {steps}, Sampler: {civitai_sampler_name}, Schedule type: {self.get_a1111_schedule_name(scheduler)}, CFG scale: {cfg}, Seed: {seed_value}, "
+            f"Steps: {steps}, Sampler: {civitai_sampler_name}, Schedule type: {cls.get_a1111_schedule_name(scheduler)}, CFG scale: {cfg}, Seed: {seed_value}, "
             f"Size: {width}x{height}{clip_skip_str}{model_hash_str}, Model: {basemodelname}{hashes_str}, Version: ComfyUI"
         )
 
-        output_path = os.path.join(self.output_dir, path)
+        output_path = os.path.join(folder_paths.output_directory, path)
 
         if output_path.strip() != '' and not os.path.exists(output_path.strip()):
-            print(f'The path `{output_path.strip()}` specified doesn\'t exist! Creating directory.')
+            logger.info(f'The path `{output_path.strip()}` specified doesn\'t exist! Creating directory.')
             os.makedirs(output_path, exist_ok=True)
 
-        filenames = self.save_images(images, output_path, filename, a111_params, extension, quality_jpeg_or_webp, lossless_webp, optimize_png, prompt, extra_pnginfo, save_workflow_as_json, embed_workflow)
+        filenames = cls.save_images(images, output_path, filename, a111_params, extension, quality_jpeg_or_webp, lossless_webp, optimize_png, prompt, extra_pnginfo, save_workflow_as_json, embed_workflow)
 
         subfolder = os.path.normpath(path)
 
         return {
             "result": (",".join(f"{Path(name.split(':')[-1]).stem + ':' if name else ''}{hash}{':' + str(weight) if weight is not None else ''}" for name, (_, weight, hash) in ({ modelname: ( ckpt_path, None, modelhash ) } | loras | embeddings | manual_entries).items()),),
-            "ui": {"images": map(lambda filename: {"filename": filename, "subfolder": subfolder if subfolder != '.' else '', "type": 'output'}, filenames)},
+            "ui": {"images": [{"filename": filename, "subfolder": subfolder if subfolder != '.' else '', "type": 'output'} for filename in filenames]},
         }
 
-    def save_images(self, images, output_path, filename_prefix, a111_params, extension, quality_jpeg_or_webp, lossless_webp, optimize_png, prompt, extra_pnginfo, save_workflow_as_json, embed_workflow) -> list[str]:
+    @classmethod
+    def save_images(cls, images, output_path, filename_prefix, a111_params, extension, quality_jpeg_or_webp, lossless_webp, optimize_png, prompt, extra_pnginfo, save_workflow_as_json, embed_workflow) -> list[str]:
         paths = list()
         for image in images:
             i = 255. * image.cpu().numpy()
             img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
 
-            current_filename_prefix = self.get_unique_filename(output_path, filename_prefix, extension)
+            current_filename_prefix = cls.get_unique_filename(output_path, filename_prefix, extension)
             filename = f"{current_filename_prefix}.{extension}"
             filepath = os.path.join(output_path, filename)
 
@@ -311,7 +317,8 @@ class ImageSaver:
             paths.append(filename)
         return paths
 
-    def get_unique_filename(self, output_path, filename_prefix, extension):
+    @classmethod
+    def get_unique_filename(cls, output_path, filename_prefix, extension):
         existing_files = [f for f in os.listdir(output_path) if f.startswith(filename_prefix) and f.endswith(extension)]
 
         if not existing_files:

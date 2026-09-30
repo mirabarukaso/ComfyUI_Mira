@@ -1,3 +1,6 @@
+from comfy_api.latest import IO
+from .v3schema import node
+
 from PIL import Image
 import math
 from .Mask import LoadImagePNG
@@ -42,7 +45,7 @@ def BooleanListInterpreter(bool_list, Start_At_Index, NOT_Mode = False, times = 
         
     return (new_list)              
 
-class SingleBooleanTrigger:
+class SingleBooleanTrigger(IO.ComfyNode):
     '''
     A Boolean Trigger
     
@@ -53,7 +56,17 @@ class SingleBooleanTrigger:
     bool    - Boolean value same as input
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "SingleBooleanTrigger",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN",),
+            ("bool",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool": ("BOOLEAN", {
@@ -62,15 +75,12 @@ class SingleBooleanTrigger:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN",)
-    RETURN_NAMES = ("bool",)
-    FUNCTION = "SingleBooleanTriggerEx"
-    CATEGORY = cat
     
-    def SingleBooleanTriggerEx(self, bool):
+    @classmethod
+    def execute(cls, bool):
         return (bool,)
     
-class TwoBooleanTrigger:
+class TwoBooleanTrigger(IO.ComfyNode):
     '''
     2 Boolean Triggers
     
@@ -81,7 +91,17 @@ class TwoBooleanTrigger:
     bool_list   - Boolean list for `BooleanListInterpreter`
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "TwoBooleanTrigger",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN_LIST",),
+            ("bool_list",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool_1": ("BOOLEAN", {"default": False,}),
@@ -89,23 +109,30 @@ class TwoBooleanTrigger:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN_LIST",)
-    RETURN_NAMES = ("bool_list",)
-    FUNCTION = "TwoBooleanTriggerEx"
-    CATEGORY = cat
     
-    def TwoBooleanTriggerEx(self, bool_1, bool_2,):
+    @classmethod
+    def execute(cls, bool_1, bool_2,):
         bool_list = [bool_1, bool_2]
         return (bool_list,)
     
-class FourBooleanTrigger:
+class FourBooleanTrigger(IO.ComfyNode):
     '''
     4 Boolean Triggers
     
     Refer to TwoBooleanTrigger
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "FourBooleanTrigger",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN_LIST",),
+            ("bool_list",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool_1": ("BOOLEAN", {"default": False,}),
@@ -115,16 +142,13 @@ class FourBooleanTrigger:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN_LIST",)
-    RETURN_NAMES = ("bool_list",)
-    FUNCTION = "FourBooleanTriggerEx"
-    CATEGORY = cat
     
-    def FourBooleanTriggerEx(self, bool_1, bool_2, bool_3, bool_4):
+    @classmethod
+    def execute(cls, bool_1, bool_2, bool_3, bool_4):
         bool_list = [bool_1, bool_2, bool_3, bool_4]
         return (bool_list,)
 
-class SixBooleanTrigger:
+class SixBooleanTrigger(IO.ComfyNode):
     '''
     6 Boolean Triggers
     
@@ -132,7 +156,17 @@ class SixBooleanTrigger:
     Refer to TwoBooleanTrigger
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "SixBooleanTrigger",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN_LIST",),
+            ("bool_list",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool_1": ("BOOLEAN", {"default": False,}),
@@ -144,23 +178,30 @@ class SixBooleanTrigger:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN_LIST",)
-    RETURN_NAMES = ("bool_list",)
-    FUNCTION = "SixBooleanTriggerEx"
-    CATEGORY = cat
     
-    def SixBooleanTriggerEx(self, bool_1, bool_2, bool_3, bool_4, bool_5, bool_6):
+    @classmethod
+    def execute(cls, bool_1, bool_2, bool_3, bool_4, bool_5, bool_6):
         bool_list = [bool_1, bool_2, bool_3, bool_4, bool_5, bool_6]
         return (bool_list,)
     
-class EightBooleanTrigger:
+class EightBooleanTrigger(IO.ComfyNode):
     '''
     8 Boolean Triggers
     
     Refer to TwoBooleanTrigger
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "EightBooleanTrigger",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN_LIST",),
+            ("bool_list",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool_1": ("BOOLEAN", {"default": False,}),
@@ -174,16 +215,13 @@ class EightBooleanTrigger:
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN_LIST",)
-    RETURN_NAMES = ("bool_list",)                
-    FUNCTION = "EightBooleanTriggerEx"
-    CATEGORY = cat
     
-    def EightBooleanTriggerEx(self, bool_1, bool_2, bool_3, bool_4, bool_5, bool_6, bool_7, bool_8):
+    @classmethod
+    def execute(cls, bool_1, bool_2, bool_3, bool_4, bool_5, bool_6, bool_7, bool_8):
         bool_list = [bool_1, bool_2, bool_3, bool_4, bool_5, bool_6, bool_7, bool_8]
         return (bool_list,)    
     
-class LogicNot:
+class LogicNot(IO.ComfyNode):
     '''   
     Always return Boolean Not
     
@@ -191,24 +229,31 @@ class LogicNot:
     True    False
     False   True    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "LogicNot",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN","STRING"),
+            ("not_bool", "result"),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool": ("BOOLEAN", {"default": True,}),
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN","STRING")
-    RETURN_NAMES = ("not_bool", "result")
-    FUNCTION = "LogicNotEx"
-    CATEGORY = cat
     
-    def LogicNotEx(self, bool,):
+    @classmethod
+    def execute(cls, bool,):
         return (not bool, str(not bool),)
     
-class EvenOrOdd:
+class EvenOrOdd(IO.ComfyNode):
     '''   
     Check if a `Integer` is odd or even.   
     
@@ -216,24 +261,31 @@ class EvenOrOdd:
     Odd     True    
     Even    False
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "EvenOrOdd",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN", "STRING"),
+            ("bool_Odd_True", "result"),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "num": ("INT", {"default": 1,}),
             },
         }
                 
-    RETURN_TYPES = ("BOOLEAN", "STRING")
-    RETURN_NAMES = ("bool_Odd_True", "result")
-    FUNCTION = "EvenOrOddEx"
-    CATEGORY = cat
     
-    def EvenOrOddEx(self, num,):       
+    @classmethod
+    def execute(cls, num,):       
         return CheckEvenOrOdd(num)
     
-class EvenOrOddList:
+class EvenOrOddList(IO.ComfyNode):
     '''   
     Checks whether each `digit` (decimal) of the input `integer` is odd or even, 
     and returns `true` for even numbers and `false` for odd numbers. 
@@ -255,9 +307,19 @@ class EvenOrOddList:
     Odd     True    
     Even    False
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "EvenOrOddList",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN_LIST", "STRING"),
+            ("bool_list_Odd_True", "result"),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "integer": ("INT", {
@@ -277,12 +339,9 @@ class EvenOrOddList:
             },            
         }
         
-    RETURN_TYPES = ("BOOLEAN_LIST", "STRING")
-    RETURN_NAMES = ("bool_list_Odd_True", "result")
-    FUNCTION = "EvenOrOddListEx"
-    CATEGORY = cat
     
-    def EvenOrOddListEx(self, integer, quantity, NOT_filling):        
+    @classmethod
+    def execute(cls, integer, quantity, NOT_filling):        
         bool_list = []
         string_list = 'Input = ' + str(integer) + ' Times = ' + str(len(str(integer))) + '\nResults\n'
         new_seed = integer       
@@ -307,7 +366,7 @@ class EvenOrOddList:
                          
         return(bool_list, string_list, )
     
-class BooleanListInterpreter1:  
+class BooleanListInterpreter1(IO.ComfyNode):  
     '''   
     Decode `Boolean` value(s) from `Boolean list`.
     
@@ -319,9 +378,19 @@ class BooleanListInterpreter1:
     Outputs:
     bool(0~N)   - Boolean list    
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "BooleanListInterpreter1",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN", ),
+            ("bool", ),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool_list": ("BOOLEAN_LIST", {
@@ -339,23 +408,30 @@ class BooleanListInterpreter1:
             },            
         }
         
-    RETURN_TYPES = ("BOOLEAN", )
-    RETURN_NAMES = ("bool", )
-    FUNCTION = "BooleanListInterpreter1Ex"
-    CATEGORY = cat
     
-    def BooleanListInterpreter1Ex(self, bool_list, Start_At_Index, NOT_Mode):
+    @classmethod
+    def execute(cls, bool_list, Start_At_Index, NOT_Mode):
         new_list = BooleanListInterpreter(bool_list, Start_At_Index, NOT_Mode)
             
         return (new_list[0],)
     
-class BooleanListInterpreter4:  
+class BooleanListInterpreter4(IO.ComfyNode):  
     '''   
     Same as BooleanListInterpreter1
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "BooleanListInterpreter4",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN",),
+            ("bool_0", "bool_1", "bool_2", "bool_3", ),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool_list": ("BOOLEAN_LIST", {
@@ -373,23 +449,30 @@ class BooleanListInterpreter4:
             },            
         }
         
-    RETURN_TYPES = ("BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN",)
-    RETURN_NAMES = ("bool_0", "bool_1", "bool_2", "bool_3", )
-    FUNCTION = "BooleanListInterpreter4Ex"
-    CATEGORY = cat
     
-    def BooleanListInterpreter4Ex(self, bool_list, Start_At_Index, NOT_Mode):
+    @classmethod
+    def execute(cls, bool_list, Start_At_Index, NOT_Mode):
         new_list = BooleanListInterpreter(bool_list, Start_At_Index, NOT_Mode, 4)
             
         return (new_list[0],new_list[1],new_list[2],new_list[3],)
     
-class BooleanListInterpreter8:  
+class BooleanListInterpreter8(IO.ComfyNode):  
     '''   
     Same as BooleanListInterpreter1
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "BooleanListInterpreter8",
+            cat,
+            cls._v1_inputs(),
+            ("BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN","BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN",),
+            ("bool_0", "bool_1", "bool_2", "bool_3", "bool_4", "bool_5", "bool_6", "bool_7",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "bool_list": ("BOOLEAN_LIST", {
@@ -407,17 +490,14 @@ class BooleanListInterpreter8:
             },            
         }
         
-    RETURN_TYPES = ("BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN","BOOLEAN", "BOOLEAN", "BOOLEAN", "BOOLEAN",)
-    RETURN_NAMES = ("bool_0", "bool_1", "bool_2", "bool_3", "bool_4", "bool_5", "bool_6", "bool_7",)
-    FUNCTION = "BooleanListInterpreter8Ex"
-    CATEGORY = cat
     
-    def BooleanListInterpreter8Ex(self, bool_list, Start_At_Index, NOT_Mode):
+    @classmethod
+    def execute(cls, bool_list, Start_At_Index, NOT_Mode):
         new_list = BooleanListInterpreter(bool_list, Start_At_Index, NOT_Mode, 8)
             
         return (new_list[0],new_list[1],new_list[2],new_list[3],new_list[4],new_list[5],new_list[6],new_list[7],)
     
-class FunctionSwap:
+class FunctionSwap(IO.ComfyNode):
     """
     Swap `func1` and `func2` outputs depends on `trigger`.
     
@@ -433,9 +513,19 @@ class FunctionSwap:
     | True  | func2 | func1 |
     | False | func1 | func2 |
     """
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "FunctionSwap",
+            cat,
+            cls._v1_inputs(),
+            (AlwaysEqualProxy("*"), AlwaysEqualProxy("*"),),
+            ("A", "B", ),
+        )
+
 
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "optional": {
                 "func2": (AlwaysEqualProxy("*"),),
@@ -446,12 +536,9 @@ class FunctionSwap:
             },
         }
 
-    RETURN_TYPES = (AlwaysEqualProxy("*"), AlwaysEqualProxy("*"),)
-    RETURN_NAMES = ("A", "B", )
-    FUNCTION = "FunctionSwapEx"
-    CATEGORY = cat
 
-    def FunctionSwapEx(self, trigger, func1, func2 = None):
+    @classmethod
+    def execute(cls, trigger, func1, func2 = None):
         if func2 is None:
             return (func1, func1,)
         
@@ -460,7 +547,7 @@ class FunctionSwap:
         else:
             return (func1, func2,)    
         
-class FunctionSelectAuto:
+class FunctionSelectAuto(IO.ComfyNode):
     """
     Function Select Auto
     
@@ -478,9 +565,19 @@ class FunctionSelectAuto:
     | func1 |   func1   |   func2   |
     | func2 |   None    |   func2   |
     """
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "FunctionSelectAuto",
+            cat,
+            cls._v1_inputs(),
+            (AlwaysEqualProxy("*"),),
+            ("Y",  ),
+        )
+
 
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "optional": {
                 "func1": (AlwaysEqualProxy("*"),),
@@ -488,12 +585,9 @@ class FunctionSelectAuto:
             },
         }
 
-    RETURN_TYPES = (AlwaysEqualProxy("*"),)
-    RETURN_NAMES = ("Y",  )
-    FUNCTION = "FunctionSelectAutoEx"
-    CATEGORY = cat
 
-    def FunctionSelectAutoEx(self, func1 = None, func2 = None):
+    @classmethod
+    def execute(cls, func1 = None, func2 = None):
         if func1 is None and func2 is None:            
             return (None, )
         
@@ -502,7 +596,7 @@ class FunctionSelectAuto:
         else:
             return (func2,)
     
-class SN74LVC1G125:
+class SN74LVC1G125(IO.ComfyNode):
     '''
     Single Bus Buffer Gate With Enable
     
@@ -510,9 +604,19 @@ class SN74LVC1G125:
     | True  |  Y   |
     | False | None |
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "SN74LVC1G125",
+            cat74,
+            cls._v1_inputs(),
+            (AlwaysEqualProxy("*"), ),
+            ("Y",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "required": {
                 "OE": ("BOOLEAN", {"default": True, "display":"input",}),
@@ -520,23 +624,30 @@ class SN74LVC1G125:
             },
         }
         
-    RETURN_TYPES = (AlwaysEqualProxy("*"), )
-    RETURN_NAMES = ("Y",)
-    FUNCTION = "SN74LVC1G125Ex"
-    CATEGORY = cat74
 
-    def SN74LVC1G125Ex(self, OE, A):
+    @classmethod
+    def execute(cls, OE, A):
         if True is OE:
             return (A,)
         else:
             return (None,)    
         
-class NoneToZero:
+class NoneToZero(IO.ComfyNode):
     '''   
     Check if the `check_none` is None, then set return value to `0`.
     '''
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "NoneToZero",
+            cat,
+            cls._v1_inputs(),
+            ("FLOAT", "INT", "IMAGE", AlwaysEqualProxy("*"),),
+            ("ret_float", "ret_int", "ret_img", "none_image",),
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         return {
             "required": {
                 "check_none": (AlwaysEqualProxy("*"),),
@@ -546,12 +657,9 @@ class NoneToZero:
             },
         }
         
-    RETURN_TYPES = ("FLOAT", "INT", "IMAGE", AlwaysEqualProxy("*"),)
-    RETURN_NAMES = ("ret_float", "ret_int", "ret_img", "none_image",)
-    FUNCTION = "NoneToZeroEx"
-    CATEGORY = cat
 
-    def NoneToZeroEx(self, check_none, ret_float, ret_int, ret_img):
+    @classmethod
+    def execute(cls, check_none, ret_float, ret_int, ret_img):
         if None is check_none:
             PngImage = Image.new("RGB", [2, 2])
             output_image = LoadImagePNG(PngImage)   
@@ -560,7 +668,7 @@ class NoneToZero:
             return (ret_float, ret_int, ret_img, ret_img, )
 
 # 74 Family               
-class SN74HC1G86:
+class SN74HC1G86(IO.ComfyNode):
     '''
     Single 2-Input Exclusive-OR Gate
     
@@ -570,9 +678,19 @@ class SN74HC1G86:
     | True  | False |  A   |
     | False | True  |  B   |
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "SN74HC1G86",
+            cat74,
+            cls._v1_inputs(),
+            (AlwaysEqualProxy("*"), ),
+            ("Y",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "optional": {
                 "A": (AlwaysEqualProxy("*"),),
@@ -582,18 +700,15 @@ class SN74HC1G86:
             },
         }
         
-    RETURN_TYPES = (AlwaysEqualProxy("*"), )
-    RETURN_NAMES = ("Y",)
-    FUNCTION = "SN74HC86Ex"
-    CATEGORY = cat74
     
-    def SN74HC86Ex(self, A = None, B = None):
+    @classmethod
+    def execute(cls, A = None, B = None):
                 
         Y = CheckXOR(A, B)
         return (Y,)
         
         
-class SN74HC86:
+class SN74HC86(IO.ComfyNode):
     '''
     Quadruple 2-Input Exclusive-OR Gates
     
@@ -603,9 +718,19 @@ class SN74HC86:
     | True  | False |  A   |
     | False | True  |  B   |
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "SN74HC86",
+            cat74,
+            cls._v1_inputs(),
+            (AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), ),
+            ("1Y", "2Y", "3Y", "4Y",),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):
+    def _v1_inputs(s):
         return {
             "optional": {
                 "A1": (AlwaysEqualProxy("*"),),
@@ -621,12 +746,9 @@ class SN74HC86:
             },
         }
         
-    RETURN_TYPES = (AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), AlwaysEqualProxy("*"), )
-    RETURN_NAMES = ("1Y", "2Y", "3Y", "4Y",)
-    FUNCTION = "SN74HC86Ex"
-    CATEGORY = cat74
     
-    def SN74HC86Ex(self, A1 = None, B1 = None, A2 = None, B2 = None, A3 = None, B3 = None, A4 = None, B4 = None):
+    @classmethod
+    def execute(cls, A1 = None, B1 = None, A2 = None, B2 = None, A3 = None, B3 = None, A4 = None, B4 = None):
                 
         Y1 = CheckXOR(A1, B1)
         Y2 = CheckXOR(A2, B2)

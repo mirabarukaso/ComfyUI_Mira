@@ -1,3 +1,8 @@
+import logging
+logger = logging.getLogger("comfy")
+from comfy_api.latest import IO
+from .v3schema import node
+
 import os
 import re
 import comfy.utils
@@ -49,7 +54,10 @@ def process_text(input_text: str) -> tuple[list, str]:
     plain_text = remove_brackets(input_text)    
     return lora_result, plain_text
 
-class LoRALoaderWithNameStacker:
+# One cached LoRA file per graph node. V3 execute runs on a locked class, so this cannot live on the instance.
+_loaded_loras = {}
+
+class LoRALoaderWithNameStacker(IO.ComfyNode):
     '''
     Load LoRA with optional LoRA Name Stacker input/output and bypass trigger
     
@@ -72,13 +80,19 @@ class LoRALoaderWithNameStacker:
     CLIP                - Alternative combined text output    
     lora_stack          - New string array with current LoRA name and strength information. AS is when bypass is `Enable` or strengths are all `0`
     '''
-    
-    # Cache
-    def __init__(self):
-        self.loaded_lora = None;
-        
     @classmethod
-    def INPUT_TYPES(s):
+    def define_schema(cls):
+        return node(
+            "LoRALoaderWithNameStacker",
+            cat,
+            cls._v1_inputs(),
+            ("MODEL", "CLIP", "STRING"),
+            ("MODEL", "CLIP", "lora_stack"),
+            hidden=[IO.Hidden.unique_id],
+        )
+
+    @classmethod
+    def _v1_inputs(s):
         lora_list = comfy_paths.get_filename_list("loras")
         if 0 == len(lora_list):
             lora_list.insert(0, "None")
@@ -98,13 +112,9 @@ class LoRALoaderWithNameStacker:
                 "bypass": ("BOOLEAN", {"default": False}),  
             },
         }
-        
-    RETURN_TYPES = ("MODEL", "CLIP", "STRING")
-    RETURN_NAMES = ("MODEL", "CLIP", "lora_stack")
-    FUNCTION = "LoRALoaderWithNameStackerEx"
-    CATEGORY = cat
     
-    def LoRALoaderWithNameStackerEx(self, model, clip, lora_name, strength_model, strength_clip, bypass, lora_stack = ''):
+    @classmethod
+    def execute(cls, model, clip, lora_name, strength_model, strength_clip, bypass, lora_stack = ''):
         if True is bypass or "None" == lora_name:
             return (model, clip, lora_stack)
         
@@ -113,21 +123,23 @@ class LoRALoaderWithNameStacker:
         
         lora_path = comfy_paths.get_full_path("loras", lora_name)
         lora = None
+        cache_key = cls.hidden.unique_id if cls.hidden is not None else ""
         # Check cached or new LoRA
-        if self.loaded_lora is not None:
-            if self.loaded_lora[0] == lora_path:
-                lora = self.loaded_lora[1]
+        cached = _loaded_loras.get(cache_key)
+        if cached is not None:
+            if cached[0] == lora_path:
+                lora = cached[1]
             else:
-                temp = self.loaded_lora
-                self.loaded_lora = None
+                temp = cached
+                _loaded_loras.pop(cache_key, None)
                 del temp
 
         if lora is None:            
             lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
-            self.loaded_lora = (lora_path, lora)
+            _loaded_loras[cache_key] = (lora_path, lora)
         
         if lora is None:
-            print(f'Mira: [ERROR][LoRALoaderWithNameStacker] Load LoRA failed return with original Model and Clip >> {lora_name}')        
+            logger.error(f'Mira: [ERROR][LoRALoaderWithNameStacker] Load LoRA failed return with original Model and Clip >> {lora_name}')        
             return (model, clip, lora_stack)
 
         model_lora, clip_lora = comfy.sd.load_lora_for_models(model, clip, lora, strength_model, strength_clip)
@@ -141,7 +153,7 @@ class LoRALoaderWithNameStacker:
                                 
         return (model_lora, clip_lora, lora_stack,)
         
-class LoRAfromText:
+class LoRAfromText(IO.ComfyNode):
     '''
     LoRA from Text
     
@@ -162,9 +174,19 @@ class LoRAfromText:
     clip_to_hifix       - In case you need change prompts in 2nd stage
     plain_text          - Connect to your positive CLIP Text Encoder or text combiner
     '''
+    @classmethod
+    def define_schema(cls):
+        return node(
+            "LoRAfromText",
+            cat,
+            cls._v1_inputs(),
+            ("MODEL", "CLIP", "MODEL", "CLIP", "STRING"),
+            ("model", "clip", "model_to_hifix", "clip_to_hifix", "plain_text"),
+        )
+
     
     @classmethod
-    def INPUT_TYPES(s):        
+    def _v1_inputs(s):        
         return {
             "required": {
                 "model": ("MODEL",),
@@ -175,12 +197,9 @@ class LoRAfromText:
             },
         }
         
-    RETURN_TYPES = ("MODEL", "CLIP", "MODEL", "CLIP", "STRING")
-    RETURN_NAMES = ("model", "clip", "model_to_hifix", "clip_to_hifix", "plain_text")
-    FUNCTION = "LoRAfromTextEx"
-    CATEGORY = cat
     
-    def LoRAfromTextEx(self, model, clip, text):                        
+    @classmethod
+    def execute(cls, model, clip, text):                        
         lora_list, plain_text = process_text(text)
         #print(f'Mira: [LoRALoaderWithNameStacker] lora_list >> {lora_list}')
         #print(f'Mira: [LoRALoaderWithNameStacker] plain_text >> {plain_text}')
@@ -195,7 +214,7 @@ class LoRAfromText:
             
             lora_path = comfy_paths.get_full_path("loras", lora_name)
             if lora_path is None:
-                print(f'Mira: [ERROR][LoRALoaderWithNameStacker] Load LoRA failed lora_path >> {lora_path}')        
+                logger.error(f'Mira: [ERROR][LoRALoaderWithNameStacker] Load LoRA failed lora_path >> {lora_path}')        
             else:
                 lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
                 if 0!=s1 or 0!=c1:
