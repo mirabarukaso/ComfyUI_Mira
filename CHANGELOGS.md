@@ -1,4 +1,12 @@
 ## Change Logs      
+#### 2026.10.22 Ver 0.6.0.1
+・Bugfix for `Image Saver` LoRA hash on Windows
+・・Resolve `moss\name`, `moss/name` and doubled backslashes to the local file
+・・Save the AutoV2 hash in image metadata, and cache the full SHA256 in a `.sha256` file beside the LoRA
+・・Refresh that cache when the file size or modified time changes
+・`LoRA Loader With Name Stacker` now writes LoRA tags with `/`
+
+
 #### 2026.10.01 Ver 0.6.0.0
 ・Update to V3 node     
 

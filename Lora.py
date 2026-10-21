@@ -144,12 +144,13 @@ class LoRALoaderWithNameStacker(IO.ComfyNode):
 
         model_lora, clip_lora = comfy.sd.load_lora_for_models(model, clip, lora, strength_model, strength_clip)
         
-        #  LoRA Stracker
+        # Forward slashes stay literal in prompt text. Backslashes get doubled when the stack is copied through JSON.
+        tag_name = lora_name.replace('\\', '/')
+        tag = '<lora:' + tag_name + ':' + str(strength_model) + ':' + str(strength_clip) + '>'
         if '' == lora_stack:
-            lora_stack = '<lora:' + lora_name + ':' + str(strength_model) + ':' + str(strength_clip) + '>'            
-        else:
-            if False is (lora_name in lora_stack):
-                lora_stack = lora_stack + '<lora:' + lora_name + ':' + str(strength_model) + ':' + str(strength_clip) + '>'
+            lora_stack = tag
+        elif tag_name not in lora_stack.replace('\\', '/'):
+            lora_stack = lora_stack + tag
                                 
         return (model_lora, clip_lora, lora_stack,)
         

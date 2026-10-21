@@ -2,7 +2,7 @@ import re
 from typing import List
 from comfy.sd1_clip import escape_important, unescape_important, token_weights
 
-from .utils import civitai_embedding_key_name, civitai_lora_key_name, full_embedding_path_for, full_lora_path_for, get_sha256
+from .utils import civitai_embedding_key_name, civitai_lora_key_name, full_embedding_path_for, full_lora_path_for, get_sha256, normalize_model_name
 
 """
 Extracts Embeddings and Lora's from the given prompts
@@ -52,7 +52,7 @@ class PromptMetadataExtractor:
                 self.__extract_lora_information(lora)
 
     def __extract_embedding_information(self, embedding: str, weight: float):
-        embedding_name = civitai_embedding_key_name(embedding)
+        embedding_name = civitai_embedding_key_name(normalize_model_name(embedding))
         embedding_path = full_embedding_path_for(embedding)
         if embedding_path == None:
             return
@@ -61,7 +61,7 @@ class PromptMetadataExtractor:
         self.__embeddings[embedding_name] = (embedding_path, weight, sha)
 
     def __extract_lora_information(self, lora: tuple[str, str]):
-        lora_name = civitai_lora_key_name(lora[0])
+        lora_name = civitai_lora_key_name(normalize_model_name(lora[0]))
         lora_path = full_lora_path_for(lora[0])
         if lora_path == None:
             return
